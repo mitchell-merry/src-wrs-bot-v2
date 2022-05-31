@@ -21,6 +21,7 @@
 	},
 	"homepage": "https://github.com/mitchell-merry/src-wrs-bot-v2#readme",
 	"dependencies": {
+		"discord.js": "^13.7.0",
 		"dotenv": "^16.0.1",
 		"mysql": "^2.18.1",
 		"reflect-metadata": "^0.1.13",
