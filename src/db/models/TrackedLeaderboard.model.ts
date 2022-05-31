@@ -4,9 +4,13 @@ import { Guild, Leaderboard } from "./";
 @Entity()
 export class TrackedLeaderboard {
 
-	/** The unique tracked leaderboard ID - auto-generated. Useless. */
-	@PrimaryGeneratedColumn()
-	tlb_id!: number;
+	/** The ID of the associated Guild. */
+	@PrimaryColumn()
+	guild_id!: string;
+
+	/** The ID of the associated Leaderboard. */
+	@PrimaryColumn()
+	lb_id!: number;
 
 	/** The guild the leaderboard is being tracked in. */
 	@ManyToOne(() => Guild, guild => guild.trackedLeaderboards)
