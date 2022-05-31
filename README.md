@@ -15,4 +15,5 @@ Example `.env`:
 TOKEN="wyushdf sdfhvhzivuoizhvsoidhvsfiuasfhd asfoihasfkljshaf"
 admin=270856336466509835
 MYSQL_ROOT_PASSWORD=root
+MYSQL_DATABASE=src-wrs
 ```
