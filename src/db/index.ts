@@ -1,5 +1,6 @@
+import { GuildManager } from "discord.js";
 import { DataSource } from "typeorm";
-import { entities } from "./models";
+import { entities, GuildEntity } from "./models";
 
 export const DB = new DataSource({
 	type: "mysql",
@@ -11,3 +12,18 @@ export const DB = new DataSource({
 	synchronize: true,
 	entities,
 });
+
+export async function synchronizeGuilds(guilds: GuildManager) {
+	const guildRepo = DB.getRepository(GuildEntity);
+	const syncs = guilds.cache.map(async guild => {
+		const guildE = await guildRepo.findOne({ where: { guild_id: guild.id } });
+		if(guildE) return null;
+
+		console.log(`Syncing ${guild.id}...`);
+		const NewGuild = new GuildEntity();
+		NewGuild.guild_id = guild.id;
+		guildRepo.save(NewGuild);
+	})
+	
+	await Promise.all(syncs);
+}
