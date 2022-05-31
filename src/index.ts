@@ -11,7 +11,11 @@ const client = new Client({ intents: [ Intents.FLAGS.GUILDS ] });
 
 client.on('ready', async () => {
 	if(!client.user) throw new Error(`Null client.user? ${client}`);
-	console.log(`Logged in as ${client.user.tag}!`);
+	
+	console.log(`Logged in as ${client.user.tag} and in the following Guilds: [${client.guilds.cache.size}]`);
+	client.guilds.cache.forEach(g => {
+		console.log(`[${g.id}] ${g.available ? g.name : "UNAVAILABLE"} `)
+	});
 
 	await DB.initialize()
 		.then(() => console.log("Data Source has been initialized!"))
