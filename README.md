@@ -3,7 +3,7 @@ A bot for tracking speedrun.com world records in your discord server.
 
 
 ## SETUP
-1. Clone the repo to your machine.
+1. Clone the repo to your machine & install Node if you have not already.
 2. Run `npm install` to install the necessary NPM packages.
 3. Add a `.env` file in the root of the project and fill it with necessary values (example below):
    - `TOKEN`: The secret token of the discord bot to run in.
