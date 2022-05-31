@@ -1,4 +1,5 @@
 import { DataSource } from "typeorm";
+import { Guild } from "./models/Guild.model";
 
 export const DB = new DataSource({
 	type: "mysql",
@@ -8,5 +9,13 @@ export const DB = new DataSource({
 	password: process.env.MYSQL_ROOT_PASSWORD,
 	database: process.env.MYSQL_DATABASE,
 	synchronize: true,
-	entities: [],
+	entities: [ Guild ],
 })
+
+DB.initialize()
+    .then(() => {
+        console.log("Data Source has been initialized!")
+    })
+    .catch((err) => {
+        console.error("Error during Data Source initialization", err)
+    });

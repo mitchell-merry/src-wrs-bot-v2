@@ -3,4 +3,4 @@
 import 'dotenv/config'
 import "reflect-metadata"
 
-console.log(process.env.hi);
+import { DB } from './db'
