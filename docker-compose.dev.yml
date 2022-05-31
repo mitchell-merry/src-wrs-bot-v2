@@ -1,0 +1,40 @@
+services: 
+  db:
+    image: mysql
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: src-wrs
+    ports:
+      - 6033:3306
+    volumes:
+      - db-data:/var/lib/mysql
+  
+  phpmyadmin:
+    # latest was broken at the time of creation
+    image: phpmyadmin/phpmyadmin:5.1.1
+    container_name: pma
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    restart: always
+    ports:
+      - 8081:80
+    depends_on:
+      - db
+
+  # app:
+  #   image: node:latest
+  #   container_name: app
+  #   ports:
+  #     - 33322:3000
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #     - .:/app
+  #   working_dir: /app
+  #   entrypoint: npm start
+
+volumes:
+  db-data:
