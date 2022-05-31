@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { TrackedLeaderboard } from "./";
 
 @Entity()
 export class Leaderboard {
@@ -14,4 +15,8 @@ export class Leaderboard {
 	/** The ID of the category of the leaderboard. */
 	@Column()
 	category_id!: string;
+
+	/** Where this leaderboard is being tracked. */
+	@OneToMany(() => TrackedLeaderboard, tlb => tlb.leaderboard)
+	trackedLeaderboards!: TrackedLeaderboard[];
 }

@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
+import { TrackedLeaderboard } from "./";
 
 @Entity()
 export class Guild {
@@ -14,4 +15,8 @@ export class Guild {
 	/** The ID of the role to place new roles above. */
 	@Column()
 	above_role_id!: string;
+
+	/** The leaderboards this guild is tracking. */
+	@OneToMany(() => TrackedLeaderboard, tlb => tlb.leaderboard)
+	trackedLeaderboards!: TrackedLeaderboard[];
 }
