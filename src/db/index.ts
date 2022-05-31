@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { Guild, Player } from "./models";
+import { entities } from "./models";
 
 export const DB = new DataSource({
 	type: "mysql",
@@ -9,7 +9,7 @@ export const DB = new DataSource({
 	password: process.env.MYSQL_ROOT_PASSWORD,
 	database: process.env.MYSQL_DATABASE,
 	synchronize: true,
-	entities: [ Guild, Player ],
+	entities,
 })
 
 DB.initialize()
