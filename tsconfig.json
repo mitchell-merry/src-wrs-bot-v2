@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"target": "esnext",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"outDir": "./build",
+		"esModuleInterop": true,
+		"incremental": true,
+		
+		"strict": true,
+		"allowJs": true,
+		"forceConsistentCasingInFileNames": true,
+		"allowSyntheticDefaultImports": true,
+
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"resolveJsonModule": true,	
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules"]
+	}
