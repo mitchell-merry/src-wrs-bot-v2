@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { TrackedLeaderboard } from "./";
+import { TrackedLeaderboard, Variable } from "./";
 
 @Entity()
 export class Leaderboard {
@@ -15,6 +15,10 @@ export class Leaderboard {
 	/** The ID of the category of the leaderboard. */
 	@Column()
 	category_id!: string;
+
+	/** The variables to filter this leaderboard by. */
+	@OneToMany(() => Variable, variable => variable.leaderboard)
+	variables!: Variable;
 
 	/** Where this leaderboard is being tracked. */
 	@OneToMany(() => TrackedLeaderboard, tlb => tlb.leaderboard)
