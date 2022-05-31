@@ -4,6 +4,7 @@
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"outDir": "./build",
+		"lib": [ "es6" ],
 		"esModuleInterop": true,
 		"incremental": true,
 		
