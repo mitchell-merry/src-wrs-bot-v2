@@ -9,6 +9,7 @@ A bot for tracking speedrun.com world records in your discord server.
    - `TOKEN`: The secret token of the discord bot to run in.
    - `admin`: The id of your discord account - the admin of the bot. This user will have full access to the bot's commands, so be careful.
    - `MYSQL_ROOT_PASSWORD`: Password to your mysql server.
+   - `MYSQL_DATABASE`: Name of the MySQL database. You should probably set this to something like `src-wrs`
 Example `.env`:
 ```env
 TOKEN="wyushdf sdfhvhzivuoizhvsoidhvsfiuasfhd asfoihasfkljshaf"
