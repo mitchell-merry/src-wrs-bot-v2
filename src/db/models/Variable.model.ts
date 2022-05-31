@@ -19,5 +19,5 @@ export class Variable {
 	/** The leaderboard which this variable is attached to. */
 	@ManyToOne(() => Leaderboard, leaderboard => leaderboard.variables)
 	@JoinColumn({ name: 'lb_id' })
-	leaderboard!: number;
+	leaderboard!: Leaderboard;
 }
