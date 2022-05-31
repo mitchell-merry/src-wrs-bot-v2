@@ -1,8 +1,8 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from "typeorm";
 import { TrackedLeaderboard } from "./";
 
-@Entity()
-export class Guild {
+@Entity({ name: "guild" })
+export class GuildEntity {
 
 	/** The discord guild's ID. */
 	@PrimaryColumn()

@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { Guild, Leaderboard } from "./";
+import { GuildEntity, Leaderboard } from "./";
 
 @Entity()
 export class TrackedLeaderboard {
@@ -13,9 +13,9 @@ export class TrackedLeaderboard {
 	lb_id!: number;
 
 	/** The guild the leaderboard is being tracked in. */
-	@ManyToOne(() => Guild, guild => guild.trackedLeaderboards)
+	@ManyToOne(() => GuildEntity, guild => guild.trackedLeaderboards)
 	@JoinColumn({ name: 'guild_id' })
-	guild!: Guild;
+	guild!: GuildEntity;
 
 	/** The leaderboard being tracked. */
 	@ManyToOne(() => Leaderboard, leaderboard => leaderboard.trackedLeaderboards)

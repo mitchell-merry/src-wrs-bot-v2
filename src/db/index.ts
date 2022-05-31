@@ -10,12 +10,4 @@ export const DB = new DataSource({
 	database: process.env.MYSQL_DATABASE,
 	synchronize: true,
 	entities,
-})
-
-DB.initialize()
-    .then(() => {
-        console.log("Data Source has been initialized!")
-    })
-    .catch((err) => {
-        console.error("Error during Data Source initialization", err)
-    });
+});
