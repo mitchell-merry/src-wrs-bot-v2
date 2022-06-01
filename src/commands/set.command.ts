@@ -20,19 +20,19 @@ export const data = new SlashCommandBuilder()
 
 export const perms = 'mod';
 
-async function above_role(interaction: CommandInteraction) {
+async function above_role(interaction: CommandInteraction, guildEnt: GuildEntity) {
 	
 }
 
-async function role_default_color(interaction: CommandInteraction) {
+async function role_default_color(interaction: CommandInteraction, guildEnt: GuildEntity) {
 
 }
 
-async function list(interaction: CommandInteraction) {
-
+async function list(interaction: CommandInteraction, guildEnt: GuildEntity) {
+	
 }
 
-const subcommands: Record<string, (interaction: CommandInteraction) => Promise<void>> = { 
+const subcommands: Record<string, (interaction: CommandInteraction, guildEnt: GuildEntity) => Promise<void>> = { 
 	'above_role': above_role, 
 	'role_default_color': role_default_color, 
 	'list': list,
@@ -41,5 +41,11 @@ const subcommands: Record<string, (interaction: CommandInteraction) => Promise<v
 export const execute = async (interaction: CommandInteraction) => {        
 	if(!subcommands[interaction.options.getSubcommand()]) throw new Error(`Invalid subcommand: ${interaction.options.getSubcommand()}`);
 
-	subcommands[interaction.options.getSubcommand()](interaction);
+	if(!interaction.guildId) throw new Error("Invalid guild id...");
+	const gRepo = DB.getRepository(GuildEntity);
+	const guildEnt = await gRepo.findOne({ where: { guild_id: interaction.guildId } });
+	
+	if(!guildEnt) throw new Error("Guild is not set...?");
+
+	subcommands[interaction.options.getSubcommand()](interaction, guildEnt);
 }
