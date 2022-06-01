@@ -44,7 +44,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
 		if(!command)
 		{
-			interaction.reply({ content: `Command ${interaction.commandName} unknown` });
+			interaction.reply(`Command ${interaction.commandName} unknown`);
 			return;
 		}
 
@@ -58,12 +58,12 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 		// Check user has correct permission.
 		if(permLevel === 'admin' && interaction.user.id !== process.env.admin)
 		{
-			interaction.reply({ content: `Only admins are allowed to use this command! Loser. Scram!!` });
+			interaction.reply(`Only admins are allowed to use this command! Loser. Scram!!`);
 			return;
 		}
 		else if(permLevel === 'mods' && !(await isUserMod(interaction.guildId, interaction.member)))
 		{
-			interaction.reply({ content: `Only mods and above are allowed to use this! GET LOST!!!` });
+			interaction.reply(`Only mods and above are allowed to use this! Shame on you. Bad.`);
 			return;
 		}
 
