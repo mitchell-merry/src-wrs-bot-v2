@@ -5,7 +5,6 @@ import 'reflect-metadata'
 import { Client, Intents } from 'discord.js'
 
 import { DB, synchronizeGuilds } from './db'
-import { GuildEntity } from './db/models'
 const client = new Client({ intents: [ Intents.FLAGS.GUILDS ] });
 
 
