@@ -12,5 +12,6 @@ export interface CommandFile {
 import * as invite from './invite.command';
 import * as modroles from './modroles.command';
 import * as set from './set.command';
+import * as player from './player.command';
 
-export default [ invite, modroles, set ] as CommandFile[];
+export default [ invite, modroles, set, player ] as CommandFile[];

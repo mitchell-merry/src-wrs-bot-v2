@@ -16,7 +16,8 @@
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"resolveJsonModule": true,	
+		"types": [ "src-ts" ]
 	},
 	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules"]
-	}
+}
