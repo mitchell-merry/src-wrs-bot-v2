@@ -46,6 +46,12 @@ async function add(interaction: CommandInteraction) {
 
 	const player_id = await SRC.getUserId(srcOpt);
 
+	if(!player_id)
+	{
+		interaction.reply(`The given speedrun.com account '${srcOpt}' could not be found.`);
+		return;
+	}
+
 	exists = await pRepo.findOne({ where: { player_id } });
 
 	if(exists) {
@@ -54,7 +60,7 @@ async function add(interaction: CommandInteraction) {
 	}
 
 	const playerEnt = new Player(player_id, userOpt.id);
-	pRepo.save(playerEnt);
+	await pRepo.save(playerEnt);
 	interaction.reply(`Added association for ${userOpt.username} to the speedrun.com account ${srcOpt} [${player_id}]`);
 }
 
@@ -67,22 +73,38 @@ async function remove(interaction: CommandInteraction) {
 		interaction.reply('The option user must be set.');
 		return;
 	}
+
+	let exists = await pRepo.findOne({ where: { discord_id: userOpt.id } });
+
+	if(!exists) {
+		interaction.reply(`This discord account is not associated with a speedrun.com account.`);
+		return;
+	}
+
+	await pRepo.remove(exists);
+	interaction.reply(`Association for ${userOpt.username} [${userOpt.id}] removed!`)
 }
 
 async function list(interaction: CommandInteraction) {
 	const pRepo = DB.getRepository(Player);
 
 	let msg = `The users with an association in this discord are:\n\`\`\`\n`;
+	
+	let count = 0;
 	const proms = interaction.guild!.members.cache.map(async member => {
 		const playerEnt = await pRepo.findOne({ where: { discord_id: member.id } });
 		if(!playerEnt) return;
-
+		
+		count++;
 		return `${member.displayName} - ${playerEnt.player_id}`;
 	});
 
 	const lines = await Promise.all(proms);
 
 	msg += `${lines.join('\n')}\n\`\`\``;
+
+	if(count === 0) msg = `There are no users associated with a speedrun.com account in this discord.`;
+
 	interaction.reply(msg);
 }
 

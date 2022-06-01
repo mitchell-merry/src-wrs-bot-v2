@@ -16,7 +16,7 @@ const BASE_URL = "https://www.speedrun.com/api/v1";
 
 export * from './user';
 
-export async function get<ResponseType>(url: string, options: Record<string, any> = {}): Promise<ResponseType> {
+export async function get<ResponseType>(url: string, options: Record<string, any> = {}): Promise<ResponseType | Error> {
 	url = `${BASE_URL}${url}`;
 	
 	if(Object.entries(options).length != 0) {
@@ -24,11 +24,6 @@ export async function get<ResponseType>(url: string, options: Record<string, any
 	}
 
 	const res = await fetchSRC(url).then(res => res.json()) as ResponseType | Error;
-	
-	if('status' in res) {
-		console.error(res);
-		throw new Error(res.message);
-	}
 	
 	return res;
 }
