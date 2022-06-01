@@ -19,4 +19,8 @@ export class GuildEntity {
 	/** The leaderboards this guild is tracking. */
 	@OneToMany(() => TrackedLeaderboard, tlb => tlb.leaderboard)
 	trackedLeaderboards!: TrackedLeaderboard[];
+
+	constructor(guild_id: string) {
+		this.guild_id = guild_id;
+	}
 }

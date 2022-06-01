@@ -20,9 +20,8 @@ export async function synchronizeGuilds(guilds: GuildManager) {
 		if(guildE) return null;
 
 		console.log(`Syncing ${guild.id}...`);
-		const NewGuild = new GuildEntity();
-		NewGuild.guild_id = guild.id;
-		guildRepo.save(NewGuild);
+		const NewGuild = new GuildEntity(guild.id);
+		return guildRepo.save(NewGuild);
 	})
 	
 	await Promise.all(syncs);
