@@ -1,8 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
-import { PermissionLevel } from ".";
 import { DB } from "../db";
-import { ModeratorRole } from "../db/models";
+import { GuildEntity } from "../db/models";
 
 export const data = new SlashCommandBuilder()
 	.setName('set')
@@ -30,7 +29,7 @@ async function role_default_color(interaction: CommandInteraction) {
 }
 
 async function list(interaction: CommandInteraction) {
-	
+
 }
 
 const subcommands: Record<string, (interaction: CommandInteraction) => Promise<void>> = { 

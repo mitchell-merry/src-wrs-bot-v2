@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
-import { PermissionLevel } from ".";
 import { DB } from "../db";
 import { ModeratorRole } from "../db/models";
 
