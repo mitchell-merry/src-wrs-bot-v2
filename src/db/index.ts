@@ -1,6 +1,7 @@
-import { GuildManager } from "discord.js";
+import { APIInteractionGuildMember } from "discord-api-types/v9";
+import { GuildManager, GuildMember, User } from "discord.js";
 import { DataSource } from "typeorm";
-import { entities, GuildEntity } from "./models";
+import { entities, GuildEntity, ModeratorRole } from "./models";
 
 export const DB = new DataSource({
 	type: "mysql",
@@ -25,4 +26,17 @@ export async function synchronizeGuilds(guilds: GuildManager) {
 	})
 	
 	await Promise.all(syncs);
+}
+
+export async function isUserMod(guild_id: string | null, member: GuildMember | APIInteractionGuildMember | null) {
+	if(!guild_id || !member) return false;
+
+	const mrRepo = DB.getRepository(ModeratorRole);
+	const guildRoles = await mrRepo.find({ where: { guild_id } });
+	
+	return guildRoles.find(role => {
+		if(Array.isArray(member.roles)) return member.roles.includes(role.role_id);
+
+		return !!member.roles.cache.get(role.role_id);
+	});
 }

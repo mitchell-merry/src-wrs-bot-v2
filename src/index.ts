@@ -4,8 +4,9 @@ import 'reflect-metadata'
 
 import { Client, Intents, Interaction } from 'discord.js'
 
-import { DB, synchronizeGuilds } from './db'
+import { DB, isUserMod, synchronizeGuilds } from './db'
 import commands, { CommandFile } from './commands';
+import { ModeratorRole } from './db/models';
 
 const client = new Client({ intents: [ Intents.FLAGS.GUILDS ] });
 let commandDict: Record<string, CommandFile> = {};
@@ -37,17 +38,42 @@ client.login(process.env.TOKEN);
 client.on('interactionCreate', async (interaction: Interaction) => {
 	if (!interaction.isCommand()) return;
 
-	if(!commandDict[interaction.commandName])
-	{
-		console.log(`Command ${interaction.commandName} unknown`);
-		return;
-	}
+	const command = commandDict[interaction.commandName];
 
 	try {
-        await interaction.deferReply();
-		await commandDict[interaction.commandName].execute(interaction);
+
+		if(!command)
+		{
+			interaction.reply({ content: `Command ${interaction.commandName} unknown` });
+			return;
+		}
+
+		// Get the perm level of the command or subcommand.
+		let permLevel;
+		if(typeof command.perms === 'string') permLevel = command.perms;
+		else permLevel = command.perms[interaction.options.getSubcommand()];
+		
+		if(!permLevel) throw new Error(`Permission level missing for ${interaction.options.getSubcommand()}.`);
+
+		// Check user has correct permission.
+		if(permLevel === 'admin' && interaction.user.id !== process.env.admin)
+		{
+			interaction.reply({ content: `Only admins are allowed to use this command! Loser. Scram!!` });
+			return;
+		}
+		else if(permLevel === 'mods' && !(await isUserMod(interaction.guildId, interaction.member)))
+		{
+			interaction.reply({ content: `Only mods and above are allowed to use this! GET LOST!!!` });
+			return;
+		}
+
+
+		await command.execute(interaction);
 	} catch (error) {
 		console.error(error);
-		await interaction.editReply({ content: "Error checkm consle baby." });
+		const msg = { content: `${error}` };
+		await (interaction.replied || interaction.deferred 
+			? interaction.editReply(msg) 
+			: interaction.reply(msg));
 	}    
 });

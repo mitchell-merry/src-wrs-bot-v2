@@ -16,4 +16,9 @@ export class ModeratorRole {
 	@ManyToOne(() => GuildEntity, guild => guild.moderatorRoles)
 	@JoinColumn({ name: 'guild_id' })
 	guild!: GuildEntity;
+
+	constructor(guild_id: string, role_id: string) {
+		this.guild_id = guild_id;
+		this.role_id = role_id;
+	}
 }
