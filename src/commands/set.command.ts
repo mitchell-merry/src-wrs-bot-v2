@@ -21,11 +21,30 @@ export const data = new SlashCommandBuilder()
 export const perms = 'mod';
 
 async function above_role(interaction: CommandInteraction, guildEnt: GuildEntity) {
+	const gRepo = DB.getRepository(GuildEntity);
 	
+	const role = interaction.options.getRole('above_role');
+	if(!role) throw new Error('/set above_role: role not set / is undefined.');
+	
+	guildEnt.above_role_id = role.id;
+	await gRepo.save(guildEnt);
+	await interaction.reply(`above_role set to ${role.name} [${role.id}].`);
 }
 
-async function role_default_color(interaction: CommandInteraction, guildEnt: GuildEntity) {
+async function role_default_colour(interaction: CommandInteraction, guildEnt: GuildEntity) {
+	const gRepo = DB.getRepository(GuildEntity);
+	
+	const colour = interaction.options.getString('role_default_colour');
+	if(!colour) throw new Error('/set role_default_colour: role_default_colour not set / is undefined.');
+	if(!colour.match(/^#[0-9A-Fa-f]{6}$/))
+	{
+		interaction.reply('Colour must be a hexcode, e.g. #FEE75C.');
+		return;
+	}
 
+	guildEnt.role_default_colour = colour;
+	await gRepo.save(guildEnt);
+	await interaction.reply(`role_default_colour set to ${colour}.`);
 }
 
 async function list(interaction: CommandInteraction, guildEnt: GuildEntity) {
@@ -36,14 +55,14 @@ async function list(interaction: CommandInteraction, guildEnt: GuildEntity) {
 	if(!roleDiscordObj || !guildEnt.above_role_id) msg += 'Not set! Will stick to bottom.\n';
 	else msg += `${roleDiscordObj.name} [${guildEnt.above_role_id}]\n`;
 
-	msg += `\`role_default_color\`: ${guildEnt.role_default_color}`;
+	msg += `\`role_default_colour\`: ${guildEnt.role_default_colour}`;
 
 	interaction.reply(msg);
 }
 
 const subcommands: Record<string, (interaction: CommandInteraction, guildEnt: GuildEntity) => Promise<void>> = { 
 	'above_role': above_role, 
-	'role_default_color': role_default_color, 
+	'role_default_colour': role_default_colour, 
 	'list': list,
 };
 

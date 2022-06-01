@@ -10,7 +10,7 @@ export class GuildEntity {
 
 	/** The default colour to give to newly created roles. */
 	@Column({ default: '#FEE75C' })
-	role_default_color!: string;
+	role_default_colour!: string;
 
 	/** The ID of the role to place new roles above. */
 	@Column({ default: '' })
