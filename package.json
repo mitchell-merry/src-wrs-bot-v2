@@ -4,10 +4,11 @@
 	"description": "",
 	"scripts": {
 		"start": "tsc && node --experimental-specifier-resolution node build/index.js",
-		"dev": "tsnd --respawn -- src/index.ts",
+		"dev": "tsnd --respawn --cache-directory ./cache -- src/index.ts",
 		"up:db": "docker-compose -f docker-compose.dev.yml up",
 		"stop:db": "docker-compose -f docker-compose.dev.yml stop",
-		"down:db": "docker-compose -f docker-compose.dev.yml down"
+		"down:db": "docker-compose -f docker-compose.dev.yml down",
+		"registerCommands": "tsc && node --experimental-specifier-resolution=node build/register_commands.js"
 	},
 	"repository": {
 		"type": "git",
@@ -25,6 +26,7 @@
 	},
 	"homepage": "https://github.com/mitchell-merry/src-wrs-bot-v2#readme",
 	"dependencies": {
+		"@discordjs/builders": "^0.13.0",
 		"@discordjs/rest": "^0.4.1",
 		"discord-api-types": "^0.33.1",
 		"discord.js": "^13.7.0",
