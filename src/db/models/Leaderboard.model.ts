@@ -16,6 +16,10 @@ export class Leaderboard {
 	@Column()
 	category_id!: string;
 
+	/** The last known name of the associated leaderboard. */
+	@Column()
+	lb_name!: string;
+
 	/** The variables to filter this leaderboard by. */
 	@OneToMany(() => Variable, variable => variable.leaderboard)
 	variables!: Variable;
