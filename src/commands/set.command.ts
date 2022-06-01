@@ -11,9 +11,9 @@ export const data = new SlashCommandBuilder()
 		.setDescription('The role that new roles get created above.')
 		.addRoleOption(o => o.setName('above_role').setDescription('The role.').setRequired(true)))
 	.addSubcommand(sc => sc
-		.setName('role_colour')
-		.setDescription('The colour of new roles created by the bot. Should be a hexcode, e.g. #FEE75C.')
-		.addStringOption(o => o.setName('role_colour').setDescription('The colour.').setRequired(true)))
+		.setName('role_default_colour')
+		.setDescription('The default colour of new roles created by the bot. Should be a hexcode, e.g. #FEE75C.')
+		.addStringOption(o => o.setName('role_default_colour').setDescription('The colour.').setRequired(true)))
 	.addSubcommand(sc => sc
 		.setName('list')
 		.setDescription('Lists all settings for this guild.'));
@@ -29,7 +29,16 @@ async function role_default_color(interaction: CommandInteraction, guildEnt: Gui
 }
 
 async function list(interaction: CommandInteraction, guildEnt: GuildEntity) {
-	
+	let msg = `The settings for this bot are:\n`;
+
+	msg += `\`above_role\`: `;
+	const roleDiscordObj = interaction.guild!.roles.cache.get(guildEnt.above_role_id);
+	if(!roleDiscordObj || !guildEnt.above_role_id) msg += 'Not set! Will stick to bottom.\n';
+	else msg += `${roleDiscordObj.name} [${guildEnt.above_role_id}]\n`;
+
+	msg += `\`role_default_color\`: ${guildEnt.role_default_color}`;
+
+	interaction.reply(msg);
 }
 
 const subcommands: Record<string, (interaction: CommandInteraction, guildEnt: GuildEntity) => Promise<void>> = { 
