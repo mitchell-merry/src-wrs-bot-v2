@@ -13,5 +13,6 @@ import * as invite from './invite.command';
 import * as modroles from './modroles.command';
 import * as set from './set.command';
 import * as player from './player.command';
+import * as leaderboard from './leaderboard.command';
 
-export default [ invite, modroles, set, player ] as CommandFile[];
+export default [ invite, modroles, set, player, leaderboard ] as CommandFile[];
