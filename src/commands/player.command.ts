@@ -37,7 +37,21 @@ async function add(interaction: CommandInteraction) {
 		return;
 	}
 
+	let exists = await pRepo.findOne({ where: { discord_id: userOpt.id } });
+
+	if(exists) {
+		interaction.reply(`This discord account is already associated with a speedrun.com account. [${exists.player_id}]`);
+		return;
+	}
+
 	const player_id = await SRC.getUserId(srcOpt);
+
+	exists = await pRepo.findOne({ where: { player_id } });
+
+	if(exists) {
+		interaction.reply(`This speedrun.com account is already associated with a discord account. [${exists.discord_id}]`);
+		return;
+	}
 
 	const playerEnt = new Player(player_id, userOpt.id);
 	pRepo.save(playerEnt);
@@ -46,6 +60,13 @@ async function add(interaction: CommandInteraction) {
 
 async function remove(interaction: CommandInteraction) {
 	const pRepo = DB.getRepository(Player);
+
+	const userOpt = interaction.options.getUser('user');
+
+	if(!userOpt) {
+		interaction.reply('The option user must be set.');
+		return;
+	}
 }
 
 async function list(interaction: CommandInteraction) {
