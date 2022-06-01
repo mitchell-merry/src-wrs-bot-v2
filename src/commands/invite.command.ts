@@ -1,6 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
-import { PermissionLevel } from ".";
 
 export const data = new SlashCommandBuilder()
 	.setName('invite')
