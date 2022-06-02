@@ -97,7 +97,7 @@ async function list(interaction: CommandInteraction) {
 		if(!playerEnt) return;
 		
 		count++;
-		return `${member.displayName} - ${playerEnt.player_id}`;
+		return `${member.displayName} - ${playerEnt.src_name} [${playerEnt.player_id}]`;
 	});
 
 	const lines = await Promise.all(proms);
