@@ -92,9 +92,11 @@ async function list(interaction: CommandInteraction) {
 	let msg = `The users with an association in this discord are:\n\`\`\`\n`;
 	
 	let count = 0;
+
+	await interaction.guild!.members.fetch();
 	const proms = interaction.guild!.members.cache.map(async member => {
 		const playerEnt = await pRepo.findOne({ where: { discord_id: member.id } });
-		if(!playerEnt) return;
+		if(!playerEnt) return '';
 		
 		count++;
 		return `${member.displayName} - ${playerEnt.src_name} [${playerEnt.player_id}]`;
@@ -102,7 +104,7 @@ async function list(interaction: CommandInteraction) {
 
 	const lines = await Promise.all(proms);
 
-	msg += `${lines.join('\n')}\n\`\`\``;
+	msg += `${lines.filter(line => line != '').join('\n')}\n\`\`\``;
 
 	if(count === 0) msg = `There are no users associated with a speedrun.com account in this discord.`;
 

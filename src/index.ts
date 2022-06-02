@@ -8,7 +8,7 @@ import { DB, isUserMod, synchronizeGuilds } from './db'
 import commands, { CommandFile } from './commands';
 import { ModeratorRole } from './db/models';
 
-const client = new Client({ intents: [ Intents.FLAGS.GUILDS ] });
+const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS ] });
 let commandDict: Record<string, CommandFile> = {};
 
 client.on('ready', async () => {
