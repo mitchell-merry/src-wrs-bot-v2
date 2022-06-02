@@ -21,5 +21,6 @@ admin=270856336466509835
 MYSQL_ROOT_PASSWORD=root
 MYSQL_DATABASE=src-wrs
 ```
-4. Run the MySQL and phpmyadmin containers by running `npm run db:up`, and then use the corresponding commands `db:stop` and `db:down` to stop/remove the containers.
-5. Then, run the bot with `npm run dev`.
+4. Enable the GUILD_MEMBERS privileged intent in your bot's developer portal on Discord.
+5. Run the MySQL and phpmyadmin containers by running `npm run db:up`, and then use the corresponding commands `db:stop` and `db:down` to stop/remove the containers.
+6. Then, run the bot with `npm run dev`.
