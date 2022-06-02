@@ -22,9 +22,16 @@ export class Leaderboard {
 
 	/** The variables to filter this leaderboard by. */
 	@OneToMany(() => Variable, variable => variable.leaderboard)
-	variables!: Variable;
+	variables!: Variable[];
 
 	/** Where this leaderboard is being tracked. */
 	@OneToMany(() => TrackedLeaderboard, tlb => tlb.leaderboard)
 	trackedLeaderboards!: TrackedLeaderboard[];
+
+	constructor(game_id: string, category_id: string, lb_name: string, variables: Variable[]) {
+		this.game_id = game_id;
+		this.category_id = category_id;
+		this.lb_name = lb_name;
+		this.variables = variables;
+	}
 }

@@ -1,5 +1,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
+import { DB } from "../db";
+import { Leaderboard } from "../db/models";
+import * as SRC from '../speedruncom';
 
 export const data = new SlashCommandBuilder()
 	.setName('leaderboard')
@@ -21,8 +24,34 @@ export const perms = {
 	'list': 'all'
 };
 
-async function add(interaction: CommandInteraction) {
+const link = /^(((https:\/\/|http:\/\/|)(www.|)|)speedrun.com\/|)\w{1,}(\/full_game(#\w{1,}|)|#\w{1,}|\/full_game|\/|)$/;
 
+async function add(interaction: CommandInteraction) {
+	const lRepo = DB.getRepository(Leaderboard);
+
+	const gameOpt = interaction.options.getString('game');
+	if(!gameOpt || !gameOpt.match(link))
+	{
+		interaction.reply(`Invalid game/link: ${gameOpt}.`);
+		return;
+	}
+
+	let tokens = gameOpt.split('/').pop()!.split("#");
+	const game = tokens[0];
+	if(tokens.length === 1)
+	{
+		// Get category from menu
+		const catData = await SRC.getGameCategories(game);
+
+		if(SRC.isError(catData))
+		{
+			interaction.reply(catData.message);
+			return;
+		}
+
+		const catNames = catData.map(cat => cat.name);
+		interaction.reply(catNames.join(', '));
+	}
 }
 
 async function remove(interaction: CommandInteraction) {
