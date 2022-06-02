@@ -10,6 +10,10 @@ export class Player {
 	/** The player's ID on discord. */
 	@Column()
 	discord_id!: string;
+
+	/** The username of the player's speedrun.com account. */
+	@Column()
+	src_name!: string;
 	
 	constructor(player_id: string, discord_id: string) {
 		this.player_id = player_id;
