@@ -15,6 +15,7 @@ const fetchSRC = new Bottleneck({
 const BASE_URL = "https://www.speedrun.com/api/v1";
 
 export * from './user';
+export * from './game';
 
 export async function get<ResponseType>(url: string, options: Record<string, any> = {}): Promise<ResponseType | Error> {
 	url = `${BASE_URL}${url}`;
