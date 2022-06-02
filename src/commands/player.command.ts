@@ -46,7 +46,7 @@ async function add(interaction: CommandInteraction) {
 
 	const player_id = await SRC.getUserId(srcOpt);
 
-	if(!player_id)
+	if(SRC.isError(player_id))
 	{
 		interaction.reply(`The given speedrun.com account '${srcOpt}' could not be found.`);
 		return;

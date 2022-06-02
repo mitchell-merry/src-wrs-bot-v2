@@ -27,3 +27,7 @@ export async function get<ResponseType>(url: string, options: Record<string, any
 	
 	return res;
 }
+
+export function isError(obj: any): obj is Error {
+	return 'status' in obj;
+}
