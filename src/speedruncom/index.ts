@@ -30,5 +30,6 @@ export async function get<ResponseType>(url: string, options: Record<string, any
 }
 
 export function isError(obj: any): obj is Error {
-	return 'status' in obj;
+	return !!obj && typeof obj === "object"
+		&& 'status' in obj;
 }
