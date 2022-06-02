@@ -38,6 +38,7 @@ async function add(interaction: CommandInteraction) {
 
 	let tokens = gameOpt.split('/').pop()!.split("#");
 	const game = tokens[0];
+	let category;
 	if(tokens.length === 1)
 	{
 		// Get category from menu
@@ -52,6 +53,7 @@ async function add(interaction: CommandInteraction) {
 		const catNames = catData.map(cat => cat.name);
 		interaction.reply(catNames.join(', '));
 	}
+	else category = tokens[1];
 }
 
 async function remove(interaction: CommandInteraction) {
