@@ -44,24 +44,25 @@ async function add(interaction: CommandInteraction) {
 		return;
 	}
 
-	const player_id = await SRC.getUserId(srcOpt);
+	const player = await SRC.getUser(srcOpt);
 
-	if(SRC.isError(player_id))
+	if(SRC.isError(player))
 	{
 		interaction.reply(`The given speedrun.com account '${srcOpt}' could not be found.`);
 		return;
 	}
 
-	exists = await pRepo.findOne({ where: { player_id } });
+	exists = await pRepo.findOne({ where: { player_id: player.id } });
 
 	if(exists) {
 		interaction.reply(`This speedrun.com account is already associated with a discord account. [${exists.discord_id}]`);
 		return;
 	}
 
-	const playerEnt = new Player(player_id, userOpt.id);
+	const playerEnt = new Player(player.id, userOpt.id);
+	playerEnt.src_name = player.names.international;
 	await pRepo.save(playerEnt);
-	interaction.reply(`Added association for ${userOpt.username} to the speedrun.com account ${srcOpt} [${player_id}]`);
+	interaction.reply(`Added association for ${userOpt.username} to the speedrun.com account ${player.names.international} [${player.id}]`);
 }
 
 async function remove(interaction: CommandInteraction) {
