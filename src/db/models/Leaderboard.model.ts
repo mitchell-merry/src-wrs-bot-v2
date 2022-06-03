@@ -26,12 +26,8 @@ export class Leaderboard {
 	variables!: Variable[];
 
 	/** Where this leaderboard is being tracked. */
-	@OneToMany(() => TrackedLeaderboard, tlb => tlb.leaderboard)
+	@OneToMany(() => TrackedLeaderboard, tlb => tlb.leaderboard, { cascade: true })
 	trackedLeaderboards!: TrackedLeaderboard[];
-
-	@ManyToMany(() => GuildEntity, guild => guild.leaderboards)
-	@JoinTable({ name: "tracked_leaderboard", joinColumn: { name: "lb_id" }, inverseJoinColumn: { name: "guild_id" } })
-	guilds!: GuildEntity[];
 
 	constructor(game_id: string, category_id: string, lb_name: string) {
 		this.game_id = game_id;

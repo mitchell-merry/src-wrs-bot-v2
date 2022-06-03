@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, Message } from "discord.js";
 import { Category, Game, Variable } from "src-ts";
 import { DB } from "../db";
-import { GuildEntity, Leaderboard, Variable as VariableEntity } from "../db/models";
+import { GuildEntity, Leaderboard, TrackedLeaderboard, Variable as VariableEntity } from "../db/models";
 import * as SRC from '../speedruncom';
 import { buildMenu, getResponse, sendMenu } from "./util";
 
@@ -31,6 +31,7 @@ const link = /^(((https:\/\/|http:\/\/|)(www.|)|)speedrun.com\/|)\w{1,}(\/full_g
 async function add(interaction: CommandInteraction) {
 	const lRepo = DB.getRepository(Leaderboard);
 	const gRepo = DB.getRepository(GuildEntity);
+	const tlbRepo = DB.getRepository(TrackedLeaderboard);
 
 	const guildEnt = await gRepo.findOne({ where: { guild_id: interaction.guildId! } });
 	if(!guildEnt) throw new Error(`Guild ${interaction.guildId} is not initialised`);
@@ -75,6 +76,16 @@ async function add(interaction: CommandInteraction) {
 	const labels = subcats.map(([subcat, v]) => subcat.values.values[v].label);
 	const lb_name = SRC.buildLeaderboardName(gameObj.names.international, categoryObj.name, labels);
 
+	let position = 1;
+	if(guildEnt.above_role_id && guildEnt.above_role_id !== '')
+	{
+		const above_role = await interaction.guild!.roles.fetch(guildEnt.above_role_id);
+		if(above_role) position = above_role.position + 2;
+	}
+
+	// @ts-ignore - role_default_colour is guaranteed to be a valid colour, probably.
+	const role = await interaction.guild!.roles.create({ name: lb_name, color: guildEnt.role_default_colour!, position });
+
 	const board = new Leaderboard(gameObj.id, categoryObj.id, lb_name);
 	board.variables = subcats.map(([subcat, v]) =>{
 		const ent = new VariableEntity();
@@ -83,9 +94,14 @@ async function add(interaction: CommandInteraction) {
 		ent.value = v;
 		return ent;
 	});
-	board.guilds = [ guildEnt ];
+	
+	board.trackedLeaderboards = [ new TrackedLeaderboard(interaction.guildId!, board.lb_id, role.id) ];
 
 	await lRepo.save(board);
+
+	const tlb = board.trackedLeaderboards.find(tlb => tlb.lb_id === board.lb_id)!;
+	tlb.role_id = role.id;
+	await tlbRepo.save(tlb);
 
 	interaction.editReply({ content: `Added the leaderboard ${lb_name}.`, components: [] });
 }

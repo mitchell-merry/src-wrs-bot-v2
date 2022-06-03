@@ -20,9 +20,6 @@ export class GuildEntity {
 	@OneToMany(() => TrackedLeaderboard, tlb => tlb.leaderboard)
 	trackedLeaderboards!: TrackedLeaderboard[];
 
-	@ManyToMany(() => Leaderboard, lb => lb.guilds)
-	leaderboards!: Leaderboard[];
-
 	/** The moderator roles of this guild. */
 	@OneToMany(() => ModeratorRole, modrole => modrole.guild)
 	moderatorRoles!: ModeratorRole[];

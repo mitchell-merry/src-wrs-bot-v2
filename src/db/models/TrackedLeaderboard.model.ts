@@ -25,4 +25,10 @@ export class TrackedLeaderboard {
 	@ManyToOne(() => Leaderboard, leaderboard => leaderboard.trackedLeaderboards)
 	@JoinColumn({ name: 'lb_id' })
 	leaderboard!: Leaderboard;
+
+	constructor(guild_id: string, lb_id: number, role_id: string) {
+		this.guild_id = guild_id;
+		this.lb_id = lb_id;
+		this.role_id = role_id;
+	}
 }
