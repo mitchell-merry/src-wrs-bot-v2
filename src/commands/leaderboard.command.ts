@@ -1,7 +1,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, Message } from "discord.js";
+import { Category, Game, Variable } from "src-ts";
 import { DB } from "../db";
-import { Leaderboard, Variable } from "../db/models";
+import { Leaderboard, Variable as VariableEntity } from "../db/models";
 import * as SRC from '../speedruncom';
 import { buildMenu, getResponse, sendMenu } from "./util";
 
@@ -41,39 +42,56 @@ async function add(interaction: CommandInteraction) {
 
 	let tokens = gameOpt.split('/').pop()!.split("#");
 	const game = tokens[0];
-	let categoryId: string;
-	if(tokens.length > 1) categoryId = tokens[1];
-	else
-	{
-		// Get category from menu
-		const catData = await SRC.getGameCategories(game);
 
-		if(SRC.isError(catData))
-		{
-			interaction.reply(catData.message);
-			return;
-		}
-
-		// Make category menu to get the category of the leaderboard
-		const catNames = catData.map(cat => ({ value: cat.id, label: cat.name }));
-		const menu = buildMenu(catNames, game);
-		const [message, choiceInt] = await sendMenu(interaction, `Choose a category:`, [ menu ]);
-		categoryId = getResponse(choiceInt);
-		const catName = catNames.find(c => c.value === categoryId)!.label;
-
-		interaction.editReply({ content: `Selected the category ${catName} [${categoryId}]`, components: [] });
-		message.delete();
-	}
-
-	const variables = await SRC.getCategoryVariables(categoryId);
-
-	if(SRC.isError(variables))
-	{
-		interaction.reply(variables.message);
+	const gameObj = await SRC.getGame(game, { embed: 'categories.variables,levels' });
+	
+	if(SRC.isError(gameObj)) {
+		interaction.editReply(`Game ${game} does not exist.`);
 		return;
 	}
 
-	const proms = variables.filter(v => v['is-subcategory']).map(async subcat => {
+	let categoryObj: Category | undefined;
+
+	// Category was provided.
+	if(tokens.length > 1)
+	{
+		categoryObj = gameObj.categories!.data.find(cat => cat.weblink.split("#")[1] === tokens[1]);
+		if(!categoryObj) {
+			interaction.editReply(`Category ${tokens[1]} does not exist. Try without specifying the category.`);
+			return;
+		}
+	}
+	else
+	{
+		// Provide a menu to select from
+		categoryObj = await selectCategory(interaction, gameObj);
+	}
+
+	const subcats = await selectVariables(interaction, categoryObj);
+	const labels = subcats.map(([subcat, v]) => subcat.values.values[v].label);
+	const lb_name = SRC.buildLeaderboardName(gameObj.names.international, categoryObj.name, labels);
+	interaction.editReply({ content: `Added the leaderboard ${lb_name}.`, components: [] });
+}
+
+async function selectCategory(interaction: CommandInteraction, game: Game): Promise<Category> {
+	// Get category from menu
+	const catData = game.categories!.data;
+
+	// Make category menu to get the category of the leaderboard
+	const catNames = catData.map(cat => ({ value: cat.id, label: cat.name }));
+	const menu = buildMenu(catNames, game.id);
+	const [message, choiceInt] = await sendMenu(interaction, `Choose a category:`, [ menu ]);
+	let categoryId = getResponse(choiceInt);
+	const category = catData.find(c => c.id === categoryId)!;
+
+	await interaction.editReply({ content: `Selected the category ${category.name} [${category.id}]`, components: [] });
+	await message.delete();
+
+	return category;
+}
+
+async function selectVariables(interaction: CommandInteraction, categoryObj: Category): Promise<[Variable, string][]> {
+	return Promise.all(categoryObj.variables!.data.filter(v => v['is-subcategory']).map(async subcat => {
 		const options = Object.entries(subcat.values.values)
 			.map(([k, v]) => ({ value: k, label: v.label }));
 
@@ -85,12 +103,8 @@ async function add(interaction: CommandInteraction) {
 
 		const value = getResponse(r);
 
-		return { variable_id: subcat.id, value, valueLabel: subcat.values.values[value].label };
-	});
-
-	const results = await Promise.all(proms);
-	const lb_name = SRC.buildLeaderboardName(game, categoryId, results.map(v => v.valueLabel));
-	interaction.editReply({ content: `Added the leaderboard ${lb_name}.`, components: [] });
+		return [ subcat, value ];
+	}));
 }
 
 async function remove(interaction: CommandInteraction) {
