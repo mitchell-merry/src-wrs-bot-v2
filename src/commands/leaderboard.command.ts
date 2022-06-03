@@ -83,11 +83,14 @@ async function add(interaction: CommandInteraction) {
 
 		await message.delete();
 
-		return { variable_id: subcat.id, value: getResponse(r) };
+		const value = getResponse(r);
+
+		return { variable_id: subcat.id, value, valueLabel: subcat.values.values[value].label };
 	});
 
 	const results = await Promise.all(proms);
-	
+	const lb_name = SRC.buildLeaderboardName(game, categoryId, results.map(v => v.valueLabel));
+	interaction.editReply({ content: `Added the leaderboard ${lb_name}.`, components: [] });
 }
 
 async function remove(interaction: CommandInteraction) {
