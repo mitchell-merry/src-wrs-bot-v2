@@ -16,10 +16,11 @@ A bot for tracking speedrun.com world records in your discord server.
 
 Example `.env`:
 ```env
-TOKEN="wyushdf sdfhvhzivuoizhvsoidhvsfiuasfhd asfoihasfkljshaf"
+TOKEN=OTgxMTg0MzQ5NDkzOTE5ODc0.GYd3M5.gBATV20FDVFrBxQ9Cz-cfzjwacIrGEyQSTEE78
 admin=270856336466509835
 MYSQL_ROOT_PASSWORD=root
 MYSQL_DATABASE=src-wrs
+PORT=6603
 ```
 4. Enable the GUILD_MEMBERS privileged intent in your bot's developer portal on Discord.
 5. Run the MySQL and phpmyadmin containers by running `npm run db:up`, and then use the corresponding commands `db:stop` and `db:down` to stop/remove the containers.
