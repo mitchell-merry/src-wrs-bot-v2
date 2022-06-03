@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, Message } from "discord.js";
 import { DB } from "../db";
-import { Leaderboard } from "../db/models";
+import { Leaderboard, Variable } from "../db/models";
 import * as SRC from '../speedruncom';
 import { buildMenu, getResponse, sendMenu } from "./util";
 
@@ -37,6 +37,8 @@ async function add(interaction: CommandInteraction) {
 		return;
 	}
 
+	await interaction.deferReply();
+
 	let tokens = gameOpt.split('/').pop()!.split("#");
 	const game = tokens[0];
 	let categoryId: string;
@@ -55,12 +57,37 @@ async function add(interaction: CommandInteraction) {
 		// Make category menu to get the category of the leaderboard
 		const catNames = catData.map(cat => ({ value: cat.id, label: cat.name }));
 		const menu = buildMenu(catNames, game);
-		const choiceInt = await sendMenu(interaction, `Choose a category:`, [ menu ]);
+		const [message, choiceInt] = await sendMenu(interaction, `Choose a category:`, [ menu ]);
 		categoryId = getResponse(choiceInt);
 		const catName = catNames.find(c => c.value === categoryId)!.label;
 
-		choiceInt.update({ content: `Selected the category ${catName} [${categoryId}]`, components: [] });
+		interaction.editReply({ content: `Selected the category ${catName} [${categoryId}]`, components: [] });
+		message.delete();
 	}
+
+	const variables = await SRC.getCategoryVariables(categoryId);
+
+	if(SRC.isError(variables))
+	{
+		interaction.reply(variables.message);
+		return;
+	}
+
+	const proms = variables.filter(v => v['is-subcategory']).map(async subcat => {
+		const options = Object.entries(subcat.values.values)
+			.map(([k, v]) => ({ value: k, label: v.label }));
+
+		const menu = buildMenu(options, subcat.id);
+		const [message, r] = await sendMenu(interaction,
+			`Choose a value for the variable ${subcat.name}:`, [ menu ]);
+
+		await message.delete();
+
+		return { variable_id: subcat.id, value: getResponse(r) };
+	});
+
+	const results = await Promise.all(proms);
+	
 }
 
 async function remove(interaction: CommandInteraction) {

@@ -7,13 +7,13 @@ interface MenuOption
 	style?: MessageButtonStyleResolvable;
 }
 
-export async function sendMenu(interaction: CommandInteraction, message: string, components: MessageActionRow[]) {
-	await interaction.reply({ content: message, components });
+export async function sendMenu(interaction: CommandInteraction, message: string, components: MessageActionRow[]): Promise<[Message<boolean>, MessageComponentInteraction]> {
+	const m = await interaction.channel!.send({ content: message, components });
 	
-	const m = await interaction.fetchReply();
 	if(!(m instanceof Message)) throw new Error("Message sent is an APIMessage. Why.");
 
-	return m.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 300000 });
+	const r = await m.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 300000 });
+	return [m, r];
 }
 
 export function getResponse(int: MessageComponentInteraction) {
