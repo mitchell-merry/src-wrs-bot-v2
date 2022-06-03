@@ -18,6 +18,16 @@ export * from './user';
 export * from './game';
 export * from './category';
 
+export async function buildLeaderboardName(gameName: string, categoryName: string, variables: string[]) {
+	let name = `${gameName} - ${categoryName}`;
+	if(variables.length !== 0)
+	{
+		name += ` (${variables.join(', ')})`;
+	}
+
+	return name;
+}
+
 export async function get<ResponseType>(url: string, options: Record<string, any> = {}): Promise<ResponseType | Error> {
 	url = `${BASE_URL}${url}`;
 	
