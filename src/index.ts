@@ -55,13 +55,16 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 		
 		if(!permLevel) throw new Error(`Permission level missing for ${interaction.options.getSubcommand()}.`);
 
+		const userIsAdmin = interaction.user.id === process.env.admin;
+		const userIsMod = userIsAdmin || (await isUserMod(interaction.guildId, interaction.member));
+
 		// Check user has correct permission.
-		if(permLevel === 'admin' && interaction.user.id !== process.env.admin)
+		if(permLevel === 'admin' && !userIsAdmin)
 		{
 			interaction.reply(`Only admins are allowed to use this command! Loser. Scram!!`);
 			return;
 		}
-		else if(permLevel === 'mods' && !(await isUserMod(interaction.guildId, interaction.member)))
+		else if(permLevel === 'mods' && !userIsMod)
 		{
 			interaction.reply(`Only mods and above are allowed to use this! Shame on you. Bad.`);
 			return;

@@ -1,8 +1,9 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, Message } from "discord.js";
 import { DB } from "../db";
 import { Leaderboard } from "../db/models";
 import * as SRC from '../speedruncom';
+import { buildMenu, getResponse, sendMenu } from "./util";
 
 export const data = new SlashCommandBuilder()
 	.setName('leaderboard')
@@ -38,7 +39,7 @@ async function add(interaction: CommandInteraction) {
 
 	let tokens = gameOpt.split('/').pop()!.split("#");
 	const game = tokens[0];
-	let category;
+	let category: string;
 	if(tokens.length === 1)
 	{
 		// Get category from menu
@@ -50,8 +51,14 @@ async function add(interaction: CommandInteraction) {
 			return;
 		}
 
-		const catNames = catData.map(cat => cat.name);
-		interaction.reply(catNames.join(', '));
+		// Make category menu to get the category of the leaderboard
+		const catNames = catData.map(cat => ({ value: cat.id, label: cat.name }));
+		const menu = buildMenu(catNames, game);
+		const choiceInt = await sendMenu(interaction, `Choose a category:`, [ menu ]);
+		category = getResponse(choiceInt);
+		const catName = catNames.find(c => c.value === category)!.label;
+
+		choiceInt.update({ content: `Selected the category ${catName} [${category}]`, components: [] });
 	}
 	else category = tokens[1];
 }
