@@ -1,5 +1,6 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { TrackedLeaderboard, Variable } from "./";
+import { GuildEntity } from "./Guild.model";
 
 @Entity()
 export class Leaderboard {
@@ -21,17 +22,20 @@ export class Leaderboard {
 	lb_name!: string;
 
 	/** The variables to filter this leaderboard by. */
-	@OneToMany(() => Variable, variable => variable.leaderboard)
+	@OneToMany(() => Variable, variable => variable.leaderboard, { cascade: true })
 	variables!: Variable[];
 
 	/** Where this leaderboard is being tracked. */
 	@OneToMany(() => TrackedLeaderboard, tlb => tlb.leaderboard)
 	trackedLeaderboards!: TrackedLeaderboard[];
 
-	constructor(game_id: string, category_id: string, lb_name: string, variables: Variable[]) {
+	@ManyToMany(() => GuildEntity, guild => guild.leaderboards)
+	@JoinTable({ name: "tracked_leaderboard", joinColumn: { name: "lb_id" }, inverseJoinColumn: { name: "guild_id" } })
+	guilds!: GuildEntity[];
+
+	constructor(game_id: string, category_id: string, lb_name: string) {
 		this.game_id = game_id;
 		this.category_id = category_id;
 		this.lb_name = lb_name;
-		this.variables = variables;
 	}
 }

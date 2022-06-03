@@ -12,6 +12,10 @@ export class TrackedLeaderboard {
 	@PrimaryColumn()
 	lb_id!: number;
 
+	/** The ID of the role associated with the leaderboard in the discord. */
+	@Column({ default: '' })
+	role_id!: string;
+
 	/** The guild the leaderboard is being tracked in. */
 	@ManyToOne(() => GuildEntity, guild => guild.trackedLeaderboards)
 	@JoinColumn({ name: 'guild_id' })
@@ -21,8 +25,4 @@ export class TrackedLeaderboard {
 	@ManyToOne(() => Leaderboard, leaderboard => leaderboard.trackedLeaderboards)
 	@JoinColumn({ name: 'lb_id' })
 	leaderboard!: Leaderboard;
-
-	/** The ID of the role associated with the leaderboard in the discord. */
-	@Column()
-	role_id!: string;
 }

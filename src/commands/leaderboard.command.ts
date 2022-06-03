@@ -2,7 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, Message } from "discord.js";
 import { Category, Game, Variable } from "src-ts";
 import { DB } from "../db";
-import { Leaderboard, Variable as VariableEntity } from "../db/models";
+import { GuildEntity, Leaderboard, Variable as VariableEntity } from "../db/models";
 import * as SRC from '../speedruncom';
 import { buildMenu, getResponse, sendMenu } from "./util";
 
@@ -30,6 +30,10 @@ const link = /^(((https:\/\/|http:\/\/|)(www.|)|)speedrun.com\/|)\w{1,}(\/full_g
 
 async function add(interaction: CommandInteraction) {
 	const lRepo = DB.getRepository(Leaderboard);
+	const gRepo = DB.getRepository(GuildEntity);
+
+	const guildEnt = await gRepo.findOne({ where: { guild_id: interaction.guildId! } });
+	if(!guildEnt) throw new Error(`Guild ${interaction.guildId} is not initialised`);
 
 	const gameOpt = interaction.options.getString('game');
 	if(!gameOpt || !gameOpt.match(link))
@@ -44,13 +48,12 @@ async function add(interaction: CommandInteraction) {
 	const game = tokens[0];
 
 	const gameObj = await SRC.getGame(game, { embed: 'categories.variables,levels' });
+	let categoryObj: Category | undefined;
 	
 	if(SRC.isError(gameObj)) {
 		interaction.editReply(`Game ${game} does not exist.`);
 		return;
 	}
-
-	let categoryObj: Category | undefined;
 
 	// Category was provided.
 	if(tokens.length > 1)
@@ -68,8 +71,22 @@ async function add(interaction: CommandInteraction) {
 	}
 
 	const subcats = await selectVariables(interaction, categoryObj);
+
 	const labels = subcats.map(([subcat, v]) => subcat.values.values[v].label);
 	const lb_name = SRC.buildLeaderboardName(gameObj.names.international, categoryObj.name, labels);
+
+	const board = new Leaderboard(gameObj.id, categoryObj.id, lb_name);
+	board.variables = subcats.map(([subcat, v]) =>{
+		const ent = new VariableEntity();
+		ent.leaderboard = board;
+		ent.variable_id = subcat.id;
+		ent.value = v;
+		return ent;
+	});
+	board.guilds = [ guildEnt ];
+
+	await lRepo.save(board);
+
 	interaction.editReply({ content: `Added the leaderboard ${lb_name}.`, components: [] });
 }
 
