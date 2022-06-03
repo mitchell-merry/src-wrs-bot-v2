@@ -18,7 +18,6 @@ services:
       PMA_HOST: db
       PMA_USER: root
       PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    restart: always
     ports:
       - 8081:80
     depends_on:
