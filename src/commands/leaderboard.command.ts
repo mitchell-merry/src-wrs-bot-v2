@@ -39,8 +39,9 @@ async function add(interaction: CommandInteraction) {
 
 	let tokens = gameOpt.split('/').pop()!.split("#");
 	const game = tokens[0];
-	let category: string;
-	if(tokens.length === 1)
+	let categoryId: string;
+	if(tokens.length > 1) categoryId = tokens[1];
+	else
 	{
 		// Get category from menu
 		const catData = await SRC.getGameCategories(game);
@@ -55,12 +56,11 @@ async function add(interaction: CommandInteraction) {
 		const catNames = catData.map(cat => ({ value: cat.id, label: cat.name }));
 		const menu = buildMenu(catNames, game);
 		const choiceInt = await sendMenu(interaction, `Choose a category:`, [ menu ]);
-		category = getResponse(choiceInt);
-		const catName = catNames.find(c => c.value === category)!.label;
+		categoryId = getResponse(choiceInt);
+		const catName = catNames.find(c => c.value === categoryId)!.label;
 
-		choiceInt.update({ content: `Selected the category ${catName} [${category}]`, components: [] });
+		choiceInt.update({ content: `Selected the category ${catName} [${categoryId}]`, components: [] });
 	}
-	else category = tokens[1];
 }
 
 async function remove(interaction: CommandInteraction) {
