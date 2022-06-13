@@ -80,7 +80,7 @@ async function add(interaction: CommandInteraction) {
 	if(guildEnt.above_role_id && guildEnt.above_role_id !== '')
 	{
 		const above_role = await interaction.guild!.roles.fetch(guildEnt.above_role_id);
-		if(above_role) position = above_role.position + 2;
+		if(above_role) position = above_role.position + 1;
 	}
 
 	// @ts-ignore - role_default_colour is guaranteed to be a valid colour, probably.
