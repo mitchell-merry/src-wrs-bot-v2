@@ -50,7 +50,7 @@ async function add(interaction: CommandInteraction) {
 
 	const gameObj = await SRC.getGame(game, { embed: 'categories.variables,levels' });
 	let categoryObj: Category | undefined;
-	
+
 	if(SRC.isError(gameObj)) {
 		interaction.editReply(`Game ${game} does not exist.`);
 		return;
@@ -98,10 +98,6 @@ async function add(interaction: CommandInteraction) {
 	board.trackedLeaderboards = [ new TrackedLeaderboard(interaction.guildId!, board.lb_id, role.id) ];
 
 	await lRepo.save(board);
-
-	const tlb = board.trackedLeaderboards.find(tlb => tlb.lb_id === board.lb_id)!;
-	tlb.role_id = role.id;
-	await tlbRepo.save(tlb);
 
 	interaction.editReply({ content: `Added the leaderboard ${lb_name}.`, components: [] });
 }
