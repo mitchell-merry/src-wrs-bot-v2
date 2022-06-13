@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { DB } from "../../db";
 import { ModeratorRole } from "../../db/models";
+import UserError from "../UserError";
 
 export const data = new SlashCommandBuilder()
 	.setName('modroles')
@@ -31,11 +32,7 @@ async function add(interaction: CommandInteraction) {
 	const roleOption = interaction.options.getRole('role', true);
 
 	const has = await mrRepo.findOne({ where: { guild_id: interaction.guildId, role_id: roleOption.id } });
-	if(!!has)
-	{
-		interaction.reply(`That role is already set as a moderator in this guild.`);
-		return;
-	}
+	if(!!has) throw new UserError(`That role is already set as a moderator in this guild.`);
 
 	const role = new ModeratorRole(interaction.guildId, roleOption.id);
 	await mrRepo.save(role);
@@ -49,11 +46,7 @@ async function remove(interaction: CommandInteraction) {
 	const roleOption = interaction.options.getRole('role', true);
 
 	const role = await mrRepo.findOne({ where: { guild_id: interaction.guildId, role_id: roleOption.id } });
-	if(!role)
-	{
-		interaction.reply(`That role is not set as a moderator in this guild.`);
-		return;
-	}
+	if(!role) throw new UserError(`That role is not set as a moderator in this guild.`);
 
 	await mrRepo.remove(role);
 	interaction.reply(`Removed moderator role '${roleOption.name}'.`);
@@ -96,5 +89,5 @@ const subcommands: Record<string, (interaction: CommandInteraction) => Promise<v
 export const execute = async (interaction: CommandInteraction) => {        
 	if(!subcommands[interaction.options.getSubcommand()]) throw new Error(`Invalid subcommand: ${interaction.options.getSubcommand()}`);
 
-	subcommands[interaction.options.getSubcommand()](interaction);
+	await subcommands[interaction.options.getSubcommand()](interaction);
 }
