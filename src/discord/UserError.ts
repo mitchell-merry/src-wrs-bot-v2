@@ -1,5 +1,5 @@
 export default class UserError extends Error {
-	constructor(message: any) {
+	constructor(message: string) {
 		super(message);
 		this.name = "UserError";
 	}
