@@ -1,8 +1,9 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, User } from "discord.js";
 import { DB } from "../../db";
 import { Player } from "../../db/models";
 import * as SRC from '../../speedruncom';
+import UserError from "../UserError";
 
 export const data = new SlashCommandBuilder()
 	.setName('player')
@@ -32,32 +33,19 @@ async function add(interaction: CommandInteraction) {
 	const userOpt = interaction.options.getUser('user');
 	const srcOpt = interaction.options.getString('src_account');
 
-	if(!srcOpt || !userOpt) {
-		interaction.reply('src_account and user must be set.');
-		return;
-	}
+	if(!srcOpt || !userOpt) throw new UserError('src_account and user must be set.');
 
 	let exists = await pRepo.findOne({ where: { discord_id: userOpt.id } });
 
-	if(exists) {
-		interaction.reply(`This discord account is already associated with a speedrun.com account. [${exists.player_id}]`);
-		return;
-	}
+	if(exists) throw new UserError(`This discord account is already associated with a speedrun.com account. [${exists.player_id}]`);
 
 	const player = await SRC.getUser(srcOpt);
 
-	if(SRC.isError(player))
-	{
-		interaction.reply(`The given speedrun.com account '${srcOpt}' could not be found.`);
-		return;
-	}
+	if(SRC.isError(player)) throw new UserError(`The given speedrun.com account '${srcOpt}' could not be found.`);
 
 	exists = await pRepo.findOne({ where: { player_id: player.id } });
 
-	if(exists) {
-		interaction.reply(`This speedrun.com account is already associated with a discord account. [${exists.discord_id}]`);
-		return;
-	}
+	if(exists) throw new UserError(`This speedrun.com account is already associated with a discord account. [${exists.discord_id}]`);
 
 	const playerEnt = new Player(player.id, userOpt.id);
 	playerEnt.src_name = player.names.international;
@@ -69,18 +57,10 @@ async function remove(interaction: CommandInteraction) {
 	const pRepo = DB.getRepository(Player);
 
 	const userOpt = interaction.options.getUser('user');
-
-	if(!userOpt) {
-		interaction.reply('The option user must be set.');
-		return;
-	}
+	if(!userOpt) throw new UserError('The option user must be set.');
 
 	let exists = await pRepo.findOne({ where: { discord_id: userOpt.id } });
-
-	if(!exists) {
-		interaction.reply(`This discord account is not associated with a speedrun.com account.`);
-		return;
-	}
+	if(!exists) throw new UserError(`This discord account is not associated with a speedrun.com account.`);
 
 	await pRepo.remove(exists);
 	interaction.reply(`Association for ${userOpt.username} [${userOpt.id}] removed!`)
@@ -123,5 +103,5 @@ export const execute = async (interaction: CommandInteraction) => {
 	if(!interaction.guildId) throw new Error("Invalid guild id...");
 	if(!interaction.guild) throw new Error('Can\'t have guild in Detroit');
 
-	subcommands[interaction.options.getSubcommand()](interaction);
+	await subcommands[interaction.options.getSubcommand()](interaction);
 }

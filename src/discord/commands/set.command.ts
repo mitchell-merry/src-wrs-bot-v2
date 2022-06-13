@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { DB } from "../../db";
 import { GuildEntity } from "../../db/models";
+import UserError from "../UserError";
 
 export const data = new SlashCommandBuilder()
 	.setName('set')
@@ -36,11 +37,7 @@ async function role_default_colour(interaction: CommandInteraction, guildEnt: Gu
 	
 	const colour = interaction.options.getString('role_default_colour');
 	if(!colour) throw new Error('/set role_default_colour: role_default_colour not set / is undefined.');
-	if(!colour.match(/^#[0-9A-Fa-f]{6}$/))
-	{
-		interaction.reply('Colour must be a hexcode, e.g. #FEE75C.');
-		return;
-	}
+	if(!colour.match(/^#[0-9A-Fa-f]{6}$/)) throw new UserError('Colour must be a hexcode, e.g. #FEE75C.');
 
 	guildEnt.role_default_colour = colour;
 	await gRepo.save(guildEnt);
@@ -75,5 +72,5 @@ export const execute = async (interaction: CommandInteraction) => {
 	
 	if(!guildEnt) throw new Error("Guild is not set...?");
 
-	subcommands[interaction.options.getSubcommand()](interaction, guildEnt);
+	await subcommands[interaction.options.getSubcommand()](interaction, guildEnt);
 }

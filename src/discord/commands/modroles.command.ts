@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { DB } from "../../db";
 import { ModeratorRole } from "../../db/models";
+import UserError from "../UserError";
 
 export const data = new SlashCommandBuilder()
 	.setName('modroles')
@@ -25,35 +26,25 @@ export const perms = {
 };
 
 async function add(interaction: CommandInteraction) {
-	if(!interaction.guildId) throw new Error("Invalid guild id...");
 	const mrRepo = DB.getRepository(ModeratorRole);
 
 	const roleOption = interaction.options.getRole('role', true);
 
-	const has = await mrRepo.findOne({ where: { guild_id: interaction.guildId, role_id: roleOption.id } });
-	if(!!has)
-	{
-		interaction.reply(`That role is already set as a moderator in this guild.`);
-		return;
-	}
+	const has = await mrRepo.findOne({ where: { guild_id: interaction.guildId!, role_id: roleOption.id } });
+	if(!!has) throw new UserError(`That role is already set as a moderator in this guild.`);
 
-	const role = new ModeratorRole(interaction.guildId, roleOption.id);
+	const role = new ModeratorRole(interaction.guildId!, roleOption.id);
 	await mrRepo.save(role);
 	interaction.reply(`Added moderator role '${roleOption.name}'.`);
 }
 
 async function remove(interaction: CommandInteraction) {
-	if(!interaction.guildId) throw new Error("Invalid guild id...");
 	const mrRepo = DB.getRepository(ModeratorRole);
 
 	const roleOption = interaction.options.getRole('role', true);
 
-	const role = await mrRepo.findOne({ where: { guild_id: interaction.guildId, role_id: roleOption.id } });
-	if(!role)
-	{
-		interaction.reply(`That role is not set as a moderator in this guild.`);
-		return;
-	}
+	const role = await mrRepo.findOne({ where: { guild_id: interaction.guildId!, role_id: roleOption.id } });
+	if(!role) throw new UserError(`That role is not set as a moderator in this guild.`);
 
 	await mrRepo.remove(role);
 	interaction.reply(`Removed moderator role '${roleOption.name}'.`);
@@ -61,12 +52,9 @@ async function remove(interaction: CommandInteraction) {
 }
 
 async function list(interaction: CommandInteraction) {
-	if(!interaction.guildId) throw new Error("Invalid guild id...");
-	if(!interaction.guild) throw new Error('Can\'t have guild in Detroit');
-
 	const mrRepo = DB.getRepository(ModeratorRole);
 
-	const guildRoles = await mrRepo.find({ where: { guild_id: interaction.guildId } });
+	const guildRoles = await mrRepo.find({ where: { guild_id: interaction.guildId! } });
 	
 	if(guildRoles.length === 0)
 	{
@@ -96,5 +84,8 @@ const subcommands: Record<string, (interaction: CommandInteraction) => Promise<v
 export const execute = async (interaction: CommandInteraction) => {        
 	if(!subcommands[interaction.options.getSubcommand()]) throw new Error(`Invalid subcommand: ${interaction.options.getSubcommand()}`);
 
-	subcommands[interaction.options.getSubcommand()](interaction);
+	if(!interaction.guildId) throw new Error("Invalid guild id...");
+	if(!interaction.guild) throw new Error('Can\'t have guild in Detroit');
+
+	await subcommands[interaction.options.getSubcommand()](interaction);
 }

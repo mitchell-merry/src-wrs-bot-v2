@@ -2,11 +2,12 @@
 import 'dotenv/config'
 import 'reflect-metadata'
 
-import { Client, Intents, Interaction } from 'discord.js'
+import { Client, Intents, Interaction, User } from 'discord.js'
 
 import { DB, isUserMod, synchronizeGuilds } from './db'
 import { commands, CommandFile } from './discord';
 import { ModeratorRole } from './db/models';
+import UserError from './discord/UserError';
 
 const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS ] });
 let commandDict: Record<string, CommandFile> = {};
@@ -42,11 +43,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
 	try {
 
-		if(!command)
-		{
-			interaction.reply(`Command ${interaction.commandName} unknown`);
-			return;
-		}
+		if(!command) throw new Error(`Command ${interaction.commandName} unknown`);
 
 		// Get the perm level of the command or subcommand.
 		let permLevel;
@@ -59,24 +56,22 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 		const userIsMod = userIsAdmin || (await isUserMod(interaction.guildId, interaction.member));
 
 		// Check user has correct permission.
-		if(permLevel === 'admin' && !userIsAdmin)
-		{
-			interaction.reply(`Only admins are allowed to use this command! Loser. Scram!!`);
-			return;
-		}
-		else if(permLevel === 'mods' && !userIsMod)
-		{
-			interaction.reply(`Only mods and above are allowed to use this! Shame on you. Bad.`);
-			return;
-		}
-
+		if(permLevel === 'admin' && !userIsAdmin) throw new UserError(`Only admins are allowed to use this command! Loser. Scram!!`);
+		else if(permLevel === 'mods' && !userIsMod) throw new UserError(`Only mods and above are allowed to use this! Shame on you. Bad.`);
 
 		await command.execute(interaction);
 	} catch (error) {
-		console.error(error);
-		const msg = { content: `${error}` };
-		await (interaction.replied || interaction.deferred 
-			? interaction.editReply(msg) 
-			: interaction.reply(msg));
+		if(error instanceof UserError) {
+			await (interaction.replied || interaction.deferred 
+				? interaction.editReply(error.message) 
+				: interaction.reply(error.message));
+		} else {
+			console.error(error);
+
+			await (interaction.replied || interaction.deferred 
+				? interaction.editReply("Unknown error occurred.") 
+				: interaction.reply("Unknown error occurred."));
+		}
+		
 	}    
 });

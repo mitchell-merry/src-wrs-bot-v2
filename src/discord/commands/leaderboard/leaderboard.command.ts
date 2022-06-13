@@ -4,6 +4,7 @@ import { Category, Game, Variable } from "src-ts";
 import { DB } from "../../../db";
 import { GuildEntity, Leaderboard, TrackedLeaderboard, Variable as VariableEntity } from "../../../db/models";
 import * as SRC from '../../../speedruncom';
+import UserError from "../../UserError";
 import { buildMenu, getResponse, sendMenu } from "../../util";
 
 export const data = new SlashCommandBuilder()
@@ -37,11 +38,7 @@ async function add(interaction: CommandInteraction) {
 	if(!guildEnt) throw new Error(`Guild ${interaction.guildId} is not initialised`);
 
 	const gameOpt = interaction.options.getString('game');
-	if(!gameOpt || !gameOpt.match(link))
-	{
-		interaction.reply(`Invalid game/link: ${gameOpt}.`);
-		return;
-	}
+	if(!gameOpt || !gameOpt.match(link)) throw new UserError(`Invalid game/link: ${gameOpt}.`);
 
 	await interaction.deferReply();
 
@@ -51,19 +48,13 @@ async function add(interaction: CommandInteraction) {
 	const gameObj = await SRC.getGame(game, { embed: 'categories.variables,levels' });
 	let categoryObj: Category | undefined;
 
-	if(SRC.isError(gameObj)) {
-		interaction.editReply(`Game ${game} does not exist.`);
-		return;
-	}
+	if(SRC.isError(gameObj)) throw new Error(`Game ${game} does not exist.`);
 
 	// Category was provided.
 	if(tokens.length > 1)
 	{
 		categoryObj = gameObj.categories!.data.find(cat => cat.weblink.split("#")[1] === tokens[1]);
-		if(!categoryObj) {
-			interaction.editReply(`Category ${tokens[1]} does not exist. Try without specifying the category.`);
-			return;
-		}
+		if(!categoryObj) throw new UserError(`Category ${tokens[1]} does not exist. Try without specifying the category.`);
 	}
 	else
 	{
@@ -156,5 +147,5 @@ export const execute = async (interaction: CommandInteraction) => {
 	if(!interaction.guildId) throw new Error("Invalid guild id...");
 	if(!interaction.guild) throw new Error('Can\'t have guild in Detroit');
 
-	subcommands[interaction.options.getSubcommand()](interaction);
+	await subcommands[interaction.options.getSubcommand()](interaction);
 }
