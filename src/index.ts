@@ -5,7 +5,7 @@ import 'reflect-metadata'
 import { Client, Intents, Interaction } from 'discord.js'
 
 import { DB, isUserMod, synchronizeGuilds } from './db'
-import commands, { CommandFile } from './commands';
+import { commands, CommandFile } from './discord';
 import { ModeratorRole } from './db/models';
 
 const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS ] });
