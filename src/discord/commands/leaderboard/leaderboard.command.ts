@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, Message } from "discord.js";
+import { CommandInteraction, Message, Role } from "discord.js";
 import { Category, Game, Variable } from "src-ts";
 import { DB } from "../../../db";
 import { GuildEntity, Leaderboard, TrackedLeaderboard, Variable as VariableEntity } from "../../../db/models";
@@ -27,67 +27,72 @@ export const perms = {
 	'list': 'all'
 };
 
-const link = /^(((https:\/\/|http:\/\/|)(www.|)|)speedrun.com\/|)\w{1,}(\/full_game(#\w{1,}|)|#\w{1,}|\/full_game|\/|)$/;
+const gameRegex = /^\w+$/;
 
 async function add(interaction: CommandInteraction) {
 	const lRepo = DB.getRepository(Leaderboard);
 	const gRepo = DB.getRepository(GuildEntity);
-	const tlbRepo = DB.getRepository(TrackedLeaderboard);
 
+	// get the guild entity
 	const guildEnt = await gRepo.findOne({ where: { guild_id: interaction.guildId! } });
 	if(!guildEnt) throw new Error(`Guild ${interaction.guildId} is not initialised`);
 
+	// get game and validate it
 	const gameOpt = interaction.options.getString('game');
-	if(!gameOpt || !gameOpt.match(link)) throw new UserError(`Invalid game/link: ${gameOpt}.`);
+	if(!gameOpt || !gameOpt.match(gameRegex)) throw new UserError(`Invalid game/link: ${gameOpt}.`);
+
+	const roleOpt = interaction.options.getRole('role');
+	let position = 1;
+	let errorRoleName: string = '';
+	if(!roleOpt) {	// "make new role"
+		// get position of new role
+		if(guildEnt.above_role_id && guildEnt.above_role_id !== '')
+		{
+			const above_role = await interaction.guild!.roles.fetch(guildEnt.above_role_id);
+			if(above_role)
+			{
+				position = above_role.position + 1;
+				errorRoleName = above_role.name;
+			}
+		}
+	} else {
+		position = roleOpt.position;
+		errorRoleName = roleOpt.name;
+	}
+
+	// check we have permission to create/manage a role at this permission
+	if(position != 1 && interaction.guild!.me!.roles.highest.position < position) {
+		throw new UserError(`Bot does not have permission to create/manage a role at this position. Give the bot a role higher than \`@${errorRoleName}\` [${interaction.guild!.me!.roles.highest.position}, ${position}].`);
+	}
 
 	await interaction.deferReply();
 
-	let tokens = gameOpt.split('/').pop()!.split("#");
-	const game = tokens[0];
+	// get game object from speedrun.com
+	const gameObj = await SRC.getGame(gameOpt, { embed: 'categories.variables,levels' });
+	if(SRC.isError(gameObj)) throw new Error(`Game ${gameOpt} does not exist.`);
 
-	const gameObj = await SRC.getGame(game, { embed: 'categories.variables,levels' });
-	let categoryObj: Category | undefined;
+	// get leaderboard info from user
+	const category = await selectCategory(interaction, gameObj);
+	const variables = await selectVariables(interaction, category);
 
-	if(SRC.isError(gameObj)) throw new Error(`Game ${game} does not exist.`);
+	// build leaderboard name
+	const labels = variables.map(([subcat, v]) => subcat.values.values[v].label);
+	const lb_name = SRC.buildLeaderboardName(gameObj.names.international, category.name, labels);
 
-	// Category was provided.
-	if(tokens.length > 1)
-	{
-		categoryObj = gameObj.categories!.data.find(cat => cat.weblink.split("#")[1] === tokens[1]);
-		if(!categoryObj) throw new UserError(`Category ${tokens[1]} does not exist. Try without specifying the category.`);
-	}
-	else
-	{
-		// Provide a menu to select from
-		categoryObj = await selectCategory(interaction, gameObj);
-	}
+	// here we should check for dupes
 
-	const subcats = await selectVariables(interaction, categoryObj);
-
-	const labels = subcats.map(([subcat, v]) => subcat.values.values[v].label);
-	const lb_name = SRC.buildLeaderboardName(gameObj.names.international, categoryObj.name, labels);
-
-	let position = 1;
-	if(guildEnt.above_role_id && guildEnt.above_role_id !== '')
-	{
-		const above_role = await interaction.guild!.roles.fetch(guildEnt.above_role_id);
-		if(above_role) position = above_role.position + 1;
+	// @ts-ignore create role if one was not provided
+	let role: Role | null = roleOpt;
+	if(!roleOpt) {
+		// @ts-ignore - role_default_colour is guaranteed to be a valid colour, probably.
+		role = await interaction.guild!.roles.create({ name: lb_name, color: guildEnt.role_default_colour!, position });
 	}
 
-	// @ts-ignore - role_default_colour is guaranteed to be a valid colour, probably.
-	const role = await interaction.guild!.roles.create({ name: lb_name, color: guildEnt.role_default_colour!, position });
-
-	const board = new Leaderboard(gameObj.id, categoryObj.id, lb_name);
-	board.variables = subcats.map(([subcat, v]) =>{
-		const ent = new VariableEntity();
-		ent.leaderboard = board;
-		ent.variable_id = subcat.id;
-		ent.value = v;
-		return ent;
-	});
-	
-	board.trackedLeaderboards = [ new TrackedLeaderboard(interaction.guildId!, board.lb_id, role.id) ];
-
+	// save new leaderboard in database
+	const board = new Leaderboard(gameObj.id, category.id, lb_name);
+	board.variables = variables.map(([subcat, v]) => new VariableEntity(board, subcat.id, v));	
+	if(!board.trackedLeaderboards) board.trackedLeaderboards = [];
+	board.trackedLeaderboards.push(new TrackedLeaderboard(interaction.guildId!, board.lb_id, role!.id));
 	await lRepo.save(board);
 
 	interaction.editReply({ content: `Added the leaderboard ${lb_name}.`, components: [] });
