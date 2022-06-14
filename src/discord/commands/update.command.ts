@@ -54,11 +54,12 @@ export const execute = async (interaction: CommandInteraction) => {
 				return [ `var-${variable.variable_id}`, variable.value ]
 			}));
 
+			// get all sr.c player ids
 			const lb = await SRC.getLeaderboard(tlb.leaderboard.game_id, tlb.leaderboard.category_id, { top: 1, ...variables });
 			if(SRC.isError(lb)) throw new UserError(`Error updating ${tlb.leaderboard.lb_name}`);
 
+			// guests are ignored
 			const srcPlayerIds = lb.runs.map(run => run.run.players.filter(p => p.rel === 'user').map(p => (p as RunPlayerUser).id)).flat();
-			console.log(srcPlayerIds);
 		}));
 	}));
 }
