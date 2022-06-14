@@ -45,6 +45,7 @@ export const execute = async (interaction: CommandInteraction) => {
 		
 		// TODO give the user the option of making a new role, attaching an existing role, removing the leaderboard, or ignoring altogether
 		if(!role) throw new UserError(`ERROR: role no exist.`);
+		console.log(`[${roleId}] Updating @${role.name}`);
 
 		// list of accounts to add the role to
 		const accounts: string[] = [];
@@ -80,6 +81,7 @@ export const execute = async (interaction: CommandInteraction) => {
 			const user = await interaction.guild!.members.fetch(a);
 			await user.roles.add(role!);
 		}));
+		console.log(`[${roleId}] Finished @${role.name}`);
 	}));
 
 	interaction.editReply('Done updating.');
