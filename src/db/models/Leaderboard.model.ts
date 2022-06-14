@@ -41,7 +41,7 @@ export class Leaderboard {
 		const lRepo = DB.getRepository(Leaderboard);
 		
 		// check leaderboard with same game/cat exists (multiple may)
-		const possibles = await lRepo.find({ where: { game_id, category_id } });
+		const possibles = await lRepo.find({ where: { game_id, category_id }, relations: { variables: true, trackedLeaderboards: true } });
 
 		// check to see if any have all variables match
 		return possibles.find(board => board.variables.every(
