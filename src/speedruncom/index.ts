@@ -17,6 +17,7 @@ const BASE_URL = "https://www.speedrun.com/api/v1";
 export * from './user';
 export * from './game';
 export * from './category';
+export * from './leaderboard';
 
 export function buildLeaderboardName(gameName: string, categoryName: string, variables: string[]) {
 	let name = `${gameName} - ${categoryName}`;
