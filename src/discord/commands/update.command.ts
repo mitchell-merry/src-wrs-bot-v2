@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { DB } from "../../db";
-import { GuildEntity, TrackedLeaderboard } from "../../db/models";
+import { GuildEntity, Player, TrackedLeaderboard } from "../../db/models";
 import UserError from "../UserError";
 import * as SRC from '../../speedruncom';
 import { RunPlayerUser } from "src-ts";
@@ -38,6 +38,7 @@ export const execute = async (interaction: CommandInteraction) => {
 	});
 	
 	// for every role (wait for all)
+	const pRepo = DB.getRepository(Player);
 	await Promise.all(Object.entries(roleLeaderboards).map(async ([ roleId, tlbs ]) => {
 		// fetch role
 		let role = await interaction.guild!.roles.fetch(roleId);
@@ -46,7 +47,7 @@ export const execute = async (interaction: CommandInteraction) => {
 		if(!role) throw new UserError(`ERROR: role no exist.`);
 
 		// list of accounts to add the role to
-		const accounts = [];
+		const accounts: string[] = [];
 		await Promise.all(tlbs.map(async tlb => {
 
 			// format variables
@@ -60,6 +61,15 @@ export const execute = async (interaction: CommandInteraction) => {
 
 			// guests are ignored
 			const srcPlayerIds = lb.runs.map(run => run.run.players.filter(p => p.rel === 'user').map(p => (p as RunPlayerUser).id)).flat();
+			const playerIDs = (await Promise.all(srcPlayerIds.map(async id => 
+				await pRepo.findOne({ where: { player_id: id }})
+			))).filter(p => p !== null).map(p => (p as Player).discord_id);
+			
+			playerIDs.forEach(id => {
+				if(!accounts.includes(id)) accounts.push(id);
+			});
 		}));
+
+		console.log(`For ${role.name}: ${accounts}`);
 	}));
 }
