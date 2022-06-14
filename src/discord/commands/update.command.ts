@@ -70,6 +70,17 @@ export const execute = async (interaction: CommandInteraction) => {
 			});
 		}));
 
-		console.log(`For ${role.name}: ${accounts}`);
+		// remove role from accounts that shouldn't have the role, and remove those that already have the role from the accounts list
+		await Promise.all(role.members.map(async member => {
+			if(accounts.includes(member.id)) accounts.filter(a => a !== member.id);
+			else await member.roles.remove(role!);
+		}));
+
+		await Promise.all(accounts.map(async a => {
+			const user = await interaction.guild!.members.fetch(a);
+			await user.roles.add(role!);
+		}));
 	}));
+
+	interaction.editReply('Done updating.');
 }
