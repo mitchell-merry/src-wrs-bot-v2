@@ -206,6 +206,18 @@
                 <mxCell id="153" value="&lt;h1&gt;&lt;span style=&quot;font-size: 12px&quot;&gt;get the leaderboard&lt;/span&gt;&lt;/h1&gt;&lt;div&gt;does the leaderboard already exist in the database?&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;and does the guild already&amp;nbsp;&lt;/div&gt;&lt;div&gt;track it?&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
                     <mxGeometry x="-810" y="1070" width="180" height="190" as="geometry"/>
                 </mxCell>
+                <mxCell id="154" value="Yes" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="-340" y="1580" width="40" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="155" value="No" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="-460" y="1470" width="30" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="157" value="Yes" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="-520" y="380" width="30" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="158" value="No" style="text;html=1;resizable=0;autosize=1;align=center;verticalAlign=middle;points=[];fillColor=none;strokeColor=none;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="-670" y="380" width="30" height="20" as="geometry"/>
+                </mxCell>
             </root>
         </mxGraphModel>
     </diagram>
