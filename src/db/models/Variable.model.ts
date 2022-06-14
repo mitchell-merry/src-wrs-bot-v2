@@ -20,4 +20,10 @@ export class Variable {
 	@ManyToOne(() => Leaderboard, leaderboard => leaderboard.variables)
 	@JoinColumn({ name: 'lb_id' })
 	leaderboard!: Leaderboard;
+
+	constructor(leaderboard: Leaderboard, variable_id: string, value: string) {
+		this.leaderboard = leaderboard;
+		this.variable_id = variable_id;
+		this.value = value;
+	}
 }

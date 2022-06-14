@@ -1,5 +1,7 @@
+import { Variable } from "src-ts";
 import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { TrackedLeaderboard, Variable } from "./";
+import { DB } from "..";
+import { TrackedLeaderboard, Variable as VariableEntity } from "./";
 import { GuildEntity } from "./Guild.model";
 
 @Entity()
@@ -22,8 +24,8 @@ export class Leaderboard {
 	lb_name!: string;
 
 	/** The variables to filter this leaderboard by. */
-	@OneToMany(() => Variable, variable => variable.leaderboard, { cascade: true })
-	variables!: Variable[];
+	@OneToMany(() => VariableEntity, variable => variable.leaderboard, { cascade: true })
+	variables!: VariableEntity[];
 
 	/** Where this leaderboard is being tracked. */
 	@OneToMany(() => TrackedLeaderboard, tlb => tlb.leaderboard, { cascade: true })
@@ -33,5 +35,17 @@ export class Leaderboard {
 		this.game_id = game_id;
 		this.category_id = category_id;
 		this.lb_name = lb_name;
+	}
+
+	static async exists(game_id: string, category_id: string, variables: [Variable, string][]) {
+		const lRepo = DB.getRepository(Leaderboard);
+		
+		// check leaderboard with same game/cat exists (multiple may)
+		const possibles = await lRepo.find({ where: { game_id, category_id }, relations: { variables: true, trackedLeaderboards: true } });
+
+		// check to see if any have all variables match
+		return possibles.find(board => board.variables.every(
+			varEnt => variables.find(([variable, value]) => varEnt.variable_id === variable.id && varEnt.value === value)
+		));
 	}
 }
