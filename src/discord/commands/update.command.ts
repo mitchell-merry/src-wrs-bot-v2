@@ -4,6 +4,7 @@ import { DB } from "../../db";
 import { GuildEntity, TrackedLeaderboard } from "../../db/models";
 import UserError from "../UserError";
 import * as SRC from '../../speedruncom';
+import { RunPlayerUser } from "src-ts";
 
 export const data = new SlashCommandBuilder()
 	.setName('update')
@@ -53,7 +54,11 @@ export const execute = async (interaction: CommandInteraction) => {
 				return [ `var-${variable.variable_id}`, variable.value ]
 			}));
 
-			console.log(await SRC.getLeaderboard(tlb.leaderboard.game_id, tlb.leaderboard.category_id, { top: 1, ...variables }));
+			const lb = await SRC.getLeaderboard(tlb.leaderboard.game_id, tlb.leaderboard.category_id, { top: 1, ...variables });
+			if(SRC.isError(lb)) throw new UserError(`Error updating ${tlb.leaderboard.lb_name}`);
+
+			const srcPlayerIds = lb.runs.map(run => run.run.players.filter(p => p.rel === 'user').map(p => (p as RunPlayerUser).id)).flat();
+			console.log(srcPlayerIds);
 		}));
 	}));
 }
