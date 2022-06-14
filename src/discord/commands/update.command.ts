@@ -25,6 +25,13 @@ export const execute = async (interaction: CommandInteraction) => {
 			leaderboard: { variables: true }
 		}
 	});
-
+	
+	// group leaderboards by role
+	const roleLeaderboards: Record<string, TrackedLeaderboard[]> = {};
+	tracked.forEach(tlb => {
+		if(!roleLeaderboards[tlb.role_id]) roleLeaderboards[tlb.role_id] = [];
+		roleLeaderboards[tlb.role_id].push(tlb);
+	});
+	
 	interaction.deferReply();
 }
