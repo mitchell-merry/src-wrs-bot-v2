@@ -80,6 +80,11 @@ async function add(interaction: CommandInteraction) {
 	const lb_name = SRC.buildLeaderboardName(gameObj.names.international, category.name, labels);
 
 	// here we should check for dupes
+	let board = await Leaderboard.exists(gameObj.id, category.id, variables);
+	if(board && board.trackedLeaderboards.find(tlb => tlb.guild_id === interaction.guildId && tlb.lb_id === board!.lb_id))
+	{
+		throw new UserError(`This guild is already tracking the leaderboard ${lb_name}.`);
+	}
 
 	// @ts-ignore create role if one was not provided
 	let role: Role | null = roleOpt;
@@ -89,9 +94,11 @@ async function add(interaction: CommandInteraction) {
 	}
 
 	// save new leaderboard in database
-	const board = new Leaderboard(gameObj.id, category.id, lb_name);
-	board.variables = variables.map(([subcat, v]) => new VariableEntity(board, subcat.id, v));	
-	if(!board.trackedLeaderboards) board.trackedLeaderboards = [];
+	if(!board) {
+		board = new Leaderboard(gameObj.id, category.id, lb_name);
+		board.variables = variables.map(([subcat, v]) => new VariableEntity(board!, subcat.id, v));	
+		board.trackedLeaderboards = [];
+	}
 	board.trackedLeaderboards.push(new TrackedLeaderboard(interaction.guildId!, board.lb_id, role!.id));
 	await lRepo.save(board);
 
