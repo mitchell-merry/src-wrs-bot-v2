@@ -222,7 +222,7 @@
         </mxGraphModel>
     </diagram>
     <diagram id="ZhySRtjYSWg17YpDQtTr" name="list">
-        <mxGraphModel dx="3206" dy="617" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="3234" dy="515" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="KPV77rWlwOfdlptLQn-e-0"/>
                 <mxCell id="KPV77rWlwOfdlptLQn-e-1" parent="KPV77rWlwOfdlptLQn-e-0"/>
@@ -376,7 +376,7 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="cfrO3Sm-tL3TV1RHe_1c-37" value="enable left buttons" style="whiteSpace=wrap;html=1;" vertex="1" parent="KPV77rWlwOfdlptLQn-e-1">
-                    <mxGeometry x="50.879999999999995" y="960" width="120" height="60" as="geometry"/>
+                    <mxGeometry x="70" y="960" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="cfrO3Sm-tL3TV1RHe_1c-46" value="" style="html=1;elbow=vertical;" edge="1" parent="KPV77rWlwOfdlptLQn-e-1" source="cfrO3Sm-tL3TV1RHe_1c-50" target="cfrO3Sm-tL3TV1RHe_1c-51">
                     <mxGeometry relative="1" as="geometry"/>
@@ -407,7 +407,7 @@
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="cfrO3Sm-tL3TV1RHe_1c-52" value="enable right buttons" style="whiteSpace=wrap;html=1;" vertex="1" parent="KPV77rWlwOfdlptLQn-e-1">
-                    <mxGeometry x="50.879999999999995" y="1150" width="120" height="60" as="geometry"/>
+                    <mxGeometry x="70" y="1150" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="cfrO3Sm-tL3TV1RHe_1c-57" value="" style="edgeStyle=none;html=1;elbow=vertical;" edge="1" parent="KPV77rWlwOfdlptLQn-e-1" source="cfrO3Sm-tL3TV1RHe_1c-53" target="cfrO3Sm-tL3TV1RHe_1c-56">
                     <mxGeometry relative="1" as="geometry"/>
