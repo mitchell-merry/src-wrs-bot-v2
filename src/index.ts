@@ -67,10 +67,14 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 				: interaction.reply(error.message));
 		} else {
 			console.error(error);
-
+			const msg = {
+				content: "Unknown error occurred.",
+				components: []
+			};
+			
 			await (interaction.replied || interaction.deferred 
-				? interaction.editReply("Unknown error occurred.") 
-				: interaction.reply("Unknown error occurred."));
+				? interaction.editReply(msg) 
+				: interaction.reply(msg));
 		}
 		
 	}    
