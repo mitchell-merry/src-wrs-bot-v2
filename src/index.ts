@@ -61,21 +61,19 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
 		await command.execute(interaction);
 	} catch (error) {
+		const msg = {
+			content: "Unknown error occurred.",
+			components: []
+		};
+
 		if(error instanceof UserError) {
-			await (interaction.replied || interaction.deferred 
-				? interaction.editReply(error.message) 
-				: interaction.reply(error.message));
+			msg.content = error.message;
 		} else {
 			console.error(error);
-			const msg = {
-				content: "Unknown error occurred.",
-				components: []
-			};
-			
-			await (interaction.replied || interaction.deferred 
-				? interaction.editReply(msg) 
-				: interaction.reply(msg));
 		}
-		
+
+		await (interaction.replied || interaction.deferred 
+			? interaction.editReply(msg) 
+			: interaction.reply(msg));
 	}    
 });
