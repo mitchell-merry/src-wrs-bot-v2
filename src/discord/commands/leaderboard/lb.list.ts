@@ -1,4 +1,4 @@
-import { CommandInteraction, Message, MessageActionRow, MessageButton } from "discord.js";
+import { CommandInteraction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, MessagePayload, WebhookEditMessageOptions } from "discord.js";
 import { DB } from "../../../db";
 import { TrackedLeaderboard } from "../../../db/models";
 import UserError from "../../UserError";
@@ -9,6 +9,7 @@ const PAGE_LENGTH = 2;
 export async function list(interaction: CommandInteraction) {
 	const tlbRepo = DB.getRepository(TrackedLeaderboard);
 	await interaction.deferReply();
+	const message = await interaction.fetchReply() as Message;
 
 	// get leaderboards tracked by guild
 	const boards = await tlbRepo.find({ where: { guild_id: interaction.guildId! }, relations: { leaderboard: true } });
@@ -16,17 +17,21 @@ export async function list(interaction: CommandInteraction) {
 	// group boards in chunks
 	const pages = array_chunks(boards, PAGE_LENGTH);
 	let page = 0;
+	let r: MessageComponentInteraction | undefined = undefined;
 
 	while(true) {
-		// get output message
-		const out = pageOutput(pages, page);
-		// get message with buttons
-		const components = pageComponents(page, pages.length);
-		const message = await interaction.editReply({ content: out, components }) as Message;
-		console.log(message.content);
+		const options: WebhookEditMessageOptions = {
+			content: pageOutput(pages, page),
+			components: pageComponents(page, pages.length)
+		};
 
+		await (r 
+			? r.update(options)
+			: interaction.editReply(options)
+		);
+		
 		// listen for button
-		const r = await message.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 300000 })
+		r = await message.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 300000 })
 			.catch(r => {throw new UserError("This list has expired. Spawn a new one with /leaderboard list.")});
 
 		switch(r.customId) {
