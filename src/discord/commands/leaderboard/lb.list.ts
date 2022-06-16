@@ -26,7 +26,7 @@ export async function list(interaction: CommandInteraction) {
 		console.log(message.content);
 
 		// listen for button
-		const r = await message.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 3000 })
+		const r = await message.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 300000 })
 			.catch(r => {throw new UserError("This list has expired. Spawn a new one with /leaderboard list.")});
 
 		switch(r.customId) {
@@ -50,7 +50,7 @@ function pageComponents(page: number, pageCount: number): MessageActionRow[] {
 	return [new MessageActionRow().addComponents([
 		new MessageButton().setLabel('|<').setCustomId(`left_all`).setDisabled(page === 0).setStyle('PRIMARY'),
 		new MessageButton().setLabel('<').setCustomId(`left_once`).setDisabled(page === 0).setStyle('PRIMARY'),
-		new MessageButton().setLabel(`${page+1}/${pageCount}`).setCustomId('page').setDisabled(true).setStyle('SECONDARY'),
+		new MessageButton().setLabel(`${page+1} / ${pageCount}`).setCustomId('page').setDisabled(true).setStyle('SECONDARY'),
 		new MessageButton().setLabel('>').setCustomId(`right_once`).setDisabled(page === pageCount-1).setStyle('PRIMARY'),
 		new MessageButton().setLabel('>|').setCustomId(`right_all`).setDisabled(page === pageCount-1).setStyle('PRIMARY'),
 	])];
