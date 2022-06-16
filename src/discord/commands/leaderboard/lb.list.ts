@@ -4,7 +4,7 @@ import { TrackedLeaderboard } from "../../../db/models";
 import UserError from "../../UserError";
 import { array_chunks } from "../../util";
 
-const PAGE_LENGTH = 2;
+const PAGE_LENGTH = 25;
 
 export async function list(interaction: CommandInteraction) {
 	const tlbRepo = DB.getRepository(TrackedLeaderboard);
