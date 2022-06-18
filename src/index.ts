@@ -51,8 +51,9 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 		else permLevel = command.perms[interaction.options.getSubcommand()];
 		
 		if(!permLevel) throw new Error(`Permission level missing for ${interaction.options.getSubcommand()}.`);
+		if(typeof interaction.member?.permissions === 'string') throw new Error(`error with ${interaction.member?.permissions}`)
 
-		const userIsAdmin = interaction.user.id === process.env.admin;
+		const userIsAdmin = interaction.user.id === process.env.admin || interaction.member!.permissions.has('ADMINISTRATOR');
 		const userIsMod = userIsAdmin || (await isUserMod(interaction.guildId, interaction.member));
 
 		// Check user has correct permission.
