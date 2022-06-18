@@ -83,7 +83,7 @@ client.on('interactionCreate', async interaction => {
 
 	// TODO: Make more modular
 	if(interaction.commandName === 'leaderboard'
-		&& interaction.options.getSubcommand() === 'remove'
+		&& (interaction.options.getSubcommand() === 'remove' || interaction.options.getSubcommand() === 'setrole')
 	) {
 		const tlbRepo = DB.getRepository(TrackedLeaderboard);
 		const val = interaction.options.getFocused(true).value as string;
