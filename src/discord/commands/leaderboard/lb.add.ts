@@ -18,7 +18,7 @@ export async function add(interaction: CommandInteraction) {
 
 	// get game and validate it
 	const gameOpt = interaction.options.getString('game');
-	if(!gameOpt || !gameOpt.match(gameRegex)) throw new UserError(`Invalid game/link: ${gameOpt}.`);
+	if(!gameOpt || !gameOpt.match(gameRegex)) throw new UserError(`Invalid game abbreviation: ${gameOpt}. You should use the 'day_seven' part of the game link 'https://www.speedrun.com/day_seven', for example.`);
 
 	const roleOpt = interaction.options.getRole('role');
 	let position = 1;
