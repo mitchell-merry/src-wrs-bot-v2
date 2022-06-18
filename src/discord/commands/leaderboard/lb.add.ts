@@ -84,6 +84,17 @@ export async function add(interaction: CommandInteraction) {
 	interaction.editReply({ content: `Added the leaderboard ${lb_name}.`, components: [] });
 }
 
+async function selectType(interaction: CommandInteraction): Promise<CategoryType> {
+	const menu = buildMenu([{ value: 'per-game', label: "Full-game" }, { value: 'per-level', label: "Level" }], 'isLevel');
+	const [message, choiceInt] = await sendMenu(interaction, `Is the leaderboard a full-game or level category?`, [ menu ]);
+	const choice = getResponse(choiceInt) as CategoryType;
+
+	await interaction.editReply({ content: `Selected ${choice}...`, components: [] });
+	await message.delete();
+
+	return choice;
+}
+
 async function selectCategory(interaction: CommandInteraction, game: Game): Promise<Category> {
 	// Get category from menu
 	const catData = game.categories!.data;
