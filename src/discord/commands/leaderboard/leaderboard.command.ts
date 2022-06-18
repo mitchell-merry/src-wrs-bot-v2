@@ -13,7 +13,9 @@ export const data = new SlashCommandBuilder()
 		.addStringOption(o => o.setName('game').setDescription('The game abbreviation of the leaderboard to add.').setRequired(true)))
 	.addSubcommand(sc => sc
 		.setName('remove')
-		.setDescription('Remove a leaderboard from this guild.'))
+		.setDescription('Remove a leaderboard from this guild.')
+		.addIntegerOption(o => o.setName('leaderboard').setDescription('The leaderboard to remove.').setRequired(true).setAutocomplete(true))
+		.addBooleanOption(o => o.setName('delete_role').setDescription('Delete the associated role.')))
 	.addSubcommand(sc => sc
 		.setName('list')
 		.setDescription('Lists all leaderboards tracked in this guild.'));

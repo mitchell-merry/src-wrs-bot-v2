@@ -17,7 +17,7 @@ export class Variable {
 	value!: string;
 
 	/** The leaderboard which this variable is attached to. */
-	@ManyToOne(() => Leaderboard, leaderboard => leaderboard.variables)
+	@ManyToOne(() => Leaderboard, leaderboard => leaderboard.variables, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'lb_id' })
 	leaderboard!: Leaderboard;
 
