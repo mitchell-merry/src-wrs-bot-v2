@@ -6,7 +6,7 @@ import { Client, Intents, Interaction, User } from 'discord.js'
 
 import { DB, isUserMod, synchronizeGuilds } from './db'
 import { commands, CommandFile } from './discord';
-import { ModeratorRole } from './db/models';
+import { TrackedLeaderboard } from './db/models';
 import UserError from './discord/UserError';
 
 const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS ] });
@@ -77,3 +77,28 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 			: interaction.reply(msg));
 	}    
 });
+
+client.on('interactionCreate', async interaction => {
+	if(!interaction.isAutocomplete()) return;
+
+	// TODO: Make more modular
+	if(interaction.commandName === 'leaderboard'
+		&& interaction.options.getSubcommand() === 'remove'
+	) {
+		const tlbRepo = DB.getRepository(TrackedLeaderboard);
+		const val = interaction.options.getFocused(true).value as string;
+
+		const boards = await tlbRepo.find({ where: { guild_id: interaction.guildId! }, relations: { leaderboard: true } });
+
+		// TODO sort alphabetically
+		const response = boards
+			.filter(tlb => tlb.leaderboard.lb_name.toLowerCase().includes(val.toLowerCase()))
+			.map(tlb => ({
+				name: `${tlb.leaderboard.lb_name}`,
+				value: tlb.leaderboard.lb_id
+			}))
+			.slice(0, 25);
+
+		interaction.respond(response);
+	}
+})
