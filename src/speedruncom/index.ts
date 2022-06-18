@@ -19,8 +19,11 @@ export * from './game';
 export * from './category';
 export * from './leaderboard';
 
-export function buildLeaderboardName(gameName: string, categoryName: string, variables: string[]) {
-	let name = `${gameName} - ${categoryName}`;
+export function buildLeaderboardName(gameName: string, categoryName: string, variables: string[], levelName?: string) {
+	let name = `${gameName}`;
+	if(levelName) name += `: ${levelName}`;
+	name += ` - ${categoryName}`;
+	
 	if(variables.length !== 0)
 	{
 		name += ` (${variables.join(', ')})`;

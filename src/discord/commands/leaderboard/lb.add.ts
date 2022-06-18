@@ -61,7 +61,7 @@ export async function add(interaction: CommandInteraction) {
 
 	// build leaderboard name
 	const labels = variables.map(([subcat, v]) => subcat.values.values[v].label);
-	const lb_name = SRC.buildLeaderboardName(gameObj.names.international, category.name, labels);
+	const lb_name = SRC.buildLeaderboardName(gameObj.names.international, category.name, labels, level?.name);
 
 	// here we should check for dupes
 	let board = await Leaderboard.exists(gameObj.id, category.id, variables);
