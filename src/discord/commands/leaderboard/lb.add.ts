@@ -63,7 +63,7 @@ export async function add(interaction: CommandInteraction) {
 	const lb_name = SRC.buildLeaderboardName(gameObj.names.international, category.name, labels, level?.name);
 
 	// here we should check for dupes
-	let board = await Leaderboard.exists(gameObj.id, category.id, variables);
+	let board = await Leaderboard.exists(gameObj.id, category.id, variables, level?.id);
 	if(board && board.trackedLeaderboards.find(tlb => tlb.guild_id === interaction.guildId && tlb.lb_id === board!.lb_id))
 	{
 		throw new UserError(`This guild is already tracking the leaderboard ${lb_name}.`);
@@ -78,7 +78,7 @@ export async function add(interaction: CommandInteraction) {
 
 	// save new leaderboard in database
 	if(!board) {
-		board = new Leaderboard(gameObj.id, category.id, lb_name);
+		board = new Leaderboard(gameObj.id, category.id, lb_name, level?.id);
 		board.variables = variables.map(([subcat, v]) => new VariableEntity(board!, subcat.id, v));	
 		board.trackedLeaderboards = [];
 	}

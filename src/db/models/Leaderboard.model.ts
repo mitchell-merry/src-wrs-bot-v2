@@ -35,17 +35,18 @@ export class Leaderboard {
 	@OneToMany(() => TrackedLeaderboard, tlb => tlb.leaderboard, { cascade: true })
 	trackedLeaderboards!: TrackedLeaderboard[];
 
-	constructor(game_id: string, category_id: string, lb_name: string) {
+	constructor(game_id: string, category_id: string, lb_name: string, level_id?: string) {
 		this.game_id = game_id;
 		this.category_id = category_id;
 		this.lb_name = lb_name;
+		this.level_id = level_id;
 	}
 
-	static async exists(game_id: string, category_id: string, variables: [Variable, string][]) {
+	static async exists(game_id: string, category_id: string, variables: [Variable, string][], level_id?: string) {
 		const lRepo = DB.getRepository(Leaderboard);
 		
 		// check leaderboard with same game/cat exists (multiple may)
-		const possibles = await lRepo.find({ where: { game_id, category_id }, relations: { variables: true, trackedLeaderboards: true } });
+		const possibles = await lRepo.find({ where: { game_id, category_id, level_id }, relations: { variables: true, trackedLeaderboards: true } });
 
 		// check to see if any have all variables match
 		return possibles.find(board => board.variables.every(
