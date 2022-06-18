@@ -4,7 +4,7 @@ import { GuildEntity, Leaderboard, TrackedLeaderboard, Variable as VariableEntit
 import UserError from "../../UserError";
 import * as SRC from '../../../speedruncom';
 import { buildMenu, getResponse, sendMenu } from "../../util";
-import { Category, Game, Variable } from "src-ts";
+import { Category, CategoryType, Game, Level, Variable } from "src-ts";
 
 const gameRegex = /^\w+$/;
 
@@ -51,15 +51,19 @@ export async function add(interaction: CommandInteraction) {
 	if(SRC.isError(gameObj)) throw new UserError(`Game ${gameOpt} does not exist.`);
 
 	// get leaderboard info from user
-	const category = await selectCategory(interaction, gameObj);
-	const variables = await selectVariables(interaction, category);
+	// choose if levels
+	const catType = await selectType(interaction);
+	const level = catType === 'per-level' ? await selectLevel(interaction, gameObj) : undefined;
+
+	const category = await selectCategory(interaction, gameObj, catType);
+	const variables = await selectVariables(interaction, category, level);
 
 	// build leaderboard name
 	const labels = variables.map(([subcat, v]) => subcat.values.values[v].label);
-	const lb_name = SRC.buildLeaderboardName(gameObj.names.international, category.name, labels);
+	const lb_name = SRC.buildLeaderboardName(gameObj.names.international, category.name, labels, level?.name);
 
 	// here we should check for dupes
-	let board = await Leaderboard.exists(gameObj.id, category.id, variables);
+	let board = await Leaderboard.exists(gameObj.id, category.id, variables, level?.id);
 	if(board && board.trackedLeaderboards.find(tlb => tlb.guild_id === interaction.guildId && tlb.lb_id === board!.lb_id))
 	{
 		throw new UserError(`This guild is already tracking the leaderboard ${lb_name}.`);
@@ -74,7 +78,7 @@ export async function add(interaction: CommandInteraction) {
 
 	// save new leaderboard in database
 	if(!board) {
-		board = new Leaderboard(gameObj.id, category.id, lb_name);
+		board = new Leaderboard(gameObj.id, category.id, lb_name, level?.id);
 		board.variables = variables.map(([subcat, v]) => new VariableEntity(board!, subcat.id, v));	
 		board.trackedLeaderboards = [];
 	}
@@ -84,12 +88,39 @@ export async function add(interaction: CommandInteraction) {
 	interaction.editReply({ content: `Added the leaderboard ${lb_name}.`, components: [] });
 }
 
-async function selectCategory(interaction: CommandInteraction, game: Game): Promise<Category> {
+async function selectType(interaction: CommandInteraction): Promise<CategoryType> {
+	const menu = buildMenu([{ value: 'per-game', label: "Full-game" }, { value: 'per-level', label: "Level" }], 'isLevel');
+	const [message, choiceInt] = await sendMenu(interaction, `Is the leaderboard a full-game or level category?`, [ menu ]);
+	const choice = getResponse(choiceInt) as CategoryType;
+
+	await interaction.editReply({ content: `Selected ${choice}...`, components: [] });
+	await message.delete();
+
+	return choice;
+}
+
+async function selectLevel(interaction: CommandInteraction, game: Game): Promise<Level> {
+	const levelData = game.levels!.data;
+
+	// Make level menu to get the level of the leaderboard
+	const levelNames = levelData.map(level => ({ value: level.id, label: level.name }));
+	const menu = buildMenu(levelNames, game.id);
+	const [message, choiceInt] = await sendMenu(interaction, `Choose a level:`, [ menu ]);
+	let levelId = getResponse(choiceInt);
+	const level = levelData.find(c => c.id === levelId)!;
+
+	await interaction.editReply({ content: `Selected the level ${level.name} [${level.id}]`, components: [] });
+	await message.delete();
+
+	return level;
+}
+
+async function selectCategory(interaction: CommandInteraction, game: Game, type: CategoryType): Promise<Category> {
 	// Get category from menu
 	const catData = game.categories!.data;
 
 	// Make category menu to get the category of the leaderboard
-	const catNames = catData.map(cat => ({ value: cat.id, label: cat.name }));
+	const catNames = catData.filter(cat => cat.type === type).map(cat => ({ value: cat.id, label: cat.name }));
 	const menu = buildMenu(catNames, game.id);
 	const [message, choiceInt] = await sendMenu(interaction, `Choose a category:`, [ menu ]);
 	let categoryId = getResponse(choiceInt);
@@ -101,19 +132,26 @@ async function selectCategory(interaction: CommandInteraction, game: Game): Prom
 	return category;
 }
 
-async function selectVariables(interaction: CommandInteraction, categoryObj: Category): Promise<[Variable, string][]> {
-	return Promise.all(categoryObj.variables!.data.filter(v => v['is-subcategory']).map(async subcat => {
-		const options = Object.entries(subcat.values.values)
-			.map(([k, v]) => ({ value: k, label: v.label }));
+async function selectVariables(interaction: CommandInteraction, categoryObj: Category, levelObj?: Level): Promise<[Variable, string][]> {
+	
+	return Promise.all(categoryObj.variables!.data
+		.filter(v => v['is-subcategory'])
+		.filter(v => levelObj === undefined 
+			|| v.scope.type === 'all-levels'
+			|| (v.scope.type === 'single-level' && v.scope.level === levelObj.id)
+		).map(async subcat => {
+			const options = Object.entries(subcat.values.values)
+				.map(([k, v]) => ({ value: k, label: v.label }));
 
-		const menu = buildMenu(options, subcat.id);
-		const [message, r] = await sendMenu(interaction,
-			`Choose a value for the variable ${subcat.name}:`, [ menu ]);
+			const menu = buildMenu(options, subcat.id);
+			const [message, r] = await sendMenu(interaction,
+				`Choose a value for the variable ${subcat.name}:`, [ menu ]);
 
-		await message.delete();
+			await message.delete();
 
-		const value = getResponse(r);
+			const value = getResponse(r);
 
-		return [ subcat, value ];
-	}));
+			return [ subcat, value ];
+		})
+	);
 }
