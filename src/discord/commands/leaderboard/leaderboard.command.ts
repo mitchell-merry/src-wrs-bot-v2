@@ -24,7 +24,7 @@ export const data = new SlashCommandBuilder()
 		.setName('setrole')
 		.setDescription('Sets the role for the leaderboard.')
 		.addIntegerOption(o => o.setName('leaderboard').setDescription('The leaderboard to change the role of.').setRequired(true).setAutocomplete(true))
-		.addBooleanOption(o => o.setName('role').setDescription('The role to change to.').setRequired(true)));
+		.addRoleOption(o => o.setName('role').setDescription('The role to change to.').setRequired(true)));
 
 export const perms = {
 	'add': 'mods',
