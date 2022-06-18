@@ -6,7 +6,7 @@ import { Client, Intents, Interaction } from 'discord.js'
 
 import { DB, isUserMod, synchronizeGuilds } from './db'
 import { commands, CommandFile } from './discord';
-import { TrackedLeaderboardEntity } from './db/models';
+import { GuildEntity, TrackedLeaderboardEntity } from './db/models';
 import UserError from './discord/UserError';
 
 const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS ] });
@@ -101,4 +101,19 @@ client.on('interactionCreate', async interaction => {
 
 		interaction.respond(response);
 	}
-})
+});
+
+client.on('guildCreate', async guild => {
+	const gRepo = DB.getRepository(GuildEntity);
+	console.log(`Joined ${guild.name}, synchronising...`);
+	await gRepo.save(new GuildEntity(guild.id));
+});
+
+client.on('guildDelete', async guild => {
+	const gRepo = DB.getRepository(GuildEntity);
+	const g = await gRepo.findOne({ where: { guild_id: guild.id } });
+	if(g) {
+		console.log(`Left ${guild.name}, synchronising...`);
+		await gRepo.delete({ guild_id: guild.id });
+	}
+});
