@@ -1,7 +1,7 @@
 import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { GuildEntity } from ".";
 
-@Entity()
+@Entity({ name: 'moderator_role' })
 export class ModeratorRoleEntity {
 
 	/** The ID of the guild the moderator role belongs to. */

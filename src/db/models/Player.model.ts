@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
 
-@Entity()
+@Entity({ name: 'player' })
 export class PlayerEntity {
 
 	/** The player's ID on speedrun.com. */

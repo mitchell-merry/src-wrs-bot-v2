@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { LeaderboardEntity } from "./";
 
-@Entity()
+@Entity({ name: 'variable' })
 export class VariableEntity {
 
 	/** The ID of the variable in speedrun.com this represents. */

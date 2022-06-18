@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { GuildEntity, LeaderboardEntity } from "./";
 
-@Entity()
+@Entity({ name: 'tracked_leaderboard' })
 export class TrackedLeaderboardEntity {
 
 	/** The ID of the associated Guild. */

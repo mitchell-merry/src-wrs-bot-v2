@@ -3,7 +3,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { DB } from "..";
 import { TrackedLeaderboardEntity, VariableEntity } from "./";
 
-@Entity()
+@Entity({ name: 'leaderboard' })
 export class LeaderboardEntity {
 
 	/** The unique leaderboard ID - auto-generated. */
