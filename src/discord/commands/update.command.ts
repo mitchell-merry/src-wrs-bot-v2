@@ -61,7 +61,7 @@ export const execute = async (interaction: CommandInteraction) => {
 			const lb = tlb.leaderboard.level_id
 				? await SRC.getLevelLeaderboard(tlb.leaderboard.game_id, tlb.leaderboard.level_id, tlb.leaderboard.category_id, lbOptions)
 				: await SRC.getLeaderboard(tlb.leaderboard.game_id, tlb.leaderboard.category_id, lbOptions);
-			if(SRC.isError(lb)) throw new UserError(`Error updating ${tlb.leaderboard.lb_name}`);
+			if(SRC.isError(lb)) throw new Error(`Error updating ${tlb.leaderboard.lb_name}`);
 
 			// guests are ignored
 			const srcPlayerIds = lb.runs.map(run => run.run.players.filter(p => p.rel === 'user').map(p => (p as RunPlayerUser).id)).flat();
