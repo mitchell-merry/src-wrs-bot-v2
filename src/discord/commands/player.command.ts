@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction, User } from "discord.js";
 import { DB } from "../../db";
-import { Player } from "../../db/models";
+import { PlayerEntity } from "../../db/models";
 import * as SRC from '../../speedruncom';
 import UserError from "../UserError";
 
@@ -28,7 +28,7 @@ export const perms = {
 };
 
 async function add(interaction: CommandInteraction) {
-	const pRepo = DB.getRepository(Player);
+	const pRepo = DB.getRepository(PlayerEntity);
 
 	const userOpt = interaction.options.getUser('user');
 	const srcOpt = interaction.options.getString('src_account');
@@ -47,14 +47,14 @@ async function add(interaction: CommandInteraction) {
 
 	if(exists) throw new UserError(`This speedrun.com account is already associated with a discord account. [${exists.discord_id}]`);
 
-	const playerEnt = new Player(player.id, userOpt.id);
+	const playerEnt = new PlayerEntity(player.id, userOpt.id);
 	playerEnt.src_name = player.names.international;
 	await pRepo.save(playerEnt);
 	interaction.reply(`Added association for ${userOpt.username} to the speedrun.com account ${player.names.international} [${player.id}]`);
 }
 
 async function remove(interaction: CommandInteraction) {
-	const pRepo = DB.getRepository(Player);
+	const pRepo = DB.getRepository(PlayerEntity);
 
 	const userOpt = interaction.options.getUser('user');
 	if(!userOpt) throw new UserError('The option user must be set.');
@@ -67,7 +67,7 @@ async function remove(interaction: CommandInteraction) {
 }
 
 async function list(interaction: CommandInteraction) {
-	const pRepo = DB.getRepository(Player);
+	const pRepo = DB.getRepository(PlayerEntity);
 
 	let msg = `The users with an association in this discord are:\n\`\`\`\n`;
 	

@@ -1,8 +1,8 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { GuildEntity, Leaderboard } from "./";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { GuildEntity, LeaderboardEntity } from "./";
 
 @Entity()
-export class TrackedLeaderboard {
+export class TrackedLeaderboardEntity {
 
 	/** The ID of the associated Guild. */
 	@PrimaryColumn()
@@ -22,9 +22,9 @@ export class TrackedLeaderboard {
 	guild!: GuildEntity;
 
 	/** The leaderboard being tracked. */
-	@ManyToOne(() => Leaderboard, leaderboard => leaderboard.trackedLeaderboards)
+	@ManyToOne(() => LeaderboardEntity, leaderboard => leaderboard.trackedLeaderboards)
 	@JoinColumn({ name: 'lb_id' })
-	leaderboard!: Leaderboard;
+	leaderboard!: LeaderboardEntity;
 
 	constructor(guild_id: string, lb_id: number, role_id: string) {
 		this.guild_id = guild_id;

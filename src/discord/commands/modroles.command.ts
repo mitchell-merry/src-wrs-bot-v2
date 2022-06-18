@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { DB } from "../../db";
-import { ModeratorRole } from "../../db/models";
+import { ModeratorRoleEntity } from "../../db/models";
 import UserError from "../UserError";
 
 export const data = new SlashCommandBuilder()
@@ -26,20 +26,20 @@ export const perms = {
 };
 
 async function add(interaction: CommandInteraction) {
-	const mrRepo = DB.getRepository(ModeratorRole);
+	const mrRepo = DB.getRepository(ModeratorRoleEntity);
 
 	const roleOption = interaction.options.getRole('role', true);
 
 	const has = await mrRepo.findOne({ where: { guild_id: interaction.guildId!, role_id: roleOption.id } });
 	if(!!has) throw new UserError(`That role is already set as a moderator in this guild.`);
 
-	const role = new ModeratorRole(interaction.guildId!, roleOption.id);
+	const role = new ModeratorRoleEntity(interaction.guildId!, roleOption.id);
 	await mrRepo.save(role);
 	interaction.reply(`Added moderator role '${roleOption.name}'.`);
 }
 
 async function remove(interaction: CommandInteraction) {
-	const mrRepo = DB.getRepository(ModeratorRole);
+	const mrRepo = DB.getRepository(ModeratorRoleEntity);
 
 	const roleOption = interaction.options.getRole('role', true);
 
@@ -52,7 +52,7 @@ async function remove(interaction: CommandInteraction) {
 }
 
 async function list(interaction: CommandInteraction) {
-	const mrRepo = DB.getRepository(ModeratorRole);
+	const mrRepo = DB.getRepository(ModeratorRoleEntity);
 
 	const guildRoles = await mrRepo.find({ where: { guild_id: interaction.guildId! } });
 	

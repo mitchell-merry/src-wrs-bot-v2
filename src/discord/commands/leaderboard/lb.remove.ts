@@ -1,13 +1,13 @@
 import { CommandInteraction, User } from "discord.js";
 import { DB } from "../../../db";
-import { Leaderboard, TrackedLeaderboard } from "../../../db/models";
+import { LeaderboardEntity, TrackedLeaderboardEntity } from "../../../db/models";
 import UserError from "../../UserError";
 
 export async function remove(interaction: CommandInteraction) {
 	await interaction.deferReply();
 
-	const tlbRepo = DB.getRepository(TrackedLeaderboard);
-	const lbRepo = DB.getRepository(Leaderboard);
+	const tlbRepo = DB.getRepository(TrackedLeaderboardEntity);
+	const lbRepo = DB.getRepository(LeaderboardEntity);
 	
 	const lb_id = interaction.options.getInteger('leaderboard')!;
 	const delete_role = interaction.options.getBoolean('delete_role');

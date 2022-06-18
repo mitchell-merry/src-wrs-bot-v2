@@ -2,11 +2,11 @@
 import 'dotenv/config'
 import 'reflect-metadata'
 
-import { Client, Intents, Interaction, User } from 'discord.js'
+import { Client, Intents, Interaction } from 'discord.js'
 
 import { DB, isUserMod, synchronizeGuilds } from './db'
 import { commands, CommandFile } from './discord';
-import { TrackedLeaderboard } from './db/models';
+import { TrackedLeaderboardEntity } from './db/models';
 import UserError from './discord/UserError';
 
 const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS ] });
@@ -85,7 +85,7 @@ client.on('interactionCreate', async interaction => {
 	if(interaction.commandName === 'leaderboard'
 		&& (interaction.options.getSubcommand() === 'remove' || interaction.options.getSubcommand() === 'setrole')
 	) {
-		const tlbRepo = DB.getRepository(TrackedLeaderboard);
+		const tlbRepo = DB.getRepository(TrackedLeaderboardEntity);
 		const val = interaction.options.getFocused(true).value as string;
 
 		const boards = await tlbRepo.find({ where: { guild_id: interaction.guildId! }, relations: { leaderboard: true } });

@@ -1,13 +1,13 @@
-import { Collection, CommandInteraction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, MessagePayload, Role, WebhookEditMessageOptions } from "discord.js";
+import { Collection, CommandInteraction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, Role, WebhookEditMessageOptions } from "discord.js";
 import { DB } from "../../../db";
-import { TrackedLeaderboard } from "../../../db/models";
+import { TrackedLeaderboardEntity } from "../../../db/models";
 import UserError from "../../UserError";
 import { array_chunks } from "../../util";
 
 const PAGE_LENGTH = 15;
 
 export async function list(interaction: CommandInteraction) {
-	const tlbRepo = DB.getRepository(TrackedLeaderboard);
+	const tlbRepo = DB.getRepository(TrackedLeaderboardEntity);
 	await interaction.deferReply();
 	const message = await interaction.fetchReply() as Message;
 	const roles = await interaction.guild!.roles.fetch();
@@ -44,7 +44,7 @@ export async function list(interaction: CommandInteraction) {
 	}
 }
 
-function pageOutput(pages: TrackedLeaderboard[][], page: number, roles: Collection<string, Role>): string {
+function pageOutput(pages: TrackedLeaderboardEntity[][], page: number, roles: Collection<string, Role>): string {
 	return `${
 		pages[page].map((tlb, i) => {
 			const role = roles.get(tlb.role_id);

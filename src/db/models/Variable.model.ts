@@ -1,8 +1,8 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
-import { Leaderboard } from "./";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { LeaderboardEntity } from "./";
 
 @Entity()
-export class Variable {
+export class VariableEntity {
 
 	/** The ID of the variable in speedrun.com this represents. */
 	@PrimaryColumn()
@@ -17,11 +17,11 @@ export class Variable {
 	value!: string;
 
 	/** The leaderboard which this variable is attached to. */
-	@ManyToOne(() => Leaderboard, leaderboard => leaderboard.variables, { onDelete: 'CASCADE' })
+	@ManyToOne(() => LeaderboardEntity, leaderboard => leaderboard.variables, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'lb_id' })
-	leaderboard!: Leaderboard;
+	leaderboard!: LeaderboardEntity;
 
-	constructor(leaderboard: Leaderboard, variable_id: string, value: string) {
+	constructor(leaderboard: LeaderboardEntity, variable_id: string, value: string) {
 		this.leaderboard = leaderboard;
 		this.variable_id = variable_id;
 		this.value = value;

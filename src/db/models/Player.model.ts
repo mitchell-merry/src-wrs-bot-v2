@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity()
-export class Player {
+export class PlayerEntity {
 
 	/** The player's ID on speedrun.com. */
 	@PrimaryColumn()

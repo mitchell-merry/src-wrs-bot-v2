@@ -1,5 +1,5 @@
-import { Column, Entity, ManyToMany, OneToMany, PrimaryColumn } from 'typeorm';
-import { TrackedLeaderboard, ModeratorRole, Leaderboard } from './';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { TrackedLeaderboardEntity, ModeratorRoleEntity } from './';
 
 @Entity({ name: 'guild' })
 export class GuildEntity {
@@ -17,12 +17,12 @@ export class GuildEntity {
 	above_role_id!: string;
 
 	/** The leaderboards this guild is tracking. */
-	@OneToMany(() => TrackedLeaderboard, tlb => tlb.leaderboard)
-	trackedLeaderboards!: TrackedLeaderboard[];
+	@OneToMany(() => TrackedLeaderboardEntity, tlb => tlb.leaderboard)
+	trackedLeaderboards!: TrackedLeaderboardEntity[];
 
 	/** The moderator roles of this guild. */
-	@OneToMany(() => ModeratorRole, modrole => modrole.guild)
-	moderatorRoles!: ModeratorRole[];
+	@OneToMany(() => ModeratorRoleEntity, modrole => modrole.guild)
+	moderatorRoles!: ModeratorRoleEntity[];
 
 	constructor(guild_id: string) {
 		this.guild_id = guild_id;

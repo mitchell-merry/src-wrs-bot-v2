@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { DB } from "../../db";
-import { GuildEntity, Player, TrackedLeaderboard } from "../../db/models";
+import { GuildEntity, PlayerEntity, TrackedLeaderboardEntity } from "../../db/models";
 import UserError from "../UserError";
 import * as SRC from '../../speedruncom';
 import { RunPlayerUser } from "src-ts";
@@ -22,7 +22,7 @@ export const execute = async (interaction: CommandInteraction) => {
 	if(!guildEnt) throw new UserError('Error: this guild is not being tracked!');
 
 	// get all leaderboards tracked by guild
-	const tlbRepo = DB.getRepository(TrackedLeaderboard);
+	const tlbRepo = DB.getRepository(TrackedLeaderboardEntity);
 	const tracked = await tlbRepo.find({
 		where: { guild_id: interaction.guildId },
 		relations: {
@@ -31,14 +31,14 @@ export const execute = async (interaction: CommandInteraction) => {
 	});
 	
 	// group leaderboards by role
-	const roleLeaderboards: Record<string, TrackedLeaderboard[]> = {};
+	const roleLeaderboards: Record<string, TrackedLeaderboardEntity[]> = {};
 	tracked.forEach(tlb => {
 		if(!roleLeaderboards[tlb.role_id]) roleLeaderboards[tlb.role_id] = [];
 		roleLeaderboards[tlb.role_id].push(tlb);
 	});
 	
 	// for every role (wait for all)
-	const pRepo = DB.getRepository(Player);
+	const pRepo = DB.getRepository(PlayerEntity);
 	await Promise.all(Object.entries(roleLeaderboards).map(async ([ roleId, tlbs ]) => {
 		// fetch role
 		let role = await interaction.guild!.roles.fetch(roleId);
@@ -67,7 +67,7 @@ export const execute = async (interaction: CommandInteraction) => {
 			const srcPlayerIds = lb.runs.map(run => run.run.players.filter(p => p.rel === 'user').map(p => (p as RunPlayerUser).id)).flat();
 			const playerIDs = (await Promise.all(srcPlayerIds.map(async id => 
 				await pRepo.findOne({ where: { player_id: id }})
-			))).filter(p => p !== null).map(p => (p as Player).discord_id);
+			))).filter(p => p !== null).map(p => (p as PlayerEntity).discord_id);
 			
 			playerIDs.forEach(id => {
 				if(!accounts.includes(id)) accounts.push(id);

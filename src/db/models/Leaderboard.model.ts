@@ -1,11 +1,10 @@
 import { Variable } from "src-ts";
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { DB } from "..";
-import { TrackedLeaderboard, Variable as VariableEntity } from "./";
-import { GuildEntity } from "./Guild.model";
+import { TrackedLeaderboardEntity, VariableEntity } from "./";
 
 @Entity()
-export class Leaderboard {
+export class LeaderboardEntity {
 
 	/** The unique leaderboard ID - auto-generated. */
 	@PrimaryGeneratedColumn()
@@ -32,8 +31,8 @@ export class Leaderboard {
 	variables!: VariableEntity[];
 
 	/** Where this leaderboard is being tracked. */
-	@OneToMany(() => TrackedLeaderboard, tlb => tlb.leaderboard, { cascade: true })
-	trackedLeaderboards!: TrackedLeaderboard[];
+	@OneToMany(() => TrackedLeaderboardEntity, tlb => tlb.leaderboard, { cascade: true })
+	trackedLeaderboards!: TrackedLeaderboardEntity[];
 
 	constructor(game_id: string, category_id: string, lb_name: string, level_id?: string) {
 		this.game_id = game_id;
@@ -43,7 +42,7 @@ export class Leaderboard {
 	}
 
 	static async exists(game_id: string, category_id: string, variables: [Variable, string][], level_id?: string) {
-		const lRepo = DB.getRepository(Leaderboard);
+		const lRepo = DB.getRepository(LeaderboardEntity);
 		
 		// check leaderboard with same game/cat exists (multiple may)
 		const possibles = await lRepo.find({ where: { game_id, category_id, level_id }, relations: { variables: true, trackedLeaderboards: true } });

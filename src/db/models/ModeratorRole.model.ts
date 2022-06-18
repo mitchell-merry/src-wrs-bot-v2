@@ -1,8 +1,8 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 import { GuildEntity } from ".";
 
 @Entity()
-export class ModeratorRole {
+export class ModeratorRoleEntity {
 
 	/** The ID of the guild the moderator role belongs to. */
 	@PrimaryColumn()
