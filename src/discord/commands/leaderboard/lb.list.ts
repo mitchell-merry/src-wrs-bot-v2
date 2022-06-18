@@ -1,15 +1,16 @@
-import { CommandInteraction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, MessagePayload, WebhookEditMessageOptions } from "discord.js";
+import { Collection, CommandInteraction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, MessagePayload, Role, WebhookEditMessageOptions } from "discord.js";
 import { DB } from "../../../db";
 import { TrackedLeaderboard } from "../../../db/models";
 import UserError from "../../UserError";
 import { array_chunks } from "../../util";
 
-const PAGE_LENGTH = 25;
+const PAGE_LENGTH = 15;
 
 export async function list(interaction: CommandInteraction) {
 	const tlbRepo = DB.getRepository(TrackedLeaderboard);
 	await interaction.deferReply();
 	const message = await interaction.fetchReply() as Message;
+	const roles = await interaction.guild!.roles.fetch();
 
 	// get leaderboards tracked by guild
 	const boards = await tlbRepo.find({ where: { guild_id: interaction.guildId! }, relations: { leaderboard: true } });
@@ -21,7 +22,7 @@ export async function list(interaction: CommandInteraction) {
 
 	while(true) {
 		const options: WebhookEditMessageOptions = {
-			content: pageOutput(pages, page),
+			content: pageOutput(pages, page, roles),
 			components: pageComponents(page, pages.length)
 		};
 
@@ -43,12 +44,13 @@ export async function list(interaction: CommandInteraction) {
 	}
 }
 
-function pageOutput(pages: TrackedLeaderboard[][], page: number): string {
-	return `\`\`\`${
+function pageOutput(pages: TrackedLeaderboard[][], page: number, roles: Collection<string, Role>): string {
+	return `${
 		pages[page].map((tlb, i) => {
-			return `[${page*PAGE_LENGTH+i+1}] ${tlb.leaderboard.lb_name}`;
+			const role = roles.get(tlb.role_id);
+			return `[${page*PAGE_LENGTH+i+1}] ${tlb.leaderboard.lb_name} - <@&${role?.id}>`;
 		}).join('\n')
-	}\`\`\``;
+	}`;
 }
 
 function pageComponents(page: number, pageCount: number): MessageActionRow[] {
