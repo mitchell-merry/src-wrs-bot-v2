@@ -4,7 +4,7 @@ import { GuildEntity, Leaderboard, TrackedLeaderboard, Variable as VariableEntit
 import UserError from "../../UserError";
 import * as SRC from '../../../speedruncom';
 import { buildMenu, getResponse, sendMenu } from "../../util";
-import { Category, CategoryType, Game, Variable } from "src-ts";
+import { Category, CategoryType, Game, Level, Variable } from "src-ts";
 
 const gameRegex = /^\w+$/;
 
@@ -53,9 +53,11 @@ export async function add(interaction: CommandInteraction) {
 	// get leaderboard info from user
 	// choose if levels
 	const catType = await selectType(interaction);
+	let level: Level | undefined = undefined;
+	if(catType === 'per-level') level = await selectLevel(interaction, gameObj);
 
 	const category = await selectCategory(interaction, gameObj, catType);
-	const variables = await selectVariables(interaction, category);
+	const variables = await selectVariables(interaction, category, level);
 
 	// build leaderboard name
 	const labels = variables.map(([subcat, v]) => subcat.values.values[v].label);
@@ -98,6 +100,22 @@ async function selectType(interaction: CommandInteraction): Promise<CategoryType
 	return choice;
 }
 
+async function selectLevel(interaction: CommandInteraction, game: Game): Promise<Level> {
+	const levelData = game.levels!.data;
+
+	// Make level menu to get the level of the leaderboard
+	const levelNames = levelData.map(level => ({ value: level.id, label: level.name }));
+	const menu = buildMenu(levelNames, game.id);
+	const [message, choiceInt] = await sendMenu(interaction, `Choose a level:`, [ menu ]);
+	let levelId = getResponse(choiceInt);
+	const level = levelData.find(c => c.id === levelId)!;
+
+	await interaction.editReply({ content: `Selected the level ${level.name} [${level.id}]`, components: [] });
+	await message.delete();
+
+	return level;
+}
+
 async function selectCategory(interaction: CommandInteraction, game: Game, type: CategoryType): Promise<Category> {
 	// Get category from menu
 	const catData = game.categories!.data;
@@ -115,19 +133,26 @@ async function selectCategory(interaction: CommandInteraction, game: Game, type:
 	return category;
 }
 
-async function selectVariables(interaction: CommandInteraction, categoryObj: Category): Promise<[Variable, string][]> {
-	return Promise.all(categoryObj.variables!.data.filter(v => v['is-subcategory']).map(async subcat => {
-		const options = Object.entries(subcat.values.values)
-			.map(([k, v]) => ({ value: k, label: v.label }));
+async function selectVariables(interaction: CommandInteraction, categoryObj: Category, levelObj?: Level): Promise<[Variable, string][]> {
+	
+	return Promise.all(categoryObj.variables!.data
+		.filter(v => v['is-subcategory'])
+		.filter(v => levelObj === undefined 
+			|| v.scope.type === 'all-levels'
+			|| (v.scope.type === 'single-level' && v.scope.level === levelObj.id)
+		).map(async subcat => {
+			const options = Object.entries(subcat.values.values)
+				.map(([k, v]) => ({ value: k, label: v.label }));
 
-		const menu = buildMenu(options, subcat.id);
-		const [message, r] = await sendMenu(interaction,
-			`Choose a value for the variable ${subcat.name}:`, [ menu ]);
+			const menu = buildMenu(options, subcat.id);
+			const [message, r] = await sendMenu(interaction,
+				`Choose a value for the variable ${subcat.name}:`, [ menu ]);
 
-		await message.delete();
+			await message.delete();
 
-		const value = getResponse(r);
+			const value = getResponse(r);
 
-		return [ subcat, value ];
-	}));
+			return [ subcat, value ];
+		})
+	);
 }
