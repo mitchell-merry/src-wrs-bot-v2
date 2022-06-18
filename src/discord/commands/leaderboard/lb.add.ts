@@ -4,7 +4,7 @@ import { GuildEntity, Leaderboard, TrackedLeaderboard, Variable as VariableEntit
 import UserError from "../../UserError";
 import * as SRC from '../../../speedruncom';
 import { buildMenu, getResponse, sendMenu } from "../../util";
-import { Category, Game, Variable } from "src-ts";
+import { Category, CategoryType, Game, Variable } from "src-ts";
 
 const gameRegex = /^\w+$/;
 
@@ -51,7 +51,10 @@ export async function add(interaction: CommandInteraction) {
 	if(SRC.isError(gameObj)) throw new UserError(`Game ${gameOpt} does not exist.`);
 
 	// get leaderboard info from user
-	const category = await selectCategory(interaction, gameObj);
+	// choose if levels
+	const catType = await selectType(interaction);
+
+	const category = await selectCategory(interaction, gameObj, catType);
 	const variables = await selectVariables(interaction, category);
 
 	// build leaderboard name
@@ -95,12 +98,12 @@ async function selectType(interaction: CommandInteraction): Promise<CategoryType
 	return choice;
 }
 
-async function selectCategory(interaction: CommandInteraction, game: Game): Promise<Category> {
+async function selectCategory(interaction: CommandInteraction, game: Game, type: CategoryType): Promise<Category> {
 	// Get category from menu
 	const catData = game.categories!.data;
 
 	// Make category menu to get the category of the leaderboard
-	const catNames = catData.map(cat => ({ value: cat.id, label: cat.name }));
+	const catNames = catData.filter(cat => cat.type === type).map(cat => ({ value: cat.id, label: cat.name }));
 	const menu = buildMenu(catNames, game.id);
 	const [message, choiceInt] = await sendMenu(interaction, `Choose a category:`, [ menu ]);
 	let categoryId = getResponse(choiceInt);
