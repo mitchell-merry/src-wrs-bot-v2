@@ -17,12 +17,12 @@ export class TrackedLeaderboardEntity {
 	role_id!: string;
 
 	/** The guild the leaderboard is being tracked in. */
-	@ManyToOne(() => GuildEntity, guild => guild.trackedLeaderboards)
+	@ManyToOne(() => GuildEntity, guild => guild.trackedLeaderboards, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'guild_id' })
 	guild!: GuildEntity;
 
 	/** The leaderboard being tracked. */
-	@ManyToOne(() => LeaderboardEntity, leaderboard => leaderboard.trackedLeaderboards)
+	@ManyToOne(() => LeaderboardEntity, leaderboard => leaderboard.trackedLeaderboards, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'lb_id' })
 	leaderboard!: LeaderboardEntity;
 
