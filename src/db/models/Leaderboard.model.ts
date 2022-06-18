@@ -19,6 +19,10 @@ export class Leaderboard {
 	@Column()
 	category_id!: string;
 
+	/** The ID of the level of the leaderboard. If null, then this is full-game. */
+	@Column({ nullable: true })
+	level_id?: string;
+
 	/** The last known name of the associated leaderboard. */
 	@Column()
 	lb_name!: string;
