@@ -53,8 +53,7 @@ export async function add(interaction: CommandInteraction) {
 	// get leaderboard info from user
 	// choose if levels
 	const catType = await selectType(interaction);
-	let level: Level | undefined = undefined;
-	if(catType === 'per-level') level = await selectLevel(interaction, gameObj);
+	const level = catType === 'per-level' ? await selectLevel(interaction, gameObj) : undefined;
 
 	const category = await selectCategory(interaction, gameObj, catType);
 	const variables = await selectVariables(interaction, category, level);
