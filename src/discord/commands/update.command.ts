@@ -57,7 +57,10 @@ export const execute = async (interaction: CommandInteraction) => {
 			}));
 
 			// get all sr.c player ids
-			const lb = await SRC.getLeaderboard(tlb.leaderboard.game_id, tlb.leaderboard.category_id, { top: 1, ...variables });
+			const lbOptions = { top: 1, ...variables };
+			const lb = tlb.leaderboard.level_id
+				? await SRC.getLevelLeaderboard(tlb.leaderboard.game_id, tlb.leaderboard.level_id, tlb.leaderboard.category_id, lbOptions)
+				: await SRC.getLeaderboard(tlb.leaderboard.game_id, tlb.leaderboard.category_id, lbOptions);
 			if(SRC.isError(lb)) throw new UserError(`Error updating ${tlb.leaderboard.lb_name}`);
 
 			// guests are ignored
