@@ -48,7 +48,7 @@ export async function add(interaction: CommandInteraction) {
 
 	// get game object from speedrun.com
 	const gameObj = await SRC.getGame(gameOpt, { embed: 'categories.variables,levels' });
-	if(SRC.isError(gameObj)) throw new Error(`Game ${gameOpt} does not exist.`);
+	if(SRC.isError(gameObj)) throw new UserError(`Game ${gameOpt} does not exist.`);
 
 	// get leaderboard info from user
 	const category = await selectCategory(interaction, gameObj);
