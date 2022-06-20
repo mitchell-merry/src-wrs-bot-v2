@@ -34,6 +34,9 @@ export function buildLeaderboardName(gameName: string, categoryName: string, var
 
 export async function get<ResponseType>(url: string, options: Record<string, any> = {}): Promise<ResponseType | Error> {
 	url = `${BASE_URL}${url}`;
+
+	// Prevent caching by making the call unique
+	options.dummy = Date.now();
 	
 	if(Object.entries(options).length != 0) {
 		url += `?${Object.entries(options).map(([k, v]) => `${k}=${v}`).join('&')}`;
