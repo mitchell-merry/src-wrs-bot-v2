@@ -11,7 +11,8 @@ export const data = new SlashCommandBuilder()
 	.addSubcommand(sc => sc
 		.setName('add')
 		.setDescription('Add a leaderboard to this guild.')
-		.addStringOption(o => o.setName('game').setDescription('The game abbreviation of the leaderboard to add.').setRequired(true)))
+		.addStringOption(o => o.setName('game').setDescription('The game abbreviation of the leaderboard to add.').setRequired(true))
+		.addRoleOption(o => o.setName('role').setDescription('The role to attach the leaderboard to. Leave blank to generate one.')))
 	.addSubcommand(sc => sc
 		.setName('remove')
 		.setDescription('Remove a leaderboard from this guild.')
