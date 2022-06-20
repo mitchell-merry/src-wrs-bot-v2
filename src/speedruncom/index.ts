@@ -39,6 +39,7 @@ export async function get<ResponseType>(url: string, options: Record<string, any
 		url += `?${Object.entries(options).map(([k, v]) => `${k}=${v}`).join('&')}`;
 	}
 
+	console.log(`[SRC] Fetching "${url}"`);
 	const res = await fetchSRC(url).then(res => res.json()) as ResponseType | Error;
 	
 	return res;
