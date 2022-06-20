@@ -5,7 +5,7 @@ import 'reflect-metadata'
 import { Client, Intents, Interaction } from 'discord.js'
 
 import { DB, isUserMod, synchronizeGuilds } from './db'
-import { commands, CommandFile } from './discord';
+import { commands, CommandFile, handleSlashCommand, handleAutocomplete } from './discord';
 import { GuildEntity, TrackedLeaderboardEntity } from './db/models';
 import UserError from './discord/UserError';
 
@@ -37,71 +37,8 @@ client.on('ready', async () => {
 client.login(process.env.TOKEN);
 
 client.on('interactionCreate', async (interaction: Interaction) => {
-	if (!interaction.isCommand()) return;
-
-	const command = commandDict[interaction.commandName];
-
-	try {
-
-		if(!command) throw new Error(`Command ${interaction.commandName} unknown`);
-
-		// Get the perm level of the command or subcommand.
-		let permLevel;
-		if(typeof command.perms === 'string') permLevel = command.perms;
-		else permLevel = command.perms[interaction.options.getSubcommand()];
-		
-		if(!permLevel) throw new Error(`Permission level missing for ${interaction.options.getSubcommand()}.`);
-		if(typeof interaction.member?.permissions === 'string') throw new Error(`error with ${interaction.member?.permissions}`)
-
-		const userIsAdmin = interaction.user.id === process.env.admin || interaction.member!.permissions.has('ADMINISTRATOR');
-		const userIsMod = userIsAdmin || (await isUserMod(interaction.guildId, interaction.member));
-
-		// Check user has correct permission.
-		if(permLevel === 'admin' && !userIsAdmin) throw new UserError(`Only admins are allowed to use this command! Loser. Scram!!`);
-		else if(permLevel === 'mods' && !userIsMod) throw new UserError(`Only mods and above are allowed to use this! Shame on you. Bad.`);
-
-		await command.execute(interaction);
-	} catch (error) {
-		const msg = {
-			content: "Unknown error occurred.",
-			components: []
-		};
-
-		if(error instanceof UserError) {
-			msg.content = error.message;
-		} else {
-			console.error(error);
-		}
-
-		await (interaction.replied || interaction.deferred 
-			? interaction.editReply(msg) 
-			: interaction.reply(msg));
-	}    
-});
-
-client.on('interactionCreate', async interaction => {
-	if(!interaction.isAutocomplete()) return;
-
-	// TODO: Make more modular
-	if(interaction.commandName === 'leaderboard'
-		&& (interaction.options.getSubcommand() === 'remove' || interaction.options.getSubcommand() === 'setrole')
-	) {
-		const tlbRepo = DB.getRepository(TrackedLeaderboardEntity);
-		const val = interaction.options.getFocused(true).value as string;
-
-		const boards = await tlbRepo.find({ where: { guild_id: interaction.guildId! }, relations: { leaderboard: true } });
-
-		// TODO sort alphabetically
-		const response = boards
-			.filter(tlb => tlb.leaderboard.lb_name.toLowerCase().includes(val.toLowerCase()))
-			.map(tlb => ({
-				name: `${tlb.leaderboard.lb_name}`,
-				value: tlb.leaderboard.lb_id
-			}))
-			.slice(0, 25);
-
-		interaction.respond(response);
-	}
+	if(interaction.isCommand()) await handleSlashCommand(interaction);
+	if(interaction.isAutocomplete()) await handleAutocomplete(interaction); 
 });
 
 client.on('guildCreate', async guild => {
