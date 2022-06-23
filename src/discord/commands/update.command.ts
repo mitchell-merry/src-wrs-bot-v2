@@ -1,9 +1,10 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
+import * as SRC from "src-ts";
+
 import { DB } from "../../db";
 import { GuildEntity, PlayerEntity, TrackedLeaderboardEntity } from "../../db/models";
 import UserError from "../UserError";
-import * as SRC from '../../speedruncom';
 import { RunPlayerUser } from "src-ts";
 
 export const data = new SlashCommandBuilder()
