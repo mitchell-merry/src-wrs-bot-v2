@@ -1,10 +1,10 @@
 import { CommandInteraction } from "discord.js";
+import * as SRC from "src-ts";
+
 import { DB } from "../../../db";
 import { GuildEntity, LeaderboardEntity, TrackedLeaderboardEntity, VariableEntity } from "../../../db/models";
 import UserError from "../../UserError";
-import * as SRC from '../../../speedruncom';
 import { buildMenu, getResponse, sendMenu } from "../../util";
-import { Category, CategoryType, Game, Level, Variable } from "src-ts";
 
 const gameRegex = /^\w+$/;
 
@@ -88,10 +88,10 @@ export async function add(interaction: CommandInteraction) {
 	interaction.editReply({ content: `Added the leaderboard ${lb_name}.`, components: [] });
 }
 
-async function selectType(interaction: CommandInteraction): Promise<CategoryType> {
+async function selectType(interaction: CommandInteraction): Promise<SRC.CategoryType> {
 	const menu = buildMenu([{ value: 'per-game', label: "Full-game" }, { value: 'per-level', label: "Level" }], 'isLevel');
 	const [message, choiceInt] = await sendMenu(interaction, `Is the leaderboard a full-game or level category?`, [ menu ]);
-	const choice = getResponse(choiceInt) as CategoryType;
+	const choice = getResponse(choiceInt) as SRC.CategoryType;
 
 	await interaction.editReply({ content: `Selected ${choice}...`, components: [] });
 	await message.delete();
@@ -99,7 +99,7 @@ async function selectType(interaction: CommandInteraction): Promise<CategoryType
 	return choice;
 }
 
-async function selectLevel(interaction: CommandInteraction, game: Game): Promise<Level> {
+async function selectLevel(interaction: CommandInteraction, game: SRC.Game): Promise<SRC.Level> {
 	const levelData = game.levels!.data;
 
 	// Make level menu to get the level of the leaderboard
@@ -115,7 +115,7 @@ async function selectLevel(interaction: CommandInteraction, game: Game): Promise
 	return level;
 }
 
-async function selectCategory(interaction: CommandInteraction, game: Game, type: CategoryType): Promise<Category> {
+async function selectCategory(interaction: CommandInteraction, game: SRC.Game, type: SRC.CategoryType): Promise<SRC.Category> {
 	// Get category from menu
 	const catData = game.categories!.data;
 
@@ -132,7 +132,7 @@ async function selectCategory(interaction: CommandInteraction, game: Game, type:
 	return category;
 }
 
-async function selectVariables(interaction: CommandInteraction, categoryObj: Category, levelObj?: Level): Promise<[Variable, string][]> {
+async function selectVariables(interaction: CommandInteraction, categoryObj: SRC.Category, levelObj?: SRC.Level): Promise<[SRC.Variable, string][]> {
 	
 	return Promise.all(categoryObj.variables!.data
 		.filter(v => v['is-subcategory'])
