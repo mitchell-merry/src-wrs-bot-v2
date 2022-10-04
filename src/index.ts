@@ -23,10 +23,23 @@ client.on('ready', async () => {
 
 	commandDict = Object.fromEntries(commands.map(command => [command.data.name, command]));
 
-	// Initialise database
-	await DB.initialize()
-		.then(() => console.log("Data Source has been initialized!"))
-		.catch(err => console.error("Error during Data Source initialization", err));
+	let retries = 5;
+	while (retries)
+	{
+		try {
+			// Initialise database
+			await DB.initialize()
+				.then(() => console.log("Data Source has been initialized!"));
+			// successful
+			break;
+		} catch (err) {
+			console.error(err);
+			retries--;
+			console.log(`Retries left: ${retries}`);
+			console.log('Will retry in 3 seconds...');
+			await new Promise(res => setTimeout(res, 3000));
+		}
+	}
 
 	// Add guilds bot doesn't currently track to database
 	await synchronizeGuilds(client.guilds);

@@ -1,0 +1,40 @@
+services: 
+  db:
+    image: mysql
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    cap_add:
+      - SYS_NICE
+    ports:
+      - 6033:3306
+    volumes:
+      - db-data:/var/lib/mysql
+  
+  phpmyadmin:
+    # latest was broken at the time of creation
+    image: phpmyadmin/phpmyadmin:5.1.1
+    container_name: pma
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - 8081:80
+    depends_on:
+      - db
+
+  bot:
+    image: mitchellmerry/src-wrs-bot-v2
+    container_name: bot
+    environment:
+      - DB_HOST=db
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - db
+    
+volumes:
+  db-data:
