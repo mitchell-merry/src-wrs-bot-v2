@@ -5,7 +5,7 @@ import { entities, GuildEntity, ModeratorRoleEntity } from "./models";
 
 export const DB = new DataSource({
 	type: "mysql",
-	host: process.env.DB_HOST || "localhost",
+	host: process.env.HOST || "localhost",
 	port: +(process.env.PORT || 3306),
 	username: 'root',
 	password: process.env.MYSQL_ROOT_PASSWORD,
