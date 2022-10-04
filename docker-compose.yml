@@ -7,8 +7,6 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     cap_add:
       - SYS_NICE
-    ports:
-      - 6033:3306
     volumes:
       - db-data:/var/lib/mysql
   
@@ -30,6 +28,7 @@ services:
     container_name: bot
     environment:
       - DB_HOST=db
+      - PORT=3306
     ports:
       - 80:80
       - 443:443
