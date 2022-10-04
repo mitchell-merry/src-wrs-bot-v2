@@ -4,7 +4,7 @@
 	"description": "",
 	"scripts": {
 		"build": "tsc",
-		"start": "npm run build && node --experimental-specifier-resolution node build/index.js",
+		"start": "node --experimental-specifier-resolution node build/index.js",
 		"dev": "tsnd --respawn --cache-directory ./cache -- src/index.ts",
 		"db:up": "docker-compose -f docker-compose.dev.yml up",
 		"db:stop": "docker-compose -f docker-compose.dev.yml stop",
