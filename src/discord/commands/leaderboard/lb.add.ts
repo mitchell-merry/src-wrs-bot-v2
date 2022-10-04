@@ -47,7 +47,7 @@ export async function add(interaction: CommandInteraction) {
 	await interaction.deferReply();
 
 	// get game object from speedrun.com
-	const gameObj = await SRC.getGame(gameOpt, { embed: 'categories.variables,levels' });
+	const gameObj = await SRC.getGame<'categories.variables,levels'>(gameOpt, { embed: 'categories.variables,levels' });
 	if(SRC.isError(gameObj)) throw new UserError(`Game ${gameOpt} does not exist.`);
 
 	// get leaderboard info from user
@@ -99,8 +99,8 @@ async function selectType(interaction: CommandInteraction): Promise<SRC.Category
 	return choice;
 }
 
-async function selectLevel(interaction: CommandInteraction, game: SRC.Game): Promise<SRC.Level> {
-	const levelData = game.levels!.data;
+async function selectLevel(interaction: CommandInteraction, game: SRC.Game<'levels'>): Promise<SRC.Level> {
+	const levelData = game.levels.data;
 
 	// Make level menu to get the level of the leaderboard
 	const levelNames = levelData.map(level => ({ value: level.id, label: level.name }));
@@ -115,9 +115,9 @@ async function selectLevel(interaction: CommandInteraction, game: SRC.Game): Pro
 	return level;
 }
 
-async function selectCategory(interaction: CommandInteraction, game: SRC.Game, type: SRC.CategoryType): Promise<SRC.Category> {
+async function selectCategory(interaction: CommandInteraction, game: SRC.Game<'categories.variables'>, type: SRC.CategoryType): Promise<SRC.Category<"variables">> {
 	// Get category from menu
-	const catData = game.categories!.data;
+	const catData = game.categories.data;
 
 	// Make category menu to get the category of the leaderboard
 	const catNames = catData.filter(cat => cat.type === type).map(cat => ({ value: cat.id, label: cat.name }));
@@ -132,9 +132,9 @@ async function selectCategory(interaction: CommandInteraction, game: SRC.Game, t
 	return category;
 }
 
-async function selectVariables(interaction: CommandInteraction, categoryObj: SRC.Category, levelObj?: SRC.Level): Promise<[SRC.Variable, string][]> {
+async function selectVariables(interaction: CommandInteraction, categoryObj: SRC.Category<'variables'>, levelObj?: SRC.Level): Promise<[SRC.Variable, string][]> {
 	
-	return Promise.all(categoryObj.variables!.data
+	return Promise.all(categoryObj.variables.data
 		.filter(v => v['is-subcategory'])
 		.filter(v => levelObj === undefined 
 			|| v.scope.type === 'all-levels'

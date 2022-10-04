@@ -5,7 +5,6 @@ import * as SRC from "src-ts";
 import { DB } from "../../db";
 import { GuildEntity, PlayerEntity, TrackedLeaderboardEntity } from "../../db/models";
 import UserError from "../UserError";
-import { RunPlayerUser } from "src-ts";
 
 export const data = new SlashCommandBuilder()
 	.setName('update')
@@ -51,26 +50,24 @@ export const execute = async (interaction: CommandInteraction) => {
 		// list of accounts to add the role to
 		const accounts: string[] = [];
 		await Promise.all(tlbs.map(async tlb => {
-
-			// format variables
-			const variables = Object.fromEntries(tlb.leaderboard.variables.map(variable => {
-				return [ `var-${variable.variable_id}`, variable.value ]
-			}));
-
 			// get all sr.c player ids
-			const lbOptions = { top: 1, ...variables };
-			const lb = tlb.leaderboard.level_id
-				? await SRC.getLevelLeaderboard(tlb.leaderboard.game_id, tlb.leaderboard.level_id, tlb.leaderboard.category_id, lbOptions)
-				: await SRC.getLeaderboard(tlb.leaderboard.game_id, tlb.leaderboard.category_id, lbOptions);
-			if(SRC.isError(lb)) throw new Error(`Error updating ${tlb.leaderboard.lb_name}`);
+			const partial: SRC.LeaderboardPartial = {
+				game: tlb.leaderboard.game_id,
+				category: tlb.leaderboard.category_id,
+				level: tlb.leaderboard.level_id,
+				variables: Object.fromEntries(tlb.leaderboard.variables.map(variable => [ variable.variable_id, variable.value ]))
+			};
+
+			const lb = await SRC.getLeaderboardFromPartial(partial, { top: 1 }).catch(() => { throw new Error(`Error updating ${tlb.leaderboard.lb_name}`) });
 
 			// guests are ignored
-			const srcPlayerIds = lb.runs.map(run => run.run.players.filter(p => p.rel === 'user').map(p => (p as RunPlayerUser).id)).flat();
-			const playerIDs = (await Promise.all(srcPlayerIds.map(async id => 
-				await pRepo.findOne({ where: { player_id: id }})
-			))).filter(p => p !== null).map(p => (p as PlayerEntity).discord_id);
+			const srcPlayerIds = lb.runs.map(run => run.run.players.filter(SRC.playerIsUser).map(p => p.id)).flat();
 			
-			playerIDs.forEach(id => {
+			const discPlayerIDs = (await Promise.all(srcPlayerIds.map(async id => 
+				await pRepo.findOne({ where: { player_id: id }})
+			))).filter((p): p is PlayerEntity => p !== null).map(p => p.discord_id);
+			
+			discPlayerIDs.forEach(id => {
 				if(!accounts.includes(id)) accounts.push(id);
 			});
 		}));
@@ -85,6 +82,7 @@ export const execute = async (interaction: CommandInteraction) => {
 			const user = await interaction.guild!.members.fetch(a);
 			await user.roles.add(role!);
 		}));
+		
 		console.log(`[${roleId}] Finished @${role.name}`);
 	}));
 

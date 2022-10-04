@@ -3,7 +3,8 @@
 	"version": "0.0.1",
 	"description": "",
 	"scripts": {
-		"start": "tsc && node --experimental-specifier-resolution node build/index.js",
+		"build": "tsc",
+		"start": "npm run build && node --experimental-specifier-resolution node build/index.js",
 		"dev": "tsnd --respawn --cache-directory ./cache -- src/index.ts",
 		"db:up": "docker-compose -f docker-compose.dev.yml up",
 		"db:stop": "docker-compose -f docker-compose.dev.yml stop",
@@ -36,7 +37,7 @@
 		"mysql2": "^2.3.3",
 		"node-fetch": "^2.6.7",
 		"reflect-metadata": "^0.1.13",
-		"src-ts": "^2.4.0",
+		"src-ts": "^2.4.3",
 		"typeorm": "^0.3.6"
 	},
 	"devDependencies": {
