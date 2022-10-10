@@ -27,13 +27,13 @@ services:
     image: mitchellmerry/src-wrs-bot-v2
     container_name: bot
     environment:
-      - DB_HOST=db
-      - DB_PORT=3306
-      - TOKEN=${TOKEN}
-      - admin=${admin}
-      - client=${client}
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      DB_HOST: db
+      DB_PORT: 3306
+      TOKEN: ${TOKEN}
+      admin: ${admin}
+      client: ${client}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - 80:80
       - 443:443
