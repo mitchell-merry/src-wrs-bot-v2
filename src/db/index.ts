@@ -10,7 +10,7 @@ export const DB = new DataSource({
 	username: 'root',
 	password: process.env.MYSQL_ROOT_PASSWORD,
 	database: process.env.MYSQL_DATABASE,
-	synchronize: true,
+	synchronize: (process.env.DB_SYNC === "true") || false,
 	entities,
 });
 
