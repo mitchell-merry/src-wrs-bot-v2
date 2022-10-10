@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { TrackedLeaderboardEntity, ModeratorRoleEntity } from '.';
+import { TrackedLeaderboardEntity, ModeratorRoleEntity, PlayerEntity } from '.';
 
 @Entity({ name: 'guild' })
 export class GuildEntity {
@@ -23,6 +23,10 @@ export class GuildEntity {
 	/** The moderator roles of this guild. */
 	@OneToMany(() => ModeratorRoleEntity, modrole => modrole.guild)
 	moderatorRoles!: ModeratorRoleEntity[];
+	
+	/** The players of this guild. */
+	@OneToMany(() => PlayerEntity, player => player.guild)
+	players!: PlayerEntity[];
 
 	constructor(guild_id: string) {
 		this.guild_id = guild_id;

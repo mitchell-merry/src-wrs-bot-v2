@@ -1,7 +1,12 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import { GuildEntity } from "./Guild.entity";
 
 @Entity({ name: 'player' })
 export class PlayerEntity {
+
+	/** The guild this association is on. */
+	@PrimaryColumn()
+	guild_id!: string;
 
 	/** The player's ID on speedrun.com. */
 	@PrimaryColumn()
@@ -14,6 +19,11 @@ export class PlayerEntity {
 	/** The username of the player's speedrun.com account. */
 	@Column()
 	src_name!: string;
+
+	/** The guild the leaderboard is being tracked in. */
+	@ManyToOne(() => GuildEntity, guild => guild.players, { onDelete: 'CASCADE' })
+	@JoinColumn({ name: 'guild_id' })
+	guild!: GuildEntity;
 	
 	constructor(player_id: string, discord_id: string) {
 		this.player_id = player_id;
