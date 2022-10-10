@@ -36,8 +36,8 @@ client.on('ready', async () => {
 			console.error(err);
 			retries--;
 			console.log(`Retries left: ${retries}`);
-			console.log('Will retry in 3 seconds...');
-			await new Promise(res => setTimeout(res, 3000));
+			console.log('Will retry in 10 seconds...');
+			await new Promise(res => setTimeout(res, 10000));
 		}
 	}
 
