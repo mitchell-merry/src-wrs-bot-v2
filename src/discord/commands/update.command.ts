@@ -46,8 +46,9 @@ export const execute = async (interaction: CommandInteraction) => {
 		// TODO give the user the option of making a new role, attaching an existing role, removing the leaderboard, or ignoring altogether
 		if(!role) throw new UserError(`ERROR: role no exist.`);
 
-		const log = (s: string) => console.log(`[/update] $[${roleId}] ${s}`);
+		const log = (s: string) => console.log(`[/update] [${roleId}] ${s}`);
 		log(`Updating @${role.name}`);
+		log(`Member(s) with role: ${Array.from(role.members).map(([id, m]) => `${m.user.username}#${m.user.tag} (${id})`).join(', ')}`);
 
 		// list of accounts to add the role to
 		let accounts: string[] = [];
