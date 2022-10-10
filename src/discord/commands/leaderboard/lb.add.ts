@@ -2,7 +2,7 @@ import { CommandInteraction } from "discord.js";
 import * as SRC from "src-ts";
 
 import { DB } from "../../../db";
-import { GuildEntity, LeaderboardEntity, TrackedLeaderboardEntity, VariableEntity } from "../../../db/models";
+import { GuildEntity, LeaderboardEntity, TrackedLeaderboardEntity, VariableEntity } from "../../../db/entities";
 import UserError from "../../UserError";
 import { buildMenu, getResponse, sendMenu } from "../../util";
 

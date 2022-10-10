@@ -6,7 +6,7 @@ import { Client, Intents, Interaction } from 'discord.js'
 
 import { DB, isUserMod, synchronizeGuilds } from './db'
 import { commands, CommandFile, handleSlashCommand, handleAutocomplete } from './discord';
-import { GuildEntity, TrackedLeaderboardEntity } from './db/models';
+import { GuildEntity, TrackedLeaderboardEntity } from './db/entities';
 import UserError from './discord/UserError';
 
 const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS ] });

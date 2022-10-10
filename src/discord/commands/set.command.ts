@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { DB } from "../../db";
-import { GuildEntity } from "../../db/models";
+import { GuildEntity } from "../../db/entities";
 import UserError from "../UserError";
 
 export const data = new SlashCommandBuilder()

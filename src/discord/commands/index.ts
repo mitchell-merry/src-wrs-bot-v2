@@ -17,7 +17,7 @@ import * as leaderboard from './leaderboard/leaderboard.command';
 import * as update from './update.command';
 import UserError from '../UserError';
 import { DB, isUserMod } from '../../db';
-import { TrackedLeaderboardEntity } from '../../db/models';
+import { TrackedLeaderboardEntity } from '../../db/entities';
 
 export const commands = [ invite, modroles, set, player, leaderboard, update ] as CommandFile[];
 

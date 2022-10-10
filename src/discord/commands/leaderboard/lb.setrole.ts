@@ -1,6 +1,6 @@
 import { CommandInteraction, Role, User } from "discord.js";
 import { DB } from "../../../db";
-import { LeaderboardEntity, TrackedLeaderboardEntity } from "../../../db/models";
+import { LeaderboardEntity, TrackedLeaderboardEntity } from "../../../db/entities";
 import UserError from "../../UserError";
 
 export async function setrole(interaction: CommandInteraction) {

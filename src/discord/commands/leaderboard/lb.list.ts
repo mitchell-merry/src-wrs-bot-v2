@@ -1,6 +1,6 @@
 import { Collection, CommandInteraction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, Role, WebhookEditMessageOptions } from "discord.js";
 import { DB } from "../../../db";
-import { TrackedLeaderboardEntity } from "../../../db/models";
+import { TrackedLeaderboardEntity } from "../../../db/entities";
 import UserError from "../../UserError";
 import { array_chunks } from "../../util";
 

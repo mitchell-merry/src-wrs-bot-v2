@@ -1,7 +1,7 @@
 import { APIInteractionGuildMember } from "discord-api-types/v9";
 import { GuildManager, GuildMember } from "discord.js";
 import { DataSource } from "typeorm";
-import { entities, GuildEntity, ModeratorRoleEntity } from "./models";
+import { entities, GuildEntity, ModeratorRoleEntity } from "./entities";
 
 export const DB = new DataSource({
 	type: "mysql",

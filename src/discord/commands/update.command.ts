@@ -3,7 +3,7 @@ import { CommandInteraction } from "discord.js";
 import * as SRC from "src-ts";
 
 import { DB } from "../../db";
-import { GuildEntity, PlayerEntity, TrackedLeaderboardEntity } from "../../db/models";
+import { GuildEntity, PlayerEntity, TrackedLeaderboardEntity } from "../../db/entities";
 import UserError from "../UserError";
 
 export const data = new SlashCommandBuilder()
