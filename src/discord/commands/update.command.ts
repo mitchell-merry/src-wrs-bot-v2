@@ -48,7 +48,7 @@ export const execute = async (interaction: CommandInteraction) => {
 		console.log(`[${roleId}] Updating @${role.name}`);
 
 		// list of accounts to add the role to
-		const accounts: string[] = [];
+		let accounts: string[] = [];
 		await Promise.all(tlbs.map(async tlb => {
 			// get all sr.c player ids
 			const partial: SRC.LeaderboardPartial = {
@@ -74,7 +74,7 @@ export const execute = async (interaction: CommandInteraction) => {
 
 		// remove role from accounts that shouldn't have the role, and remove those that already have the role from the accounts list
 		await Promise.all(role.members.map(async member => {
-			if(accounts.includes(member.id)) accounts.filter(a => a !== member.id);
+			if(accounts.includes(member.id)) accounts = accounts.filter(a => a !== member.id);
 			else await member.roles.remove(role!);
 		}));
 
