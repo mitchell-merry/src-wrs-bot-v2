@@ -29,7 +29,7 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 3306
-      DB_SYNC: false
+      DB_SYNC: "false"
       TOKEN: ${TOKEN}
       admin: ${admin}
       client: ${client}
