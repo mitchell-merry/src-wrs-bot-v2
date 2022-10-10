@@ -106,5 +106,6 @@ export const execute = async (interaction: CommandInteraction) => {
 		roleLog(`Finished @${role.name}!`);
 	}));
 
+	updateLog(`Finished updating!`);
 	interaction.editReply('Done updating.');
 }
