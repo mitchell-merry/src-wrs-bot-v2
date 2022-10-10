@@ -41,7 +41,7 @@ export const execute = async (interaction: CommandInteraction) => {
 	const pRepo = DB.getRepository(PlayerEntity);
 	await Promise.all(Object.entries(roleLeaderboards).map(async ([ roleId, tlbs ]) => {
 		// fetch role
-		let role = await interaction.guild!.roles.fetch(roleId);
+		let role = await interaction.guild!.roles.fetch(roleId, { cache: false });
 		
 		// TODO give the user the option of making a new role, attaching an existing role, removing the leaderboard, or ignoring altogether
 		if(!role) throw new UserError(`ERROR: role no exist.`);
