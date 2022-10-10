@@ -24,18 +24,6 @@ services:
       - 8081:80
     depends_on:
       - db
-
-  # app:
-  #   image: node:latest
-  #   container_name: app
-  #   ports:
-  #     - 33322:3000
-  #   depends_on:
-  #     - db
-  #   volumes:
-  #     - .:/app
-  #   working_dir: /app
-  #   entrypoint: npm start
-
+      
 volumes:
   db-data:
