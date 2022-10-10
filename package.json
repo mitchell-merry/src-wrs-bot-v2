@@ -9,8 +9,8 @@
 		"db:up": "docker-compose -f docker-compose.dev.yml up",
 		"db:stop": "docker-compose -f docker-compose.dev.yml stop",
 		"db:down": "docker-compose -f docker-compose.dev.yml down",
-		"docker:build": "docker build -t mitchellmerry/src-wrs-bot-v2 .",
-		"docker:push": "docker push mitchellmerry/src-wrs-bot-v2",
+		"docker:build": "npm run build && docker build -t mitchellmerry/src-wrs-bot-v2 .",
+		"docker:push": "npm run docker:build && docker push mitchellmerry/src-wrs-bot-v2",
 		"registerCommands": "tsc && node --experimental-specifier-resolution=node build/register_commands.js",
 		"clearCommands": "tsc && node --experimental-specifier-resolution=node build/clear_commands.js"
 	},
