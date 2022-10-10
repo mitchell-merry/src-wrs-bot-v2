@@ -32,6 +32,8 @@ services:
       - TOKEN=${TOKEN}
       - admin=${admin}
       - client=${client}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
     ports:
       - 80:80
       - 443:443
