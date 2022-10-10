@@ -15,6 +15,11 @@ export const perms = 'mods';
 export const execute = async (interaction: CommandInteraction) => {
 	interaction.deferReply();
 
+	const updateLog = (s: string) => console.log(`[${interaction.guildId}] [/update] ${s}`);
+	updateLog(`Update run by ${interaction.user.username}#${interaction.user.tag}, fetching all members in guild...`);
+	await interaction.guild!.members.fetch();
+	updateLog('Members fetched.');
+
 	// check if guild is tracked
 	if(!interaction.guild || !interaction.guildId) throw new Error('guild or guildId undefined.');
 	const guildRepo = DB.getRepository(GuildEntity);
@@ -46,14 +51,14 @@ export const execute = async (interaction: CommandInteraction) => {
 		// TODO give the user the option of making a new role, attaching an existing role, removing the leaderboard, or ignoring altogether
 		if(!role) throw new UserError(`ERROR: role no exist.`);
 
-		const log = (s: string) => console.log(`[/update] [${roleId}] ${s}`);
-		log(`Updating @${role.name}`);
-		log(`Member(s) with role: ${Array.from(role.members).map(([id, m]) => `${m.user.username}#${m.user.tag} (${id})`).join(', ')}`);
+		const roleLog = (s: string) => updateLog(`[${roleId}] ${s}`);
+		roleLog(`Updating @${role.name}`);
+		roleLog(`Member(s) with role: ${Array.from(role.members).map(([id, m]) => `${m.user.username}#${m.user.tag} (${id})`).join(', ')}`);
 
 		// list of accounts to add the role to
 		let accounts: string[] = [];
 		await Promise.all(tlbs.map(async tlb => {
-			const lblog = (s: string) => log(`:: [${tlb.leaderboard.lb_name}] ${s}`);
+			const lblog = (s: string) => roleLog(`:: [${tlb.leaderboard.lb_name}] ${s}`);
 
 			// get all sr.c player ids
 			const partial: SRC.LeaderboardPartial = {
@@ -79,14 +84,14 @@ export const execute = async (interaction: CommandInteraction) => {
 			});
 		}));
 
-		log(`Account(s) should be (discord): ${accounts.join(', ')}`);
+		roleLog(`Account(s) should be (discord): ${accounts.join(', ')}`);
 
 		// remove role from accounts that shouldn't have the role, and remove those that already have the role from the accounts list
 		await Promise.all(role.members.map(async member => {
 			if(accounts.includes(member.id)) accounts = accounts.filter(a => a !== member.id);
 			else
 			{
-				log(`Removing role from ${member.user.username}#${member.user.tag}...`);
+				roleLog(`Removing role from ${member.user.username}#${member.user.tag}...`);
 				await member.roles.remove(role!);
 			}
 		}));
@@ -94,11 +99,11 @@ export const execute = async (interaction: CommandInteraction) => {
 		// add roles to users
 		await Promise.all(accounts.map(async a => {
 			const user = await interaction.guild!.members.fetch(a);
-			log(`Adding role to ${user.user.username}#${user.user.tag}...`);
+			roleLog(`Adding role to ${user.user.username}#${user.user.tag}...`);
 			await user.roles.add(role!);
 		}));
 		
-		log(`Finished @${role.name}!`);
+		roleLog(`Finished @${role.name}!`);
 	}));
 
 	interaction.editReply('Done updating.');
