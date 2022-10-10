@@ -28,7 +28,7 @@ services:
     container_name: bot
     environment:
       - DB_HOST=db
-      - PORT=3306
+      - DB_PORT=3306
       - TOKEN=${TOKEN}
       - admin=${admin}
       - client=${client}

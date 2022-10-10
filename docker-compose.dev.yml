@@ -8,7 +8,7 @@ services:
     cap_add:
       - SYS_NICE
     ports:
-      - 6033:3306
+      - ${DB_PORT}:3306
     volumes:
       - db-data:/var/lib/mysql
   
