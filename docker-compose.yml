@@ -29,6 +29,9 @@ services:
     environment:
       - DB_HOST=db
       - PORT=3306
+      - TOKEN=${TOKEN}
+      - admin=${admin}
+      - client=${client}
     ports:
       - 80:80
       - 443:443
