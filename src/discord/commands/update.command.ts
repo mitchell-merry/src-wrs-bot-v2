@@ -16,7 +16,7 @@ export const execute = async (interaction: CommandInteraction) => {
 	interaction.deferReply();
 
 	const updateLog = (s: string) => console.log(`[${interaction.guildId}] [/update] ${s}`);
-	updateLog(`Update run by ${interaction.user.username}#${interaction.user.tag}, fetching all members in guild...`);
+	updateLog(`Update run by ${interaction.user.tag}, fetching all members in guild...`);
 	await interaction.guild!.members.fetch();
 	updateLog('Members fetched.');
 
@@ -53,7 +53,7 @@ export const execute = async (interaction: CommandInteraction) => {
 
 		const roleLog = (s: string) => updateLog(`[${roleId}] ${s}`);
 		roleLog(`Updating @${role.name}`);
-		roleLog(`Member(s) with role: ${Array.from(role.members).map(([id, m]) => `${m.user.username}#${m.user.tag} (${id})`).join(', ')}`);
+		roleLog(`Member(s) with role: ${Array.from(role.members).map(([id, m]) => `${m.user.tag} (${id})`).join(', ')}`);
 
 		// list of accounts to add the role to
 		let accounts: string[] = [];
@@ -91,7 +91,7 @@ export const execute = async (interaction: CommandInteraction) => {
 			if(accounts.includes(member.id)) accounts = accounts.filter(a => a !== member.id);
 			else
 			{
-				roleLog(`Removing role from ${member.user.username}#${member.user.tag}...`);
+				roleLog(`Removing role from ${member.user.tag}...`);
 				await member.roles.remove(role!);
 			}
 		}));
@@ -99,7 +99,7 @@ export const execute = async (interaction: CommandInteraction) => {
 		// add roles to users
 		await Promise.all(accounts.map(async a => {
 			const user = await interaction.guild!.members.fetch(a);
-			roleLog(`Adding role to ${user.user.username}#${user.user.tag}...`);
+			roleLog(`Adding role to ${user.user.tag}...`);
 			await user.roles.add(role!);
 		}));
 		
