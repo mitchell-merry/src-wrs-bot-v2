@@ -4,6 +4,7 @@ import * as SRC from "src-ts";
 
 import { DB } from "../../db";
 import { PlayerEntity } from "../../db/entities";
+import PaginatedList from "../menus/PaginatedList";
 import UserError from "../UserError";
 
 export const data = new SlashCommandBuilder()
@@ -65,27 +66,20 @@ async function remove(interaction: CommandInteraction) {
 
 async function list(interaction: CommandInteraction) {
 	const pRepo = DB.getRepository(PlayerEntity);
-
-	let msg = `The users with an association in this discord are:\n\`\`\`\n`;
-	
-	let count = 0;
-
+	await interaction.deferReply();	
 	await interaction.guild!.members.fetch();
-	const proms = interaction.guild!.members.cache.map(async member => {
+
+	const items = (await Promise.all(interaction.guild!.members.cache.map(async member => {
 		const playerEnt = await pRepo.findOne({ where: { guild_id: interaction.guildId!, discord_id: member.id } });
 		if(!playerEnt) return '';
 		
-		count++;
-		return `${member.displayName} - ${playerEnt.src_name} [${playerEnt.player_id}]`;
-	});
+		return `<@${member.id}> - ${playerEnt.src_name} [${playerEnt.player_id}]`;
+	}))).filter(l => l != '');
 
-	const lines = await Promise.all(proms);
+	if(items.length === 0) throw new UserError("This guild has no associations for players.");
 
-	msg += `${lines.filter(line => line != '').join('\n')}\n\`\`\``;
-
-	if(count === 0) msg = `There are no users associated with a speedrun.com account in this discord.`;
-
-	interaction.reply(msg);
+	new PaginatedList(items, 15, "This list has expired. Use /player list to sapwn a new one.")
+		.spawnMenu(interaction);
 }
 
 const subcommands: Record<string, (interaction: CommandInteraction) => Promise<void>> = { 
