@@ -18,6 +18,7 @@ import * as update from './update.command';
 import UserError from '../UserError';
 import { DB, isUserMod } from '../../db';
 import { TrackedLeaderboardEntity } from '../../db/entities';
+import SRCError from 'src-ts/lib/src/SRCError';
 
 export const commands = [ invite, modroles, set, player, leaderboard, update ] as CommandFile[];
 
@@ -50,15 +51,15 @@ export async function handleSlashCommand(interaction: CommandInteraction) {
 			components: []
 		};
 
-		if(error instanceof UserError) {
+		if(error instanceof UserError || error instanceof SRCError) {
 			msg.content = error.message;
 		} else {
 			console.error(error);
 		}
 
-		await (interaction.replied || interaction.deferred 
+		await (interaction.replied || interaction.deferred)
 			? interaction.editReply(msg) 
-			: interaction.reply(msg));
+			: interaction.reply(msg);
 	}
 }
 

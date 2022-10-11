@@ -37,15 +37,11 @@ async function add(interaction: CommandInteraction) {
 	if(!srcOpt || !userOpt) throw new UserError('src_account and user must be set.');
 
 	let exists = await pRepo.findOne({ where: { guild_id: interaction.guildId!, discord_id: userOpt.id } });
-
 	if(exists) throw new UserError(`This discord account is already associated with a speedrun.com account. [${exists.player_id}]`);
 
 	const player = await SRC.getUser(srcOpt);
 
-	if(SRC.isError(player)) throw new UserError(`The given speedrun.com account '${srcOpt}' could not be found.`);
-
 	exists = await pRepo.findOne({ where: { guild_id: interaction.guildId!, player_id: player.id } });
-
 	if(exists) throw new UserError(`This speedrun.com account is already associated with a discord account. [${exists.discord_id}]`);
 
 	const playerEnt = new PlayerEntity(interaction.guildId!, player.id, userOpt.id);
