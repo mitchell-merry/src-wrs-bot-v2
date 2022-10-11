@@ -3,6 +3,7 @@ import { APIInteractionGuildMember } from "discord-api-types/v9";
 import { GuildManager, GuildMember } from "discord.js";
 import { DataSource } from "typeorm";
 import { entities, GuildEntity, ModeratorRoleEntity } from "./entities";
+import { join } from 'path';
 
 export const DB = new DataSource({
 	type: "mysql",
@@ -13,7 +14,7 @@ export const DB = new DataSource({
 	database: process.env.MYSQL_DATABASE,
 	synchronize: (process.env.DB_SYNC === "true") || false,
 	entities,
-	migrations: [ 'src/db/migrations/*.ts' ]
+	migrations: [ join(__dirname, 'db', 'migrations', '*.{ts,js}') ]
 });
 
 export async function synchronizeGuilds(guilds: GuildManager) {
