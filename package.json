@@ -5,6 +5,7 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "node --experimental-specifier-resolution node build/index.js",
+		"bs": "npm run build && npm run start",
 		"dev": "tsnd --respawn --cache-directory ./cache -- src/index.ts",
 		"db:up": "docker-compose -f docker-compose.dev.yml up",
 		"db:stop": "docker-compose -f docker-compose.dev.yml stop",

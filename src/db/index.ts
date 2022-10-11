@@ -5,6 +5,7 @@ import { DataSource } from "typeorm";
 import { entities, GuildEntity, ModeratorRoleEntity } from "./entities";
 import { join } from 'path';
 
+const migrations = [ join(__dirname, 'migrations', '*.{ts,js}') ];
 export const DB = new DataSource({
 	type: "mysql",
 	host: process.env.DB_HOST || "localhost",
@@ -14,8 +15,10 @@ export const DB = new DataSource({
 	database: process.env.MYSQL_DATABASE,
 	synchronize: (process.env.DB_SYNC === "true") || false,
 	entities,
-	migrations: [ join(__dirname, 'db', 'migrations', '*.{ts,js}') ]
+	migrations
 });
+
+console.log(`Will look for migrations at \`${migrations}\`.`);
 
 export async function synchronizeGuilds(guilds: GuildManager) {
 	const guildRepo = DB.getRepository(GuildEntity);
