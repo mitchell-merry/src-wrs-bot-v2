@@ -36,7 +36,7 @@ async function add(interaction: CommandInteraction) {
 
 	if(!srcOpt || !userOpt) throw new UserError('src_account and user must be set.');
 
-	let exists = await pRepo.findOne({ where: { discord_id: userOpt.id } });
+	let exists = await pRepo.findOne({ where: { guild_id: interaction.guildId!, discord_id: userOpt.id } });
 
 	if(exists) throw new UserError(`This discord account is already associated with a speedrun.com account. [${exists.player_id}]`);
 
@@ -44,14 +44,14 @@ async function add(interaction: CommandInteraction) {
 
 	if(SRC.isError(player)) throw new UserError(`The given speedrun.com account '${srcOpt}' could not be found.`);
 
-	exists = await pRepo.findOne({ where: { player_id: player.id } });
+	exists = await pRepo.findOne({ where: { guild_id: interaction.guildId!, player_id: player.id } });
 
 	if(exists) throw new UserError(`This speedrun.com account is already associated with a discord account. [${exists.discord_id}]`);
 
-	const playerEnt = new PlayerEntity(player.id, userOpt.id);
+	const playerEnt = new PlayerEntity(interaction.guildId!, player.id, userOpt.id);
 	playerEnt.src_name = player.names.international;
 	await pRepo.save(playerEnt);
-	interaction.reply(`Added association for ${userOpt.username} to the speedrun.com account ${player.names.international} [${player.id}]`);
+	await interaction.reply(`Added association for ${userOpt.username} to the speedrun.com account ${player.names.international} [${player.id}]`);
 }
 
 async function remove(interaction: CommandInteraction) {
@@ -60,11 +60,11 @@ async function remove(interaction: CommandInteraction) {
 	const userOpt = interaction.options.getUser('user');
 	if(!userOpt) throw new UserError('The option user must be set.');
 
-	let exists = await pRepo.findOne({ where: { discord_id: userOpt.id } });
+	let exists = await pRepo.findOne({ where: { guild_id: interaction.guildId!, discord_id: userOpt.id } });
 	if(!exists) throw new UserError(`This discord account is not associated with a speedrun.com account.`);
 
 	await pRepo.remove(exists);
-	interaction.reply(`Association for ${userOpt.username} [${userOpt.id}] removed!`)
+	await interaction.reply(`Association for ${userOpt.username} [${userOpt.id}] removed!`)
 }
 
 async function list(interaction: CommandInteraction) {
@@ -76,7 +76,7 @@ async function list(interaction: CommandInteraction) {
 
 	await interaction.guild!.members.fetch();
 	const proms = interaction.guild!.members.cache.map(async member => {
-		const playerEnt = await pRepo.findOne({ where: { discord_id: member.id } });
+		const playerEnt = await pRepo.findOne({ where: { guild_id: interaction.guildId!, discord_id: member.id } });
 		if(!playerEnt) return '';
 		
 		count++;

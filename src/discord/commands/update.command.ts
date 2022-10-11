@@ -75,7 +75,7 @@ export const execute = async (interaction: CommandInteraction) => {
 			lblog(`Found WR holder(s) (sr.c): ${srcPlayerIds.join(', ')}`);
 
 			const discPlayerIDs = (await Promise.all(srcPlayerIds.map(async id => 
-				await pRepo.findOne({ where: { player_id: id }})
+				await pRepo.findOne({ where: { guild_id: interaction.guildId!, player_id: id }})
 			))).filter((p): p is PlayerEntity => p !== null).map(p => p.discord_id);
 			lblog(`Found WR holder(s) (discord): ${discPlayerIDs.join(', ')}`);
 			
