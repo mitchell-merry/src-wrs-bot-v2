@@ -78,7 +78,7 @@ async function list(interaction: CommandInteraction) {
 
 	if(items.length === 0) throw new UserError("This guild has no associations for players.");
 
-	new PaginatedList(items, 15, "This list has expired. Use /player list to sapwn a new one.")
+	await new PaginatedList(items, 15, "This list has expired. Use /player list to sapwn a new one.")
 		.spawnMenu(interaction);
 }
 

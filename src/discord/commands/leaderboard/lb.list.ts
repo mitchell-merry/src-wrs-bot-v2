@@ -20,6 +20,6 @@ export async function list(interaction: CommandInteraction) {
 		return `${tlb.leaderboard.lb_name} - <@&${role?.id}>`;
 	});
 
-	new PaginatedList(items, 15, "This list has expired. Use /leaderboard list to spawn a new one.")
+	await new PaginatedList(items, 15, "This list has expired. Use /leaderboard list to spawn a new one.")
 		.spawnMenu(interaction);
 }
