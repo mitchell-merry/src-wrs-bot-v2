@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { APIInteractionGuildMember } from "discord-api-types/v9";
 import { GuildManager, GuildMember } from "discord.js";
 import { DataSource } from "typeorm";
@@ -12,6 +13,7 @@ export const DB = new DataSource({
 	database: process.env.MYSQL_DATABASE,
 	synchronize: (process.env.DB_SYNC === "true") || false,
 	entities,
+	migrations: [ 'src/db/migrations/*.ts' ]
 });
 
 export async function synchronizeGuilds(guilds: GuildManager) {
