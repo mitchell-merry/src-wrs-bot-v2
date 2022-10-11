@@ -19,7 +19,6 @@ export default class PaginatedList {
 		this.items.forEach(item => {
 			const lastPage = this.pages.at(-1)!;
 			const pageLength = lastPage.reduce((prev, curr) => prev + curr.length, 0);
-			console.log(lastPage.length);
 			
 			if (lastPage.length >= this.pageSize || pageLength + item.length > MESSAGE_LIMIT) this.pages.push([item]);
 			else lastPage.push(item);
@@ -47,7 +46,7 @@ export default class PaginatedList {
 			
 			// listen for button
 			r = await message.awaitMessageComponent({ filter: i => i.user.id === interaction.user.id, time: 300000 })
-				.catch(r => {throw new UserError(this.expireMessage)});
+				.catch(_ => {throw new UserError(this.expireMessage)});
 
 			switch(r.customId) {
 				case(`left_all`): this.currentPage = 0; break;
