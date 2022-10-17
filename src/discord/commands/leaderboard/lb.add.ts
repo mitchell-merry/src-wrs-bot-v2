@@ -57,7 +57,7 @@ export async function add(interaction: CommandInteraction) {
 	const level = catType === 'per-level' ? await selectLevel(interaction, gameObj.levels.data) : undefined;
 
 	const category = await selectCategory(interaction, gameObj.categories.data, catType);
-	const variables = await selectVariables(interaction, category, level);
+	const variables = await selectVariables(interaction, category.variables.data, level);
 
 	// build leaderboard name
 	const labels = variables.map(([subcat, v]) => subcat.values.values[v].label);
