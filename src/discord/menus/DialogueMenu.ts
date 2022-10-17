@@ -60,7 +60,10 @@ export default class DialogueMenu {
 
 		// deal with menu
 		if (action === "NEW_DELETE") await menuMessage.delete();
-		else await menuMessage.edit(`The selected option was "${this.options.find(o => o.id === choice)?.label ?? "UNKNOWN"}"`);
+		else await menuMessage.edit({
+			content: `The selected option was "${this.options.find(o => o.id === choice)?.label ?? "UNKNOWN"}"`,
+			components: []
+		});
 
 		return choice;
 	}
