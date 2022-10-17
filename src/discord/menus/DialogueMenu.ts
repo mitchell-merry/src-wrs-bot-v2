@@ -58,15 +58,17 @@ export default class DialogueMenu {
 		else if (r.isSelectMenu()) choice = r.values[0];
 		else throw new Error(`Unexpected interaction type: ${r.componentType}`);
 
+		let choiceLabel = this.options.find(o => o.id === choice)!.label;
+		
 		// deal with menu
 		if (action === "NEW_DELETE") await menuMessage.delete();
 		else if (action === "REPLY_NO_EDIT") await menuMessage.edit({ components: [] });
 		else await menuMessage.edit({
-			content: `The selected option was "${this.options.find(o => o.id === choice)?.label ?? "UNKNOWN"}"`,
+			content: `The selected option was "${choiceLabel}"`,
 			components: []
 		});
 
-		return choice;
+		return [ choice, choiceLabel ];
 	}
 
 	private getComponents() {
