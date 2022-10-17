@@ -54,9 +54,9 @@ export async function add(interaction: CommandInteraction) {
 	// get leaderboard info from user
 	// choose if levels
 	const catType = await selectType(interaction);
-	const level = catType === 'per-level' ? await selectLevel(interaction, gameObj) : undefined;
+	const level = catType === 'per-level' ? await selectLevel(interaction, gameObj.levels.data) : undefined;
 
-	const category = await selectCategory(interaction, gameObj, catType);
+	const category = await selectCategory(interaction, gameObj.categories.data, catType);
 	const variables = await selectVariables(interaction, category, level);
 
 	// build leaderboard name
@@ -117,35 +117,24 @@ async function selectType(interaction: CommandInteraction): Promise<SRC.Category
 	return choice;
 }
 
-async function selectLevel(interaction: CommandInteraction, game: SRC.Game<'levels'>): Promise<SRC.Level> {
-	const levelData = game.levels.data;
-
+async function selectLevel(interaction: CommandInteraction, levels: SRC.Level[]): Promise<SRC.Level> {
 	// Make level menu to get the level of the leaderboard
-	const levelNames = levelData.map(level => ({ value: level.id, label: level.name }));
-	const menu = buildMenu(levelNames, game.id);
-	const [message, choiceInt] = await sendMenu(interaction, `Choose a level:`, [ menu ]);
-	let levelId = getResponse(choiceInt);
-	const level = levelData.find(c => c.id === levelId)!;
+	const levelOptions = levels.map(level => ({ id: level.id, label: level.name }));
+	const levelId = await new DialogueMenu(`Choose a level:`, levelOptions, "PRIMARY").spawnMenu(interaction, "NEW_DELETE");
+	const level = levels.find(c => c.id === levelId)!;
 
 	await interaction.editReply({ content: `Selected the level ${level.name} [${level.id}]`, components: [] });
-	await message.delete();
 
 	return level;
 }
 
-async function selectCategory(interaction: CommandInteraction, game: SRC.Game<'categories.variables'>, type: SRC.CategoryType): Promise<SRC.Category<"variables">> {
-	// Get category from menu
-	const catData = game.categories.data;
-
+async function selectCategory(interaction: CommandInteraction, categories: SRC.Category<'variables'>[], type: SRC.CategoryType): Promise<SRC.Category<"variables">> {
 	// Make category menu to get the category of the leaderboard
-	const catNames = catData.filter(cat => cat.type === type).map(cat => ({ value: cat.id, label: cat.name }));
-	const menu = buildMenu(catNames, game.id);
-	const [message, choiceInt] = await sendMenu(interaction, `Choose a category:`, [ menu ]);
-	let categoryId = getResponse(choiceInt);
-	const category = catData.find(c => c.id === categoryId)!;
+	const categoryOptions = categories.filter(cat => cat.type === type).map(cat => ({ id: cat.id, label: cat.name }));
+	const categoryId = await new DialogueMenu(`Choose a category:`, categoryOptions, "PRIMARY").spawnMenu(interaction, "NEW_DELETE");
+	const category = categories.find(c => c.id === categoryId)!;
 
 	await interaction.editReply({ content: `Selected the category ${category.name} [${category.id}]`, components: [] });
-	await message.delete();
 
 	return category;
 }
