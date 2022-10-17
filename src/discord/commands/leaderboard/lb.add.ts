@@ -3,6 +3,7 @@ import * as SRC from "src-ts";
 
 import { DB } from "../../../db";
 import { GuildEntity, LeaderboardEntity, TrackedLeaderboardEntity, VariableEntity } from "../../../db/entities";
+import DialogueMenu from "../../menus/DialogueMenu";
 import UserError from "../../UserError";
 import { buildMenu, getResponse, sendMenu } from "../../util";
 
@@ -88,12 +89,19 @@ export async function add(interaction: CommandInteraction) {
 }
 
 async function selectType(interaction: CommandInteraction): Promise<SRC.CategoryType> {
-	const menu = buildMenu([{ value: 'per-game', label: "Full-game" }, { value: 'per-level', label: "Level" }], 'isLevel');
-	const [message, choiceInt] = await sendMenu(interaction, `Is the leaderboard a full-game or level category?`, [ menu ]);
-	const choice = getResponse(choiceInt) as SRC.CategoryType;
+	const types = [{
+		id: 'per-game',
+		label: "Full-game"
+	}, { 
+		id: 'per-level',
+		label: "Level"
+	}];
 
-	await interaction.editReply({ content: `Selected ${choice}...`, components: [] });
-	await message.delete();
+	const choice = (await
+		new DialogueMenu(`Is the leaderboard a full-game or level category?`, types, "PRIMARY")
+		.spawnMenu(interaction, "NEW_DELETE")) as SRC.CategoryType;
+
+	await interaction.editReply({ content: `Selected "${types.find(t => t.id === choice)!.label}"...`, components: [] });
 
 	return choice;
 }
