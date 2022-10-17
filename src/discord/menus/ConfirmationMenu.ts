@@ -1,6 +1,6 @@
 import DialogueMenu from "./DialogueMenu";
 
-export default class ConfirmationMenu extends DialogueMenu {
+export default class ConfirmationMenu extends DialogueMenu<"YES" | "NO"> {
 	constructor(message: string, yes: string = "Yes", no: string = "No") {
 		super(message, [{
 			id: "YES",
