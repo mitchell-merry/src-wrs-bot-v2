@@ -16,9 +16,12 @@ export default class DialogueMenu {
 	private options: DialogueOption[];
 	private defaultStyle: InteractionButtonOptions['style'];
 
-	constructor(content: string, options: DialogueOption[], defaultStyle: InteractionButtonOptions['style'] = "SECONDARY") {
+	constructor(content: string, options: DialogueOption[] | Record<string, string>, defaultStyle: InteractionButtonOptions['style'] = "SECONDARY") {
 		this.content = content;
-		this.options = options;
+		
+		if (Array.isArray(options)) this.options = options;
+		else this.options = Object.entries(options).map(([k, v]) => ({ id: k, label: v }));
+
 		this.defaultStyle = defaultStyle;
 	}
 
