@@ -139,25 +139,17 @@ async function selectCategory(interaction: CommandInteraction, categories: SRC.C
 	return category;
 }
 
-async function selectVariables(interaction: CommandInteraction, categoryObj: SRC.Category<'variables'>, levelObj?: SRC.Level): Promise<[SRC.Variable, string][]> {
+async function selectVariables(interaction: CommandInteraction, variables: SRC.Variable[], level?: SRC.Level): Promise<[SRC.Variable, string][]> {
 	
-	return Promise.all(categoryObj.variables.data
-		.filter(v => v['is-subcategory'])
-		.filter(v => levelObj === undefined 
+	return Promise.all(variables.filter(SRC.variableIsSubcategory)
+		.filter(v => level === undefined 
 			|| v.scope.type === 'all-levels'
-			|| (v.scope.type === 'single-level' && v.scope.level === levelObj.id)
+			|| (v.scope.type === 'single-level' && v.scope.level === level.id)
 		).map(async subcat => {
 			const options = Object.entries(subcat.values.values)
-				.map(([k, v]) => ({ value: k, label: v.label }));
+				.map(([k, v]) => ({ id: k, label: v.label }));
 
-			const menu = buildMenu(options, subcat.id);
-			const [message, r] = await sendMenu(interaction,
-				`Choose a value for the variable ${subcat.name}:`, [ menu ]);
-
-			await message.delete();
-
-			const value = getResponse(r);
-
+			const value = await new DialogueMenu(`Choose a value for the variable ${subcat.name}:`, options, "PRIMARY").spawnMenu(interaction, "NEW_DELETE");
 			return [ subcat, value ];
 		})
 	);
