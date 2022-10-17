@@ -1,8 +1,8 @@
 import { CommandInteraction, EmojiResolvable, InteractionButtonOptions, Message, MessageActionRow, MessageButton, MessageButtonStyle, MessageSelectMenu } from "discord.js";
 import UserError from "../UserError";
 
-export interface DialogueOption {
-	id: string;
+export interface DialogueOption<T extends string = string> {
+	id: T;
 	label: string;
 	style?: InteractionButtonOptions['style'];
 	emoji?: EmojiResolvable;
@@ -11,12 +11,12 @@ export interface DialogueOption {
 
 export type SpawnAction = "REPLY" | "REPLY_NO_EDIT" | "NEW_DELETE" | "NEW_STAY";
 
-export default class DialogueMenu {
+export default class DialogueMenu<T extends string = string> {
 	private content: string;
 	private options: DialogueOption[];
 	private defaultStyle: InteractionButtonOptions['style'];
 
-	constructor(content: string, options: DialogueOption[] | Record<string, string>, defaultStyle: InteractionButtonOptions['style'] = "SECONDARY") {
+	constructor(content: string, options: DialogueOption<T>[] | Record<string, T>, defaultStyle: InteractionButtonOptions['style'] = "SECONDARY") {
 		this.content = content;
 		
 		if (Array.isArray(options)) this.options = options;
@@ -25,7 +25,7 @@ export default class DialogueMenu {
 		this.defaultStyle = defaultStyle;
 	}
 
-	public async spawnMenu(interaction: CommandInteraction, action: SpawnAction, timeout: number = 300000) {
+	public async spawnMenu(interaction: CommandInteraction, action: SpawnAction, timeout: number = 300000): Promise<[T, string]> {
 		// get the components of the menu (buttons / select menu for > 5 items)
 		const components = this.getComponents();
 
@@ -56,9 +56,9 @@ export default class DialogueMenu {
 		});
 
 		// get the choice
-		let choice: string;
-		if (r.isButton()) choice = r.customId
-		else if (r.isSelectMenu()) choice = r.values[0];
+		let choice: T;
+		if (r.isButton()) choice = r.customId as T;
+		else if (r.isSelectMenu()) choice = r.values[0] as T;
 		else throw new Error(`Unexpected interaction type: ${r.componentType}`);
 
 		let choiceLabel = this.options.find(o => o.id === choice)!.label;
