@@ -1,6 +1,8 @@
 import { CommandInteraction, User } from "discord.js";
+import { FindOneOptions } from "typeorm";
 import { DB } from "../../../db";
 import { LeaderboardEntity, TrackedLeaderboardEntity } from "../../../db/entities";
+import ConfirmationMenu from "../../menus/ConfirmationMenu";
 import UserError from "../../UserError";
 
 export async function remove(interaction: CommandInteraction) {
@@ -16,9 +18,16 @@ export async function remove(interaction: CommandInteraction) {
 	const lb = await lbRepo.findOne(lbCrit);
 	if(!lb) throw new UserError(`That leaderboard does not exist.`);
 
-	const tlbCriteria = { where: { guild_id: interaction.guildId!, lb_id } }
+	const tlbCriteria = { where: { guild_id: interaction.guildId!, lb_id }, relations: { leaderboard: true } };
 	const tlb = await tlbRepo.findOne(tlbCriteria);
 	if(!tlb) throw new UserError(`This guild does not track the given leaderboard.`);
+
+	const message = delete_role
+		? `This will remove tracking for the leaderboard ${tlb.leaderboard.lb_name} in this guild, and delete the associated role <@&${tlb.role_id}>. Are you sure you want to do this?`
+		: `This will remove tracking for the leaderboard ${tlb.leaderboard.lb_name} in this guild, and keep the associated role <@&${tlb.role_id}>. Are you sure you want to do this?`;
+	
+	const confirm = await new ConfirmationMenu(message).spawnMenu(interaction, "REPLY");
+	if (confirm === "NO") throw new UserError("Exiting menu.");
 
 	if(delete_role) {
 		const boardsWithRole = await tlbRepo.find({ where: { role_id: tlb.role_id } });
