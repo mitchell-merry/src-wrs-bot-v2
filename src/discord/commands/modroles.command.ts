@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
 import { DB } from "../../db";
 import { ModeratorRoleEntity } from "../../db/entities";
+import PaginatedList from "../menus/PaginatedList";
 import UserError from "../UserError";
 
 export const data = new SlashCommandBuilder()
@@ -53,26 +54,15 @@ async function remove(interaction: CommandInteraction) {
 
 async function list(interaction: CommandInteraction) {
 	const mrRepo = DB.getRepository(ModeratorRoleEntity);
+	await interaction.deferReply();	
 
 	const guildRoles = await mrRepo.find({ where: { guild_id: interaction.guildId! } });
-	
-	if(guildRoles.length === 0)
-	{
-		interaction.reply(`This guild has no moderator roles.`);
-		return;
-	}
+	if(guildRoles.length === 0) throw new UserError(`This guild has no moderator roles.`);
 
-	let msg = `This guild has ${guildRoles.length} modrole(s): \n\`\`\`\n`;
+	const items = guildRoles.map(role => `<@&${role.role_id}> [${role.role_id}]`);
 
-	msg += guildRoles.map(role => {
-		const roleDiscordObj = interaction.guild!.roles.cache.get(role.role_id);
-		if(!roleDiscordObj?.name) return `${role.role_id} does not exist.`;
-		
-		return `${roleDiscordObj.name} [${role.role_id}]`;
-	}).join('\n');
-
-	msg += `\n\`\`\``;
-	interaction.reply(msg);
+	await new PaginatedList(items, 15, "This list has expired. Use /modroles list to spawn a new one.")
+		.spawnMenu(interaction);
 }
 
 const subcommands: Record<string, (interaction: CommandInteraction) => Promise<void>> = { 
