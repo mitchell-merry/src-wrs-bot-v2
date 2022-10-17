@@ -6,7 +6,6 @@ import { GuildEntity, LeaderboardEntity, TrackedLeaderboardEntity, VariableEntit
 import ConfirmationMenu from "../../menus/ConfirmationMenu";
 import DialogueMenu from "../../menus/DialogueMenu";
 import UserError from "../../UserError";
-import { buildMenu, getResponse, sendMenu } from "../../util";
 
 const gameRegex = /^\w+$/;
 
