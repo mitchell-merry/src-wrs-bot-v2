@@ -16,7 +16,7 @@ export default class DialogueMenu<T extends string = string> {
 	private options: DialogueOption[];
 	private defaultStyle: InteractionButtonOptions['style'];
 
-	constructor(content: string, options: DialogueOption<T>[] | Record<string, T>, defaultStyle: InteractionButtonOptions['style'] = "SECONDARY") {
+	constructor(content: string, options: readonly DialogueOption<T>[] | Record<string, T>, defaultStyle: InteractionButtonOptions['style'] = "SECONDARY") {
 		this.content = content;
 		
 		if (Array.isArray(options)) this.options = options;
