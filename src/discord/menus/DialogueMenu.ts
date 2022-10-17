@@ -9,7 +9,7 @@ export interface DialogueOption {
 	disabled?: boolean;
 }
 
-export type SpawnAction = "REPLY" | "NEW_DELETE" | "NEW_STAY";
+export type SpawnAction = "REPLY" | "REPLY_NO_EDIT" | "NEW_DELETE" | "NEW_STAY";
 
 export default class DialogueMenu {
 	private content: string;
@@ -36,7 +36,7 @@ export default class DialogueMenu {
 
 		// depending on the action, either reply / edit the reply to the interaction,
 		// or send a new message in the same channel
-		if (action === "REPLY") {
+		if (action === "REPLY" || action === "REPLY_NO_EDIT") {
 			menuMessage = await ((interaction.replied || interaction.deferred)
 				? interaction.editReply(messageOptions) 
 				: interaction.reply(messageOptions)) as Message;
@@ -60,6 +60,7 @@ export default class DialogueMenu {
 
 		// deal with menu
 		if (action === "NEW_DELETE") await menuMessage.delete();
+		else if (action === "REPLY_NO_EDIT") await menuMessage.edit({ components: [] });
 		else await menuMessage.edit({
 			content: `The selected option was "${this.options.find(o => o.id === choice)?.label ?? "UNKNOWN"}"`,
 			components: []

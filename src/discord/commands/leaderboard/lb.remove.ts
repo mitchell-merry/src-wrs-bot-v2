@@ -1,5 +1,4 @@
 import { CommandInteraction, User } from "discord.js";
-import { FindOneOptions } from "typeorm";
 import { DB } from "../../../db";
 import { LeaderboardEntity, TrackedLeaderboardEntity } from "../../../db/entities";
 import ConfirmationMenu from "../../menus/ConfirmationMenu";
@@ -26,7 +25,7 @@ export async function remove(interaction: CommandInteraction) {
 		? `This will remove tracking for the leaderboard ${tlb.leaderboard.lb_name} in this guild, and delete the associated role <@&${tlb.role_id}>. Are you sure you want to do this?`
 		: `This will remove tracking for the leaderboard ${tlb.leaderboard.lb_name} in this guild, and keep the associated role <@&${tlb.role_id}>. Are you sure you want to do this?`;
 	
-	const confirm = await new ConfirmationMenu(message).spawnMenu(interaction, "REPLY");
+	const confirm = await new ConfirmationMenu(message).spawnMenu(interaction, "REPLY_NO_EDIT");
 	if (confirm === "NO") throw new UserError("Exiting menu.");
 
 	if(delete_role) {
