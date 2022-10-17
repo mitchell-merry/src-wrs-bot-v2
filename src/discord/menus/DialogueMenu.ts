@@ -67,7 +67,7 @@ export default class DialogueMenu {
 
 	private getComponents() {
 		const row = this.options.length <= 5 
-			? this.options.map(this.buildButton)
+			? this.options.map(o => this.buildButton(o))
 			: [ this.buildSelect(this.options) ];
 		return [ new MessageActionRow().addComponents(row) ];
 	}
