@@ -3,6 +3,7 @@ import * as SRC from "src-ts";
 
 import { DB } from "../../../db";
 import { GuildEntity, LeaderboardEntity, TrackedLeaderboardEntity, VariableEntity } from "../../../db/entities";
+import ConfirmationMenu from "../../menus/ConfirmationMenu";
 import DialogueMenu from "../../menus/DialogueMenu";
 import UserError from "../../UserError";
 import { buildMenu, getResponse, sendMenu } from "../../util";
@@ -68,6 +69,16 @@ export async function add(interaction: CommandInteraction) {
 	{
 		throw new UserError(`This guild is already tracking the leaderboard ${lb_name}.`);
 	}
+
+	// confirm with the user that this is the action we want to take
+	const message = roleOpt
+		? `This will track the leaderboard ${lb_name} in this guild with the role <@&${roleOpt.id}>. Are you sure you wish to do this?`
+		: guildEnt.above_role_id === ''
+			? `This will track the leaderboard ${lb_name} in this guild with a new role. Are you sure you wish to do this?`
+			: `This will track the leaderboard ${lb_name} in this guild with a new role, created above <@&${guildEnt.above_role_id}>. Are you sure you wish to do this?`;
+	
+	const confirmation = await new ConfirmationMenu(message).spawnMenu(interaction, "NEW_DELETE");
+	if (confirmation === "NO") throw new UserError('Exited menu!');
 
 	// @ts-ignore create role if one was not provided
 	let role: Role | null = roleOpt;
