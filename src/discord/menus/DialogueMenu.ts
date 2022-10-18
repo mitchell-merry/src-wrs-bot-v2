@@ -44,8 +44,7 @@ export default class DialogueMenu<T extends string = string> {
 				? interaction.editReply(messageOptions) 
 				: interaction.reply(messageOptions)) as Message;
 		} else if (action === "NEW_REPLY") {
-			const intMessage = await interaction.fetchReply() as Message;
-			menuMessage = await intMessage.reply(messageOptions);
+			menuMessage = await interaction.followUp(messageOptions) as Message;
 		} else {
 			menuMessage = await interaction.channel!.send(messageOptions) as Message;
 		}
