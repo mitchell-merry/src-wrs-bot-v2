@@ -29,7 +29,7 @@ async function above_role(interaction: CommandInteraction, guildEnt: GuildEntity
 	
 	guildEnt.above_role_id = role.id;
 	await gRepo.save(guildEnt);
-	await interaction.reply(`above_role set to ${role.name} [${role.id}].`);
+	await interaction.reply(`above_role set to <@&${role.id}>.`);
 }
 
 async function role_default_colour(interaction: CommandInteraction, guildEnt: GuildEntity) {
