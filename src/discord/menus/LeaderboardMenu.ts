@@ -74,15 +74,22 @@ export default class LeaderboardMenu {
 	}
 
 	public async selectVariables(interaction: CommandInteraction, message: string, variables: SRC.Variable[], level?: SRC.Level): Promise<[SRC.Variable, string][]> {
+		const selectedVariables: string[] = [];
+
 		return Promise.all(variables.filter(SRC.variableIsSubcategory)
 			.filter(v => level === undefined 
+				|| v.scope.type === 'global'
 				|| v.scope.type === 'all-levels'
 				|| (v.scope.type === 'single-level' && v.scope.level === level.id)
 			).map(async subcat => {
 				const options = Object.entries(subcat.values.values)
 					.map(([k, v]) => ({ id: k, label: v.label }));
 	
-				const [ value ] = await new DialogueMenu(`Choose a value for the variable ${subcat.name}:`, options).spawnMenu(interaction, "NEW_REPLY");
+				const [ value, valueLabel ] = await new DialogueMenu(`Choose a value for the variable ${subcat.name}:`, options).spawnMenu(interaction, "NEW_REPLY");
+				
+				selectedVariables.push(`Selected the value ${valueLabel} [${value}] for variable ${subcat.name} [${subcat.id}].`);
+				interaction.editReply(`${message}\n${selectedVariables.join('\n')}`);
+				
 				return [ subcat, value ];
 			})
 		);
