@@ -38,7 +38,7 @@ export async function add(interaction: CommandInteraction) {
 	}
 
 	// check we have permission to create/manage a role at this permission
-	if(position != 1 && interaction.guild!.me!.roles.highest.position < position) {
+	if(interaction.guild!.me!.roles.highest.position < position) {
 		throw new UserError(`Bot does not have permission to create/manage a role at this position. Give the bot a role higher than \`@${errorRoleName}\` [${interaction.guild!.me!.roles.highest.position}, ${position}].`);
 	}
 
