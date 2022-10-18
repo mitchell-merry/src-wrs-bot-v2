@@ -1,4 +1,4 @@
-import { CommandInteraction, EmojiResolvable, InteractionButtonOptions, Message, MessageActionRow, MessageButton, MessageButtonStyle, MessageSelectMenu } from "discord.js";
+import { CommandInteraction, EmojiResolvable, InteractionButtonOptions, Message, MessageActionRow, MessageButton, MessageButtonStyle, MessageComponentInteraction, MessageSelectMenu } from "discord.js";
 import UserError from "../UserError";
 
 export interface DialogueOption<T extends string = string> {
@@ -25,7 +25,7 @@ export default class DialogueMenu<T extends string = string> {
 		this.defaultStyle = defaultStyle;
 	}
 
-	public async spawnMenu(interaction: CommandInteraction, action: SpawnAction, timeout: number = 300000): Promise<[T, string]> {
+	public async spawnMenu(interaction: CommandInteraction, action: SpawnAction, mci?: MessageComponentInteraction, timeout: number = 300000): Promise<[T, string, MessageComponentInteraction]> {
 		// get the components of the menu (buttons / select menu for > 5 items)
 		const components = this.getComponents();
 
@@ -40,9 +40,14 @@ export default class DialogueMenu<T extends string = string> {
 		// depending on the action, either reply / edit the reply to the interaction,
 		// or send a new message in the same channel
 		if (action === "EDIT_REPLY") {
-			menuMessage = await ((interaction.replied || interaction.deferred)
-				? interaction.editReply(messageOptions) 
-				: interaction.reply(messageOptions)) as Message;
+			if (mci && !mci.replied && !mci.deferred) {
+				menuMessage = await interaction.fetchReply() as Message;
+				await mci.update(messageOptions);
+			} else {
+				menuMessage = await ((interaction.replied || interaction.deferred)
+					? interaction.editReply(messageOptions) 
+					: interaction.reply(messageOptions)) as Message;
+			}
 		} else if (action === "NEW_REPLY") {
 			menuMessage = await interaction.followUp(messageOptions) as Message;
 		} else {
@@ -69,7 +74,7 @@ export default class DialogueMenu<T extends string = string> {
 		if (action === "NEW_MESSAGE" || action === "NEW_REPLY") await menuMessage.delete();
 		else await menuMessage.edit({ components: [] });
 
-		return [ choice, choiceLabel ];
+		return [ choice, choiceLabel, r ];
 	}
 
 	private getComponents() {

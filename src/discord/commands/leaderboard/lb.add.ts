@@ -5,6 +5,7 @@ import { DB } from "../../../db";
 import { GuildEntity, LeaderboardEntity, TrackedLeaderboardEntity, VariableEntity } from "../../../db/entities";
 import ConfirmationMenu from "../../menus/ConfirmationMenu";
 import DialogueMenu from "../../menus/DialogueMenu";
+import LeaderboardMenu from "../../menus/LeaderboardMenu";
 import UserError from "../../UserError";
 
 const gameRegex = /^\w+$/;
@@ -47,23 +48,14 @@ export async function add(interaction: CommandInteraction) {
 
 	await interaction.deferReply();
 
-	// get game object from speedrun.com
-	const gameObj = await SRC.getGame<'categories.variables,levels'>(gameOpt, { embed: 'categories.variables,levels' });
-
-	// get leaderboard info from user
-	// choose if levels
-	const catType = await selectType(interaction);
-	const level = catType === 'per-level' ? await selectLevel(interaction, gameObj.levels.data) : undefined;
-
-	const category = await selectCategory(interaction, gameObj.categories.data, catType);
-	const variables = await selectVariables(interaction, category.variables.data, level);
+	const [{ game, category, variables, level }, mci] = await new LeaderboardMenu().spawnMenu(interaction, gameOpt)
 
 	// build leaderboard name
 	const labels = variables.map(([subcat, v]) => subcat.values.values[v].label);
-	const lb_name = SRC.buildLeaderboardName(gameObj.names.international, category.name, labels, level?.name);
+	const lb_name = SRC.buildLeaderboardName(game.names.international, category.name, labels, level?.name);
 
 	// here we should check for dupes
-	let board = await LeaderboardEntity.exists(gameObj.id, category.id, variables, level?.id);
+	let board = await LeaderboardEntity.exists(game.id, category.id, variables, level?.id);
 	if(board && board.trackedLeaderboards.find(tlb => tlb.guild_id === interaction.guildId && tlb.lb_id === board!.lb_id))
 	{
 		throw new UserError(`This guild is already tracking the leaderboard ${lb_name}.`);
@@ -76,7 +68,7 @@ export async function add(interaction: CommandInteraction) {
 			? `This will track the leaderboard ${lb_name} in this guild with a new role. Are you sure you wish to do this?`
 			: `This will track the leaderboard ${lb_name} in this guild with a new role, created above <@&${guildEnt.above_role_id}>. Are you sure you wish to do this?`;
 	
-	const [ confirmation ] = await new ConfirmationMenu(message).spawnMenu(interaction, "NEW_MESSAGE");
+	const [ confirmation ] = await new ConfirmationMenu(message).spawnMenu(interaction, "EDIT_REPLY", mci);
 	if (confirmation === "NO") throw new UserError('Exited menu!');
 
 	// @ts-ignore create role if one was not provided
@@ -88,7 +80,7 @@ export async function add(interaction: CommandInteraction) {
 
 	// save new leaderboard in database
 	if(!board) {
-		board = new LeaderboardEntity(gameObj.id, category.id, lb_name, level?.id);
+		board = new LeaderboardEntity(game.id, category.id, lb_name, level?.id);
 		board.variables = variables.map(([subcat, v]) => new VariableEntity(board!, subcat.id, v));	
 		board.trackedLeaderboards = [];
 	}
@@ -96,60 +88,4 @@ export async function add(interaction: CommandInteraction) {
 	await lRepo.save(board);
 
 	interaction.editReply({ content: `Added the leaderboard ${lb_name}.`, components: [] });
-}
-
-async function selectType(interaction: CommandInteraction): Promise<SRC.CategoryType> {
-	const types = [{
-		id: 'per-game',
-		label: "Full-game"
-	}, { 
-		id: 'per-level',
-		label: "Level"
-	}] as const;
-
-	const [ choice, name ] = (await
-		new DialogueMenu<SRC.CategoryType>(`Is the leaderboard a full-game or level category?`, types, "PRIMARY")
-		.spawnMenu(interaction, "NEW_MESSAGE"));
-
-	await interaction.editReply({ content: `Selected "${name}"...`, components: [] });
-
-	return choice;
-}
-
-async function selectLevel(interaction: CommandInteraction, levels: SRC.Level[]): Promise<SRC.Level> {
-	// Make level menu to get the level of the leaderboard
-	const levelOptions = levels.map(level => ({ id: level.id, label: level.name }));
-	const [ levelId ] = await new DialogueMenu(`Choose a level:`, levelOptions, "PRIMARY").spawnMenu(interaction, "NEW_MESSAGE");
-	const level = levels.find(c => c.id === levelId)!;
-
-	await interaction.editReply({ content: `Selected the level ${level.name} [${level.id}]`, components: [] });
-
-	return level;
-}
-
-async function selectCategory(interaction: CommandInteraction, categories: SRC.Category<'variables'>[], type: SRC.CategoryType): Promise<SRC.Category<"variables">> {
-	// Make category menu to get the category of the leaderboard
-	const categoryOptions = categories.filter(cat => cat.type === type).map(cat => ({ id: cat.id, label: cat.name }));
-	const [ categoryId ] = await new DialogueMenu(`Choose a category:`, categoryOptions, "PRIMARY").spawnMenu(interaction, "NEW_MESSAGE");
-	const category = categories.find(c => c.id === categoryId)!;
-
-	await interaction.editReply({ content: `Selected the category ${category.name} [${category.id}]`, components: [] });
-
-	return category;
-}
-
-async function selectVariables(interaction: CommandInteraction, variables: SRC.Variable[], level?: SRC.Level): Promise<[SRC.Variable, string][]> {
-	
-	return Promise.all(variables.filter(SRC.variableIsSubcategory)
-		.filter(v => level === undefined 
-			|| v.scope.type === 'all-levels'
-			|| (v.scope.type === 'single-level' && v.scope.level === level.id)
-		).map(async subcat => {
-			const options = Object.entries(subcat.values.values)
-				.map(([k, v]) => ({ id: k, label: v.label }));
-
-			const [ value ] = await new DialogueMenu(`Choose a value for the variable ${subcat.name}:`, options, "PRIMARY").spawnMenu(interaction, "NEW_MESSAGE");
-			return [ subcat, value ];
-		})
-	);
 }
