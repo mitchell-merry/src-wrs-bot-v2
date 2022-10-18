@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, HexColorString } from "discord.js";
 import { DB } from "../../db";
 import { GuildEntity } from "../../db/entities";
 import UserError from "../UserError";
@@ -39,7 +39,7 @@ async function role_default_colour(interaction: CommandInteraction, guildEnt: Gu
 	if(!colour) throw new Error('/set role_default_colour: role_default_colour not set / is undefined.');
 	if(!colour.match(/^#[0-9A-Fa-f]{6}$/)) throw new UserError('Colour must be a hexcode, e.g. #FEE75C.');
 
-	guildEnt.role_default_colour = colour;
+	guildEnt.role_default_colour = colour as HexColorString;
 	await gRepo.save(guildEnt);
 	await interaction.reply(`role_default_colour set to ${colour}.`);
 }
