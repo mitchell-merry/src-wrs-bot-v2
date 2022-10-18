@@ -16,7 +16,7 @@ export default class LeaderboardMenu {
 		const game = await SRC.getGame<'categories.variables,levels'>(gameId, { embed: 'categories.variables,levels' });
 
 		// get the type of the leaderboard (full game / level)
-		let type = await this.selectType(interaction, game);
+		const type = await this.selectType(interaction, game);
 		let message = `Selected "${LeaderboardMenu.types[type]}".\n`;
 
 		// get the level of the leaderboard, if selected level
@@ -55,7 +55,7 @@ export default class LeaderboardMenu {
 	public async selectLevel(interaction: CommandInteraction, message: string, levels: SRC.Level[]) {
 		if (levels.length === 1) return levels[0];
 		
-		let q = (message !== '' ? `${message}\n` : '') + 'Choose a level:';
+		const q = (message !== '' ? `${message}\n` : '') + 'Choose a level:';
 		const levelOptions = levels.map(level => ({ id: level.id, label: level.name }));
 		const [ levelId ] = await new DialogueMenu(q, levelOptions, "PRIMARY").spawnMenu(interaction, "EDIT_REPLY");
 		
@@ -66,7 +66,7 @@ export default class LeaderboardMenu {
 		const categoriesOfType = categories.filter(c => c.type === type);
 		if (categoriesOfType.length === 1) return categoriesOfType[0];
 
-		let q = (message !== '' ? `${message}\n` : '') + 'Choose a category:';
+		const q = (message !== '' ? `${message}\n` : '') + 'Choose a category:';
 		const catOptions = categoriesOfType.map(c => ({ id: c.id, label: c.name }));
 		const [ categoryId ] = await new DialogueMenu(q, catOptions, "PRIMARY").spawnMenu(interaction, "EDIT_REPLY");
 
