@@ -23,6 +23,10 @@ export default class LeaderboardMenu {
 
 		const category = await this.selectCategory(interaction, game.categories.data, type, message);
 		const variables = await this.selectVariables(interaction, category.variables.data, level);
+
+		return {
+			game, level, category, variables
+		};
 	}
 
 	public async selectType(interaction: CommandInteraction, game: SRC.Game<'categories.variables,levels'>): Promise<[SRC.CategoryType, string] | [SRC.CategoryType]> {
