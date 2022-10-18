@@ -19,7 +19,7 @@ export default class LeaderboardMenu {
 		let message = label ? '' : `Selected "${label}".\n`;
 
 		const level = type === "per-level" ? await this.selectLevel(interaction, game.levels.data, message) : undefined;
-		if (level) message += `Selected the level "${level.name}"`;
+		if (level) message += `Selected the level "${level.name}"\n`;
 
 
 	}
@@ -42,7 +42,7 @@ export default class LeaderboardMenu {
 		let q = (message === '' ? `\n${message}` : '') + 'Choose a level:';
 		const levelOptions = levels.map(level => ({ id: level.id, label: level.name }));
 		const [ levelId ] = await new DialogueMenu(q, levelOptions, "PRIMARY").spawnMenu(interaction, "REPLY_NO_EDIT");
-		
+
 		return levels.find(c => c.id === levelId)!;
 	}
 }
