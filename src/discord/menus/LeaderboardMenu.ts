@@ -16,6 +16,10 @@ export default class LeaderboardMenu {
 	public async spawnMenu(interaction: CommandInteraction, gameId: string) {
 		const game = await SRC.getGame<'categories.variables,levels'>(gameId, { embed: 'categories.variables,levels' });
 		const [ type, label ] = await this.selectType(interaction, game);
+		let message = label ? '' : `Selected "${label}".\n`;
+
+		const level = type === "per-level" ? await this.selectLevel(interaction, game.levels.data, message) : undefined;
+		if (level) message += `Selected the level "${level.name}"`;
 
 
 	}
@@ -30,5 +34,15 @@ export default class LeaderboardMenu {
 		}
 		else if (game.levels.data.length === 0) return [ "per-game" ];
 		else return [ "per-level" ];
+	}
+
+	public async selectLevel(interaction: CommandInteraction, levels: SRC.Level[], message: string) {
+		if (levels.length === 1) return levels[0];
+		
+		let q = (message === '' ? `\n${message}` : '') + 'Choose a level:';
+		const levelOptions = levels.map(level => ({ id: level.id, label: level.name }));
+		const [ levelId ] = await new DialogueMenu(q, levelOptions, "PRIMARY").spawnMenu(interaction, "REPLY_NO_EDIT");
+		
+		return levels.find(c => c.id === levelId)!;
 	}
 }
