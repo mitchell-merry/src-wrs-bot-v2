@@ -1,4 +1,4 @@
-import { Collection, CommandInteraction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, Role, WebhookEditMessageOptions } from "discord.js";
+import {  CommandInteraction } from "discord.js";
 import { DB } from "../../../db";
 import { TrackedLeaderboardEntity } from "../../../db/entities";
 import PaginatedList from "../../menus/PaginatedList";
