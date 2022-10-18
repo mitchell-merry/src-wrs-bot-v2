@@ -48,7 +48,7 @@ async function add(interaction: CommandInteraction) {
 	const playerEnt = new PlayerEntity(interaction.guildId!, player.id, userOpt.id);
 	playerEnt.src_name = player.names.international;
 	await pRepo.save(playerEnt);
-	await interaction.reply(`Added association for ${userOpt.username} to the speedrun.com account ${player.names.international} [${player.id}]`);
+	await interaction.reply(`Added association for <@${userOpt.id}> to the speedrun.com account ${player.names.international} [${player.id}]`);
 }
 
 async function remove(interaction: CommandInteraction) {
@@ -61,7 +61,7 @@ async function remove(interaction: CommandInteraction) {
 	if(!exists) throw new UserError(`This discord account is not associated with a speedrun.com account.`);
 
 	await pRepo.remove(exists);
-	await interaction.reply(`Association for ${userOpt.username} [${userOpt.id}] removed!`)
+	await interaction.reply(`Association for <@${userOpt.id}> removed!`)
 }
 
 async function list(interaction: CommandInteraction) {
