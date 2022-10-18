@@ -4,7 +4,6 @@ import * as SRC from "src-ts";
 import { DB } from "../../../db";
 import { GuildEntity, LeaderboardEntity, TrackedLeaderboardEntity, VariableEntity } from "../../../db/entities";
 import ConfirmationMenu from "../../menus/ConfirmationMenu";
-import DialogueMenu from "../../menus/DialogueMenu";
 import LeaderboardMenu from "../../menus/LeaderboardMenu";
 import UserError from "../../UserError";
 
