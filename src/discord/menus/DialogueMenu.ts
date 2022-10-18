@@ -1,4 +1,4 @@
-import { CommandInteraction, EmojiResolvable, InteractionButtonOptions, Message, MessageActionRow, MessageButton, MessageSelectMenu } from "discord.js";
+import { CommandInteraction, EmojiResolvable, InteractionButtonOptions, Message, MessageActionRow, MessageButton, MessageSelectMenu, WebhookEditMessageOptions } from "discord.js";
 import UserError from "../UserError";
 
 export interface DialogueOption<T extends string = string> {
@@ -25,14 +25,16 @@ export default class DialogueMenu<T extends string = string> {
 		this.defaultStyle = defaultStyle;
 	}
 
-	public async spawnMenu(interaction: CommandInteraction, action: SpawnAction, timeout: number = 300000): Promise<[T, string]> {
+	public async spawnMenu(interaction: CommandInteraction, action: SpawnAction, options: WebhookEditMessageOptions, timeout: number = 300000): Promise<[T, string]> {
 		// get the components of the menu (buttons / select menu for > 5 items)
 		const components = this.getComponents();
 
 		// build the message to send
-		const messageOptions = {
+		const data: WebhookEditMessageOptions = {
 			content: this.content,
-			components
+			components,
+			allowedMentions: { users: [], roles: [] },
+			...options
 		};
 
 		let menuMessage: Message;
@@ -41,12 +43,12 @@ export default class DialogueMenu<T extends string = string> {
 		// or send a new message in the same channel
 		if (action === "EDIT_REPLY") {
 			menuMessage = await ((interaction.replied || interaction.deferred)
-				? interaction.editReply(messageOptions) 
-				: interaction.reply(messageOptions)) as Message;
+				? interaction.editReply(data) 
+				: interaction.reply(data)) as Message;
 		} else if (action === "NEW_REPLY") {
-			menuMessage = await interaction.followUp(messageOptions) as Message;
+			menuMessage = await interaction.followUp(data) as Message;
 		} else {
-			menuMessage = await interaction.channel!.send(messageOptions) as Message;
+			menuMessage = await interaction.channel!.send(data) as Message;
 		}
 
 		// wait for the response to the menu
