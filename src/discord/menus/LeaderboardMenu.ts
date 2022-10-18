@@ -22,19 +22,19 @@ export default class LeaderboardMenu {
 		// get the level of the leaderboard, if selected level
 		let level: SRC.Level | undefined;
 		if (type === "per-level") {
-			level = await this.selectLevel(interaction, game.levels.data, message);
+			level = await this.selectLevel(interaction, message, game.levels.data);
 			message += `Selected the level "${level.name}".\n`;
 		}
 
 		// get the category for the leaderboard
-		const category = await this.selectCategory(interaction, game.categories.data, type, message);
+		const category = await this.selectCategory(interaction, message, game.categories.data, type);
 		message += `Selected the category "${category.name}"\n`;
 		
 		// update the message with the current selections (this is done with DialogueMenu in the previous two steps)
 		await interaction.editReply({ content: message });
 		
 		// get the variables if any
-		const variables = await this.selectVariables(interaction, category.variables.data, level);
+		const variables = await this.selectVariables(interaction, message, category.variables.data, level);
 
 		return { game, level, category, variables };
 	}
@@ -52,7 +52,7 @@ export default class LeaderboardMenu {
 		else return "per-level";
 	}
 
-	public async selectLevel(interaction: CommandInteraction, levels: SRC.Level[], message: string,) {
+	public async selectLevel(interaction: CommandInteraction, message: string, levels: SRC.Level[]) {
 		if (levels.length === 1) return levels[0];
 		
 		let q = (message !== '' ? `${message}\n` : '') + 'Choose a level:';
@@ -62,7 +62,7 @@ export default class LeaderboardMenu {
 		return levels.find(l => l.id === levelId)!;
 	}
 
-	public async selectCategory<E extends string, T extends SRC.CategoryType>(interaction: CommandInteraction, categories: SRC.Category<E, T>[], type: T, message: string): Promise<SRC.Category<E>> {
+	public async selectCategory<E extends string, T extends SRC.CategoryType>(interaction: CommandInteraction, message: string, categories: SRC.Category<E, T>[], type: T) {
 		const categoriesOfType = categories.filter(c => c.type === type);
 		if (categoriesOfType.length === 1) return categoriesOfType[0];
 
@@ -73,7 +73,7 @@ export default class LeaderboardMenu {
 		return categories.find(c => c.id === categoryId)!;
 	}
 
-	public async selectVariables(interaction: CommandInteraction, variables: SRC.Variable[], level?: SRC.Level): Promise<[SRC.Variable, string][]> {
+	public async selectVariables(interaction: CommandInteraction, message: string, variables: SRC.Variable[], level?: SRC.Level): Promise<[SRC.Variable, string][]> {
 		return Promise.all(variables.filter(SRC.variableIsSubcategory)
 			.filter(v => level === undefined 
 				|| v.scope.type === 'all-levels'
