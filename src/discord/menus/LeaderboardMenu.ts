@@ -9,9 +9,7 @@ export default class LeaderboardMenu {
 		'per-level': "Level"
 	} as const;
 
-	constructor() {
-
-	}
+	constructor() { }
 
 	public async spawnMenu(interaction: CommandInteraction, gameId: string) {
 		const game = await SRC.getGame<'categories.variables,levels'>(gameId, { embed: 'categories.variables,levels' });
