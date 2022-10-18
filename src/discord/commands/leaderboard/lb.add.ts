@@ -10,6 +10,8 @@ import UserError from "../../UserError";
 const gameRegex = /^\w+$/;
 
 export async function add(interaction: CommandInteraction) {
+	await interaction.deferReply();
+
 	const lRepo = DB.getRepository(LeaderboardEntity);
 	const gRepo = DB.getRepository(GuildEntity);
 
@@ -41,8 +43,6 @@ export async function add(interaction: CommandInteraction) {
 	if(interaction.guild!.me!.roles.highest.position < position) {
 		throw new UserError(`Bot does not have permission to create/manage a role at this position. Give the bot a role higher than \`@${errorRoleName}\` [${interaction.guild!.me!.roles.highest.position}, ${position}].`);
 	}
-
-	await interaction.deferReply();
 
 	const { game, category, variables, level } = await new LeaderboardMenu().spawnMenu(interaction, gameOpt)
 
