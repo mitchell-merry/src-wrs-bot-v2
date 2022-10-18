@@ -25,7 +25,7 @@ export default class DialogueMenu<T extends string = string> {
 		this.defaultStyle = defaultStyle;
 	}
 
-	public async spawnMenu(interaction: CommandInteraction, action: SpawnAction, options: WebhookEditMessageOptions, timeout: number = 300000): Promise<[T, string]> {
+	public async spawnMenu(interaction: CommandInteraction, action: SpawnAction, options: WebhookEditMessageOptions = {}, timeout: number = 300000): Promise<[T, string]> {
 		// get the components of the menu (buttons / select menu for > 5 items)
 		const components = this.getComponents();
 
