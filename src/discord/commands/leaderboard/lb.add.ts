@@ -21,19 +21,16 @@ export async function add(interaction: CommandInteraction) {
 	const gameOpt = interaction.options.getString('game');
 	if(!gameOpt || !gameOpt.match(gameRegex)) throw new UserError(`Invalid game abbreviation: ${gameOpt}. You should use the 'day_seven' part of the game link 'https://www.speedrun.com/day_seven', for example.`);
 
+	// check if we have permissions to manage the role  
 	const roleOpt = interaction.options.getRole('role');
 	let position = 1;
-	let errorRoleName: string = '';
-	if(!roleOpt) {	// "make new role"
-		// get position of new role
-		if(guildEnt.above_role_id && guildEnt.above_role_id !== '')
+	let errorRoleName = '';
+	if(!roleOpt) {	// if no role was provided, we want to make a new role
+		const above_role = await interaction.guild!.roles.fetch(guildEnt.above_role_id);
+		if(above_role)
 		{
-			const above_role = await interaction.guild!.roles.fetch(guildEnt.above_role_id);
-			if(above_role)
-			{
-				position = above_role.position + 1;
-				errorRoleName = above_role.name;
-			}
+			position = above_role.position + 1;
+			errorRoleName = above_role.name;
 		}
 	} else {
 		position = roleOpt.position;
