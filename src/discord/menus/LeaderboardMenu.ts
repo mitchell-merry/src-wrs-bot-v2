@@ -21,7 +21,8 @@ export default class LeaderboardMenu {
 		const level = type === "per-level" ? await this.selectLevel(interaction, game.levels.data, message) : undefined;
 		if (level) message += `Selected the level "${level.name}"\n`;
 
-
+		const category = await this.selectCategory(interaction, game.categories.data, type, message);
+		
 	}
 
 	public async selectType(interaction: CommandInteraction, game: SRC.Game<'categories.variables,levels'>): Promise<[SRC.CategoryType, string] | [SRC.CategoryType]> {
@@ -43,6 +44,16 @@ export default class LeaderboardMenu {
 		const levelOptions = levels.map(level => ({ id: level.id, label: level.name }));
 		const [ levelId ] = await new DialogueMenu(q, levelOptions, "PRIMARY").spawnMenu(interaction, "REPLY_NO_EDIT");
 
-		return levels.find(c => c.id === levelId)!;
+		return levels.find(l => l.id === levelId)!;
+	}
+
+	public async selectCategory<E extends string, T extends SRC.CategoryType>(interaction: CommandInteraction, categories: SRC.Category<E, T>[], type: T, message: string) {
+		if (categories.length === 1) return categories[0];
+
+		let q = (message === '' ? `\n${message}` : '') + 'Choose a category:';
+		const catOptions = categories.filter(c => c.type === type).map(c => ({ id: c.id, label: c.name }));
+		const [ categoryId ] = await new DialogueMenu(q, catOptions, "PRIMARY").spawnMenu(interaction, "REPLY_NO_EDIT");
+
+		return categories.find(c => c.id === categoryId)!;
 	}
 }
