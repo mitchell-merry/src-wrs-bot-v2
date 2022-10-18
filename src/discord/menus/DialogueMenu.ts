@@ -72,7 +72,7 @@ export default class DialogueMenu<T extends string = string> {
 		
 		// deal with menu
 		if (action === "NEW_MESSAGE" || action === "NEW_REPLY") await menuMessage.delete();
-		else await menuMessage.edit({ components: [] });
+		else await r.update({ components: [] });
 
 		return [ choice, choiceLabel, r ];
 	}

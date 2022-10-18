@@ -48,7 +48,7 @@ export async function add(interaction: CommandInteraction) {
 
 	await interaction.deferReply();
 
-	const [{ game, category, variables, level }, mci] = await new LeaderboardMenu().spawnMenu(interaction, gameOpt)
+	const { game, category, variables, level } = await new LeaderboardMenu().spawnMenu(interaction, gameOpt)
 
 	// build leaderboard name
 	const labels = variables.map(([subcat, v]) => subcat.values.values[v].label);
@@ -68,7 +68,7 @@ export async function add(interaction: CommandInteraction) {
 			? `This will track the leaderboard ${lb_name} in this guild with a new role. Are you sure you wish to do this?`
 			: `This will track the leaderboard ${lb_name} in this guild with a new role, created above <@&${guildEnt.above_role_id}>. Are you sure you wish to do this?`;
 	
-	const [ confirmation ] = await new ConfirmationMenu(message).spawnMenu(interaction, "EDIT_REPLY", mci);
+	const [ confirmation ] = await new ConfirmationMenu(message).spawnMenu(interaction, "EDIT_REPLY");
 	if (confirmation === "NO") throw new UserError('Exited menu!');
 
 	// @ts-ignore create role if one was not provided
