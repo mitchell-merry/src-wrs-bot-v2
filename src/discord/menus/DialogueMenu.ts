@@ -9,7 +9,7 @@ export interface DialogueOption<T extends string = string> {
 	disabled?: boolean;
 }
 
-export type SpawnAction = "REPLY" | "REPLY_NO_EDIT" | "NEW_DELETE" | "NEW_STAY";
+export type SpawnAction = "NEW_REPLY" | "EDIT_REPLY" | "NEW_MESSAGE";
 
 export default class DialogueMenu<T extends string = string> {
 	private content: string;
@@ -39,10 +39,13 @@ export default class DialogueMenu<T extends string = string> {
 
 		// depending on the action, either reply / edit the reply to the interaction,
 		// or send a new message in the same channel
-		if (action === "REPLY" || action === "REPLY_NO_EDIT") {
+		if (action === "EDIT_REPLY") {
 			menuMessage = await ((interaction.replied || interaction.deferred)
 				? interaction.editReply(messageOptions) 
 				: interaction.reply(messageOptions)) as Message;
+		} else if (action === "NEW_REPLY") {
+			const intMessage = await interaction.fetchReply() as Message;
+			menuMessage = await intMessage.reply(messageOptions);
 		} else {
 			menuMessage = await interaction.channel!.send(messageOptions) as Message;
 		}
@@ -64,12 +67,8 @@ export default class DialogueMenu<T extends string = string> {
 		let choiceLabel = this.options.find(o => o.id === choice)!.label;
 		
 		// deal with menu
-		if (action === "NEW_DELETE") await menuMessage.delete();
-		else if (action === "REPLY_NO_EDIT") await menuMessage.edit({ components: [] });
-		else await menuMessage.edit({
-			content: `The selected option was "${choiceLabel}"`,
-			components: []
-		});
+		if (action === "NEW_MESSAGE" || action === "NEW_REPLY") await menuMessage.delete();
+		else await menuMessage.edit({ components: [] });
 
 		return [ choice, choiceLabel ];
 	}

@@ -22,7 +22,7 @@ export default class LeaderboardMenu {
 		if (level) message += `Selected the level "${level.name}"\n`;
 
 		const category = await this.selectCategory(interaction, game.categories.data, type, message);
-		
+		const variables = await this.selectVariables(interaction, category.variables.data, level);
 	}
 
 	public async selectType(interaction: CommandInteraction, game: SRC.Game<'categories.variables,levels'>): Promise<[SRC.CategoryType, string] | [SRC.CategoryType]> {
@@ -31,7 +31,7 @@ export default class LeaderboardMenu {
 
 		if (game.levels.data.length !== 0 && game.categories.data.length !== 0) {
 			return await new DialogueMenu<SRC.CategoryType>(`Is the leaderboard a full-game or level category?`, LeaderboardMenu.types, "PRIMARY")
-				.spawnMenu(interaction, "REPLY_NO_EDIT");
+				.spawnMenu(interaction, "EDIT_REPLY");
 		}
 		else if (game.levels.data.length === 0) return [ "per-game" ];
 		else return [ "per-level" ];
@@ -42,7 +42,7 @@ export default class LeaderboardMenu {
 		
 		let q = (message === '' ? `\n${message}` : '') + 'Choose a level:';
 		const levelOptions = levels.map(level => ({ id: level.id, label: level.name }));
-		const [ levelId ] = await new DialogueMenu(q, levelOptions, "PRIMARY").spawnMenu(interaction, "REPLY_NO_EDIT");
+		const [ levelId ] = await new DialogueMenu(q, levelOptions, "PRIMARY").spawnMenu(interaction, "EDIT_REPLY");
 
 		return levels.find(l => l.id === levelId)!;
 	}
@@ -52,8 +52,23 @@ export default class LeaderboardMenu {
 
 		let q = (message === '' ? `\n${message}` : '') + 'Choose a category:';
 		const catOptions = categories.filter(c => c.type === type).map(c => ({ id: c.id, label: c.name }));
-		const [ categoryId ] = await new DialogueMenu(q, catOptions, "PRIMARY").spawnMenu(interaction, "REPLY_NO_EDIT");
+		const [ categoryId ] = await new DialogueMenu(q, catOptions, "PRIMARY").spawnMenu(interaction, "EDIT_REPLY");
 
 		return categories.find(c => c.id === categoryId)!;
+	}
+
+	public async selectVariables(interaction: CommandInteraction, variables: SRC.Variable[], level?: SRC.Level): Promise<[SRC.Variable, string][]> {
+		return Promise.all(variables.filter(SRC.variableIsSubcategory)
+			.filter(v => level === undefined 
+				|| v.scope.type === 'all-levels'
+				|| (v.scope.type === 'single-level' && v.scope.level === level.id)
+			).map(async subcat => {
+				const options = Object.entries(subcat.values.values)
+					.map(([k, v]) => ({ id: k, label: v.label }));
+	
+				const [ value ] = await new DialogueMenu(`Choose a value for the variable ${subcat.name}:`, options, "PRIMARY").spawnMenu(interaction, "NEW_MESSAGE");
+				return [ subcat, value ];
+			})
+		);
 	}
 }
