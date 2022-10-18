@@ -76,7 +76,7 @@ export async function add(interaction: CommandInteraction) {
 			? `This will track the leaderboard ${lb_name} in this guild with a new role. Are you sure you wish to do this?`
 			: `This will track the leaderboard ${lb_name} in this guild with a new role, created above <@&${guildEnt.above_role_id}>. Are you sure you wish to do this?`;
 	
-	const confirmation = await new ConfirmationMenu(message).spawnMenu(interaction, "NEW_DELETE");
+	const [ confirmation ] = await new ConfirmationMenu(message).spawnMenu(interaction, "NEW_DELETE");
 	if (confirmation === "NO") throw new UserError('Exited menu!');
 
 	// @ts-ignore create role if one was not provided
@@ -105,13 +105,13 @@ async function selectType(interaction: CommandInteraction): Promise<SRC.Category
 	}, { 
 		id: 'per-level',
 		label: "Level"
-	}];
+	}] as const;
 
-	const choice = (await
-		new DialogueMenu(`Is the leaderboard a full-game or level category?`, types, "PRIMARY")
-		.spawnMenu(interaction, "NEW_DELETE")) as SRC.CategoryType;
+	const [ choice, name ] = (await
+		new DialogueMenu<SRC.CategoryType>(`Is the leaderboard a full-game or level category?`, types, "PRIMARY")
+		.spawnMenu(interaction, "NEW_DELETE"));
 
-	await interaction.editReply({ content: `Selected "${types.find(t => t.id === choice)!.label}"...`, components: [] });
+	await interaction.editReply({ content: `Selected "${name}"...`, components: [] });
 
 	return choice;
 }
@@ -119,7 +119,7 @@ async function selectType(interaction: CommandInteraction): Promise<SRC.Category
 async function selectLevel(interaction: CommandInteraction, levels: SRC.Level[]): Promise<SRC.Level> {
 	// Make level menu to get the level of the leaderboard
 	const levelOptions = levels.map(level => ({ id: level.id, label: level.name }));
-	const levelId = await new DialogueMenu(`Choose a level:`, levelOptions, "PRIMARY").spawnMenu(interaction, "NEW_DELETE");
+	const [ levelId ] = await new DialogueMenu(`Choose a level:`, levelOptions, "PRIMARY").spawnMenu(interaction, "NEW_DELETE");
 	const level = levels.find(c => c.id === levelId)!;
 
 	await interaction.editReply({ content: `Selected the level ${level.name} [${level.id}]`, components: [] });
@@ -130,7 +130,7 @@ async function selectLevel(interaction: CommandInteraction, levels: SRC.Level[])
 async function selectCategory(interaction: CommandInteraction, categories: SRC.Category<'variables'>[], type: SRC.CategoryType): Promise<SRC.Category<"variables">> {
 	// Make category menu to get the category of the leaderboard
 	const categoryOptions = categories.filter(cat => cat.type === type).map(cat => ({ id: cat.id, label: cat.name }));
-	const categoryId = await new DialogueMenu(`Choose a category:`, categoryOptions, "PRIMARY").spawnMenu(interaction, "NEW_DELETE");
+	const [ categoryId ] = await new DialogueMenu(`Choose a category:`, categoryOptions, "PRIMARY").spawnMenu(interaction, "NEW_DELETE");
 	const category = categories.find(c => c.id === categoryId)!;
 
 	await interaction.editReply({ content: `Selected the category ${category.name} [${category.id}]`, components: [] });
@@ -148,7 +148,7 @@ async function selectVariables(interaction: CommandInteraction, variables: SRC.V
 			const options = Object.entries(subcat.values.values)
 				.map(([k, v]) => ({ id: k, label: v.label }));
 
-			const value = await new DialogueMenu(`Choose a value for the variable ${subcat.name}:`, options, "PRIMARY").spawnMenu(interaction, "NEW_DELETE");
+			const [ value ] = await new DialogueMenu(`Choose a value for the variable ${subcat.name}:`, options, "PRIMARY").spawnMenu(interaction, "NEW_DELETE");
 			return [ subcat, value ];
 		})
 	);
