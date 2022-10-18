@@ -1,4 +1,4 @@
-import { CommandInteraction, HexColorString, Role } from "discord.js";
+import { CommandInteraction, Role } from "discord.js";
 import * as SRC from "src-ts";
 
 import { DB } from "../../../db";
