@@ -1,3 +1,4 @@
+import { HexColorString } from 'discord.js';
 import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { TrackedLeaderboardEntity, ModeratorRoleEntity, PlayerEntity } from '.';
 
@@ -10,7 +11,7 @@ export class GuildEntity {
 
 	/** The default colour to give to newly created roles. */
 	@Column({ default: '#FEE75C' })
-	role_default_colour!: string;
+	role_default_colour!: HexColorString;
 
 	/** The ID of the role to place new roles above. */
 	@Column({ default: '' })
