@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { AutocompleteInteraction, CommandInteraction } from 'discord.js';
+import { AutocompleteInteraction, CommandInteraction, WebhookEditMessageOptions } from 'discord.js';
 
 export type PermissionLevel = 'admin' | 'mods' | 'all';
 
@@ -46,20 +46,21 @@ export async function handleSlashCommand(interaction: CommandInteraction) {
 
 		await command.execute(interaction);
 	} catch (error) {
-		const msg = {
+		const data: WebhookEditMessageOptions = {
 			content: "Unknown error occurred.",
-			components: []
+			components: [],
+			allowedMentions: { users: [], roles: [] }
 		};
 
 		if(error instanceof UserError || error instanceof SRCError) {
-			msg.content = error.message;
+			data.content = error.message;
 		} else {
 			console.error(error);
 		}
 
-		await (interaction.replied || interaction.deferred)
-			? interaction.editReply(msg) 
-			: interaction.reply(msg);
+		await ((interaction.replied || interaction.deferred)
+			? interaction.editReply(data) 
+			: interaction.reply(data));
 	}
 }
 
