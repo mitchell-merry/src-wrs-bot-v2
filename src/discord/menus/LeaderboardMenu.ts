@@ -15,20 +15,20 @@ export default class LeaderboardMenu {
 
 	public async spawnMenu(interaction: CommandInteraction, gameId: string) {
 		const game = await SRC.getGame<'categories.variables,levels'>(gameId, { embed: 'categories.variables,levels' });
+		const [ type, label ] = await this.selectLevel(interaction, game);
 
-		let type: SRC.CategoryType;
-		let label: string | undefined;
+		
+	}
 
+	public async selectLevel(interaction: CommandInteraction, game: SRC.Game<'categories.variables,levels'>): Promise<[SRC.CategoryType, string] | [SRC.CategoryType]> {
 		if (game.levels.data.length === 0 && game.categories.data.length === 0)
 			throw new UserError(`The game ${game.names.international} has no leaderboards!`);
 
 		if (game.levels.data.length !== 0 && game.categories.data.length !== 0) {
-			[ type, label ] = await new DialogueMenu<SRC.CategoryType>(`Is the leaderboard a full-game or level category?`, LeaderboardMenu.types, "PRIMARY")
+			return await new DialogueMenu<SRC.CategoryType>(`Is the leaderboard a full-game or level category?`, LeaderboardMenu.types, "PRIMARY")
 				.spawnMenu(interaction, "REPLY_NO_EDIT");
 		}
-		else if (game.levels.data.length === 0) type = "per-game";
-		else type = "per-level";
-
-		
+		else if (game.levels.data.length === 0) return [ "per-game" ];
+		else return [ "per-level" ];
 	}
 }
