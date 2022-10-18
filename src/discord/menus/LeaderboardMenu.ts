@@ -15,12 +15,12 @@ export default class LeaderboardMenu {
 
 	public async spawnMenu(interaction: CommandInteraction, gameId: string) {
 		const game = await SRC.getGame<'categories.variables,levels'>(gameId, { embed: 'categories.variables,levels' });
-		const [ type, label ] = await this.selectLevel(interaction, game);
+		const [ type, label ] = await this.selectType(interaction, game);
 
-		
+
 	}
 
-	public async selectLevel(interaction: CommandInteraction, game: SRC.Game<'categories.variables,levels'>): Promise<[SRC.CategoryType, string] | [SRC.CategoryType]> {
+	public async selectType(interaction: CommandInteraction, game: SRC.Game<'categories.variables,levels'>): Promise<[SRC.CategoryType, string] | [SRC.CategoryType]> {
 		if (game.levels.data.length === 0 && game.categories.data.length === 0)
 			throw new UserError(`The game ${game.names.international} has no leaderboards!`);
 
