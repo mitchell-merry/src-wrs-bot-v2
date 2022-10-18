@@ -1,4 +1,4 @@
-import { CommandInteraction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, WebhookEditMessageOptions } from "discord.js";
+import { CommandInteraction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, MessageEditOptions, WebhookEditMessageOptions } from "discord.js";
 import UserError from "../UserError";
 
 const MESSAGE_LIMIT = 2000;
@@ -28,20 +28,22 @@ export default class PaginatedList {
 		this.expireMessage = expireMessage;
 	}
 
-	public async spawnMenu(interaction: CommandInteraction)
+	public async spawnMenu(interaction: CommandInteraction, options: WebhookEditMessageOptions = {})
 	{
 		const message = await interaction.fetchReply() as Message;
 		let r: MessageComponentInteraction | undefined = undefined;
 
 		while(true) {
-			const options: WebhookEditMessageOptions = {
+			const data: WebhookEditMessageOptions = {
 				content: this.pages[this.currentPage].join(''),
-				components: this.getPageComponents(this.currentPage)
+				components: this.getPageComponents(this.currentPage),
+				allowedMentions: { users: [], roles: [] },
+				...options
 			};
 
 			await (r 
-				? r.update(options)
-				: interaction.editReply(options)
+				? r.update(data)
+				: interaction.editReply(data)
 			);
 			
 			// listen for button
