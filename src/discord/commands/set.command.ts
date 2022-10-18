@@ -29,7 +29,7 @@ async function above_role(interaction: CommandInteraction, guildEnt: GuildEntity
 	
 	guildEnt.above_role_id = role.id;
 	await gRepo.save(guildEnt);
-	await interaction.reply(`above_role set to <@&${role.id}>.`);
+	await interaction.reply({ content: `above_role set to <@&${role.id}>.`, allowedMentions: { users: [], roles: [] } });
 }
 
 async function role_default_colour(interaction: CommandInteraction, guildEnt: GuildEntity) {
@@ -54,7 +54,7 @@ async function list(interaction: CommandInteraction, guildEnt: GuildEntity) {
 
 	msg += `\`role_default_colour\`: ${guildEnt.role_default_colour}`;
 
-	interaction.reply(msg);
+	interaction.reply({ content: msg, allowedMentions: { users: [], roles: [] } });
 }
 
 const subcommands: Record<string, (interaction: CommandInteraction, guildEnt: GuildEntity) => Promise<void>> = { 
