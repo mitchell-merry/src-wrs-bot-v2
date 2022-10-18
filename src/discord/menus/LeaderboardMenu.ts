@@ -63,10 +63,11 @@ export default class LeaderboardMenu {
 	}
 
 	public async selectCategory<E extends string, T extends SRC.CategoryType>(interaction: CommandInteraction, categories: SRC.Category<E, T>[], type: T, message: string): Promise<SRC.Category<E>> {
-		if (categories.length === 1) return categories[0];
+		const categoriesOfType = categories.filter(c => c.type === type);
+		if (categoriesOfType.length === 1) return categoriesOfType[0];
 
 		let q = (message !== '' ? `${message}\n` : '') + 'Choose a category:';
-		const catOptions = categories.filter(c => c.type === type).map(c => ({ id: c.id, label: c.name }));
+		const catOptions = categoriesOfType.map(c => ({ id: c.id, label: c.name }));
 		const [ categoryId ] = await new DialogueMenu(q, catOptions, "PRIMARY").spawnMenu(interaction, "EDIT_REPLY");
 
 		return categories.find(c => c.id === categoryId)!;
