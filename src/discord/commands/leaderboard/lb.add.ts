@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, HexColorString, Role } from "discord.js";
 import * as SRC from "src-ts";
 
 import { DB } from "../../../db";
@@ -70,12 +70,9 @@ export async function add(interaction: CommandInteraction) {
 	const [ confirmation ] = await new ConfirmationMenu(message).spawnMenu(interaction, "EDIT_REPLY");
 	if (confirmation === "NO") throw new UserError('Exited menu!');
 
-	// @ts-ignore create role if one was not provided
-	let role: Role | null = roleOpt;
-	if(!roleOpt) {
-		// @ts-ignore - role_default_colour is guaranteed to be a valid colour, probably.
-		role = await interaction.guild!.roles.create({ name: lb_name, color: guildEnt.role_default_colour!, position });
-	}
+	let role: Role;
+	if (roleOpt) role = roleOpt as Role;
+	else role = await interaction.guild!.roles.create({ name: lb_name, color: guildEnt.role_default_colour, position });
 
 	// save new leaderboard in database
 	if(!board) {
