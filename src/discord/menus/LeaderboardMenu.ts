@@ -4,13 +4,10 @@ import UserError from "../UserError";
 import DialogueMenu from "./DialogueMenu";
 
 export default class LeaderboardMenu {
-	private static types = [{
-		id: 'per-game',
-		label: "Full-game"
-	}, { 
-		id: 'per-level',
-		label: "Level"
-	}] as const;
+	private static types = {
+		'per-game': "Full-game",
+		'per-level': "Level"
+	} as const;
 
 	constructor() {
 
