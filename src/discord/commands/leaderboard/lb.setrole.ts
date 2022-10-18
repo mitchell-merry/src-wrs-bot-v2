@@ -27,5 +27,5 @@ export async function setrole(interaction: CommandInteraction) {
 
 	tlb.role_id = new_role.id;
 	await tlbRepo.save(tlb);
-	interaction.editReply(`Leaderboard ${lb.lb_name} updated to be tracked with the role <@&${new_role.id}>. Run /update to reflect this change in role holders.`);
+	interaction.editReply({ content: `Leaderboard ${lb.lb_name} updated to be tracked with the role <@&${new_role.id}>. Run /update to reflect this change in role holders.`, allowedMentions: { users: [], roles: [] } });
 }
