@@ -55,10 +55,8 @@ export async function add(interaction: CommandInteraction) {
 
 	// here we should check for dupes
 	let board = await LeaderboardEntity.exists(game.id, category.id, variables, level?.id);
-	if(board && board.trackedLeaderboards.find(tlb => tlb.guild_id === interaction.guildId && tlb.lb_id === board!.lb_id))
-	{
-		throw new UserError(`This guild is already tracking the leaderboard ${lb_name}.`);
-	}
+	const exists = board && board.trackedLeaderboards.find(tlb => tlb.guild_id === interaction.guildId);
+	if(exists) throw new UserError(`This guild is already tracking the leaderboard ${lb_name}.`);
 
 	// confirm with the user that this is the action we want to take
 	const message = roleOpt
