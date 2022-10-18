@@ -44,7 +44,7 @@ export default class LeaderboardMenu {
 			throw new UserError(`The game ${game.names.international} has no leaderboards!`);
 
 		if (game.levels.data.length !== 0 && game.categories.data.length !== 0) {
-			const [type] = await new DialogueMenu<SRC.CategoryType>(`Is the leaderboard a full-game or level category?`, LeaderboardMenu.types, "PRIMARY")
+			const [type] = await new DialogueMenu<SRC.CategoryType>(`Is the leaderboard a full-game or level category?`, LeaderboardMenu.types)
 				.spawnMenu(interaction, "EDIT_REPLY");
 			return type;
 		}
@@ -57,7 +57,7 @@ export default class LeaderboardMenu {
 		
 		const q = (message !== '' ? `${message}\n` : '') + 'Choose a level:';
 		const levelOptions = levels.map(level => ({ id: level.id, label: level.name }));
-		const [ levelId ] = await new DialogueMenu(q, levelOptions, "PRIMARY").spawnMenu(interaction, "EDIT_REPLY");
+		const [ levelId ] = await new DialogueMenu(q, levelOptions).spawnMenu(interaction, "EDIT_REPLY");
 		
 		return levels.find(l => l.id === levelId)!;
 	}
@@ -68,7 +68,7 @@ export default class LeaderboardMenu {
 
 		const q = (message !== '' ? `${message}\n` : '') + 'Choose a category:';
 		const catOptions = categoriesOfType.map(c => ({ id: c.id, label: c.name }));
-		const [ categoryId ] = await new DialogueMenu(q, catOptions, "PRIMARY").spawnMenu(interaction, "EDIT_REPLY");
+		const [ categoryId ] = await new DialogueMenu(q, catOptions).spawnMenu(interaction, "EDIT_REPLY");
 
 		return categories.find(c => c.id === categoryId)!;
 	}
@@ -82,7 +82,7 @@ export default class LeaderboardMenu {
 				const options = Object.entries(subcat.values.values)
 					.map(([k, v]) => ({ id: k, label: v.label }));
 	
-				const [ value ] = await new DialogueMenu(`Choose a value for the variable ${subcat.name}:`, options, "PRIMARY").spawnMenu(interaction, "NEW_REPLY");
+				const [ value ] = await new DialogueMenu(`Choose a value for the variable ${subcat.name}:`, options).spawnMenu(interaction, "NEW_REPLY");
 				return [ subcat, value ];
 			})
 		);
