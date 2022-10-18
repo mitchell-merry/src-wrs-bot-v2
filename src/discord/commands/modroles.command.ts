@@ -36,7 +36,7 @@ async function add(interaction: CommandInteraction) {
 
 	const role = new ModeratorRoleEntity(interaction.guildId!, roleOption.id);
 	await mrRepo.save(role);
-	interaction.reply(`Added moderator role '${roleOption.name}'.`);
+	interaction.reply(`Added moderator role <@&${roleOption.id}>.`);
 }
 
 async function remove(interaction: CommandInteraction) {
@@ -59,7 +59,7 @@ async function list(interaction: CommandInteraction) {
 	const guildRoles = await mrRepo.find({ where: { guild_id: interaction.guildId! } });
 	if(guildRoles.length === 0) throw new UserError(`This guild has no moderator roles.`);
 
-	const items = guildRoles.map(role => `<@&${role.role_id}> [${role.role_id}]`);
+	const items = guildRoles.map(role => `<@&${role.role_id}>`);
 
 	await new PaginatedList(items, 15, "This list has expired. Use /modroles list to spawn a new one.")
 		.spawnMenu(interaction);
