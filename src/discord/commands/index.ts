@@ -3,7 +3,7 @@ import SRCError from 'src-ts/lib/src/SRCError';
 
 import InviteCommand from './invite.command';
 import ModrolesCommand from './modroles/modroles.command';
-import SetCommand from './set.command';
+import SetCommand from './set';
 import PlayerCommand from './player';
 import LeaderboardCommand from './leaderboard';
 import UpdateCommand from './update.command';
