@@ -17,18 +17,9 @@ const UpdateCommand: Command = {
 		await interaction.guild!.members.fetch();
 		updateLog('Members fetched.');
 
-		// get all leaderboards tracked by guild
-		const tlbRepo = DB.getRepository(TrackedLeaderboardEntity);
-		const tracked = await tlbRepo.find({
-			where: { guild_id: interaction.guildId! },
-			relations: {
-				leaderboard: { variables: true }
-			}
-		});
-		
 		// group leaderboards by role
 		const roleLeaderboards: Record<string, TrackedLeaderboardEntity[]> = {};
-		tracked.forEach(tlb => {
+		guildEnt.trackedLeaderboards.forEach(tlb => {
 			if(!roleLeaderboards[tlb.role_id]) roleLeaderboards[tlb.role_id] = [];
 			roleLeaderboards[tlb.role_id].push(tlb);
 		});
