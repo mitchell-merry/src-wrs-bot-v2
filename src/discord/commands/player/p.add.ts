@@ -1,4 +1,4 @@
-import SRC from "src-ts";
+import * as SRC from "src-ts";
 import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import UserError from "../../UserError";
 import { Subcommand } from "../command";
