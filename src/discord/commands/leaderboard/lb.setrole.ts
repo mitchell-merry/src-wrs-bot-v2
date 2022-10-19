@@ -1,10 +1,10 @@
 import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, Role, User } from "discord.js";
+import { CommandInteraction, Role } from "discord.js";
 import { DB } from "../../../db";
 import { LeaderboardEntity, TrackedLeaderboardEntity } from "../../../db/entities";
 import { LeaderboardNameACL } from "../../autocompleters/lbname.acl";
 import UserError from "../../UserError";
-import { Subcommand } from "../Command";
+import { Subcommand } from "../command";
 
 const LeaderboardSetroleCommand: Subcommand = {
 	data: new SlashCommandSubcommandBuilder().setName('setrole')

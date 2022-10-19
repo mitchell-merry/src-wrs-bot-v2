@@ -1,5 +1,5 @@
 import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, Role } from "discord.js";
+import { Role } from "discord.js";
 import * as SRC from "src-ts";
 
 import { DB } from "../../../db";
@@ -7,7 +7,7 @@ import { GuildEntity, LeaderboardEntity, TrackedLeaderboardEntity, VariableEntit
 import ConfirmationMenu from "../../menus/ConfirmationMenu";
 import LeaderboardMenu from "../../menus/LeaderboardMenu";
 import UserError from "../../UserError";
-import { Subcommand } from "../Command";
+import { Subcommand } from "../command";
 
 const gameRegex = /^\w+$/;
 

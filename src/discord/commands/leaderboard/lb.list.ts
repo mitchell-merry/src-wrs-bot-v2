@@ -1,10 +1,10 @@
 import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import {  CommandInteraction } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import { DB } from "../../../db";
 import { TrackedLeaderboardEntity } from "../../../db/entities";
 import PaginatedList from "../../menus/PaginatedList";
 import UserError from "../../UserError";
-import { Subcommand } from "../Command";
+import { Subcommand } from "../command";
 
 const LeaderboardListCommand: Subcommand = {
 	data: new SlashCommandSubcommandBuilder().setName('list')
