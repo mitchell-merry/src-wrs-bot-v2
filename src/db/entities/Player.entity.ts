@@ -25,9 +25,10 @@ export class PlayerEntity {
 	@JoinColumn({ name: 'guild_id' })
 	guild!: GuildEntity;
 	
-	constructor(guild_id: string, player_id: string, discord_id: string) {
+	constructor(guild_id: string, player_id: string, discord_id: string, src_name: string) {
 		this.guild_id = guild_id;
 		this.player_id = player_id;
 		this.discord_id = discord_id;
+		this.src_name = src_name;
 	}
 }
