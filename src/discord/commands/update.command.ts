@@ -25,7 +25,6 @@ const UpdateCommand: Command = {
 		});
 		
 		// for every role (wait for all)
-		const pRepo = DB.getRepository(PlayerEntity);
 		await Promise.all(Object.entries(roleLeaderboards).map(async ([ roleId, tlbs ]) => {
 			// fetch role
 			let role = await interaction.guild!.roles.fetch(roleId, { cache: false });
@@ -56,9 +55,11 @@ const UpdateCommand: Command = {
 				const srcPlayerIds = lb.runs.map(run => run.run.players.filter(SRC.playerIsUser).map(p => p.id)).flat();
 				lblog(`Found WR holder(s) (sr.c): ${srcPlayerIds.join(', ')}`);
 
-				const discPlayerIDs = (await Promise.all(srcPlayerIds.map(async id => 
-					await pRepo.findOne({ where: { guild_id: interaction.guildId!, player_id: id }})
-				))).filter((p): p is PlayerEntity => p !== null).map(p => p.discord_id);
+				const discPlayerIDs = srcPlayerIds
+					.map(id => guildEnt.players.find(p => p.player_id === id))
+					.filter((p): p is PlayerEntity => p !== null)
+					.map(p => p.discord_id);
+				
 				lblog(`Found WR holder(s) (discord): ${discPlayerIDs.join(', ')}`);
 				
 				discPlayerIDs.forEach(id => {
