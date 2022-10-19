@@ -71,6 +71,8 @@ export async function handleAutocomplete(interaction: AutocompleteInteraction) {
 	}
 
 	if (!acl) throw new Error(`Error getting autocomplete: Missing autocompleter`);
+	
+	await acl(interaction);
 }
 
 export async function interactionCreate(interaction: Interaction) {
@@ -86,6 +88,7 @@ export async function interactionCreate(interaction: Interaction) {
 
 		if(error instanceof UserError || error instanceof SRCError) {
 			data.content = error.message;
+			console.error(error);
 		} else {
 			console.error(error);
 		}
