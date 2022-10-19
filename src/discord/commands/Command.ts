@@ -3,37 +3,28 @@ import { AutocompleteInteraction, CommandInteraction } from "discord.js";
 import { PermissionLevel } from ".";
 import { GuildEntity } from "../../db/entities";
 
-export abstract class Command {
-	static data: SlashCommandBuilder;
-	static perm: PermissionLevel;
-	static execute: (interaction: CommandInteraction, guildEnt: GuildEntity) => Promise<void>;
-	static autocomplete: (interaction: AutocompleteInteraction) => Promise<void>;
-
-	static getData(): SlashCommandBuilder { return this.data; }
+export interface Command {
+	data: SlashCommandBuilder;
+	perm: PermissionLevel;
+	execute: (interaction: CommandInteraction, guildEnt: GuildEntity) => Promise<void>;
+	autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
 }
 
-export abstract class CommandWithSubcommands extends Command {
-	static subcommands: (typeof Subcommand)[]
-
-	static async execute(interaction: CommandInteraction, guildEnt: GuildEntity) {
-		const sc = this.subcommands.find(sc => sc.data.name === interaction.options.getSubcommand());
-		if(!sc) throw new Error(`Invalid subcommand: ${interaction.options.getSubcommand()}`);
-
-		sc.execute(interaction, guildEnt);
-	}
-
-	static getData() {
-		const newData = this.data;
-		this.subcommands.forEach(sc => newData.addSubcommand(sc.data));
-		return newData;
-	}
+export interface CommandWithSubcommands {
+	data: SlashCommandBuilder;
+	subcommands: Subcommand[];	
 }
 
-export abstract class Subcommand {
-	static data: SlashCommandSubcommandBuilder;
-	static perms: PermissionLevel;
-	static execute: (interaction: CommandInteraction, guildEnt: GuildEntity) => Promise<void>;
-	static autocomplete: (interaction: AutocompleteInteraction) => Promise<void>;
-
-
+export interface Subcommand {
+	data: SlashCommandSubcommandBuilder;
+	perm: PermissionLevel;
+	execute: (interaction: CommandInteraction, guildEnt: GuildEntity) => Promise<void>;
+	autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
 }
+	
+	
+	// this.subcommands.forEach(sc => this.data.addSubcommand(sc.data));
+	// const sc = this.subcommands.find(sc => sc.data.name === interaction.options.getSubcommand());
+	// if(!sc) throw new Error(`Invalid subcommand: ${interaction.options.getSubcommand()}`);
+	
+	// sc.execute(interaction, guildEnt);
