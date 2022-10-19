@@ -1,7 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import * as SRC from "src-ts";
 
-import { DB } from "../../db";
 import { PlayerEntity, TrackedLeaderboardEntity } from "../../db/entities";
 import UserError from "../UserError";
 import { Command } from "./command";

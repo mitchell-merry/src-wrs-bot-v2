@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, HexColorString } from "discord.js";
+import { HexColorString } from "discord.js";
 import { DB } from "../../db";
 import { GuildEntity } from "../../db/entities";
 import UserError from "../UserError";
