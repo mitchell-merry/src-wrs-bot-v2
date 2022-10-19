@@ -57,13 +57,12 @@ const PlayerListCommand: Subcommand = {
 	data: new SlashCommandSubcommandBuilder().setName('list')
 		.setDescription('Lists all player associations in this guild.'),
 	perm: 'mods',
-	execute: async (interaction) => {
-		const pRepo = DB.getRepository(PlayerEntity);
+	execute: async (interaction, guildEnt) => {
 		await interaction.deferReply();	
 		await interaction.guild!.members.fetch();
 	
 		const items = (await Promise.all(interaction.guild!.members.cache.map(async member => {
-			const playerEnt = await pRepo.findOne({ where: { guild_id: interaction.guildId!, discord_id: member.id } });
+			const playerEnt = guildEnt.players.find(p => p.discord_id === member.id);
 			if(!playerEnt) return '';
 			
 			return `<@${member.id}> - ${playerEnt.src_name} [${playerEnt.player_id}]`;
