@@ -40,7 +40,7 @@ export async function isUserMod(guild_id: string | null, member: GuildMember | A
 	const mrRepo = DB.getRepository(ModeratorRoleEntity);
 	const guildRoles = await mrRepo.find({ where: { guild_id } });
 	
-	return guildRoles.find(role => {
+	return !!guildRoles.find(role => {
 		if(Array.isArray(member.roles)) return member.roles.includes(role.role_id);
 
 		return !!member.roles.cache.get(role.role_id);

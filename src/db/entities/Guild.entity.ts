@@ -18,7 +18,7 @@ export class GuildEntity {
 	above_role_id!: string;
 
 	/** The leaderboards this guild is tracking. */
-	@OneToMany(() => TrackedLeaderboardEntity, tlb => tlb.leaderboard)
+	@OneToMany(() => TrackedLeaderboardEntity, tlb => tlb.guild)
 	trackedLeaderboards!: TrackedLeaderboardEntity[];
 
 	/** The moderator roles of this guild. */
