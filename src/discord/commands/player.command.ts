@@ -5,7 +5,7 @@ import { DB } from "../../db";
 import { PlayerEntity } from "../../db/entities";
 import PaginatedList from "../menus/PaginatedList";
 import UserError from "../UserError";
-import { CommandWithSubcommands, Subcommand } from "./Command";
+import { CommandWithSubcommands, Subcommand } from "./command";
 
 const PlayerAddCommand: Subcommand = {
 	data: new SlashCommandSubcommandBuilder().setName('add')

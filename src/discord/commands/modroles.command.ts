@@ -4,7 +4,7 @@ import { DB } from "../../db";
 import { ModeratorRoleEntity } from "../../db/entities";
 import PaginatedList from "../menus/PaginatedList";
 import UserError from "../UserError";
-import { CommandWithSubcommands, Subcommand } from "./Command";
+import { CommandWithSubcommands, Subcommand } from "./command";
 
 const ModrolesAddCommand: Subcommand = {
 	data: new SlashCommandSubcommandBuilder().setName('add')
