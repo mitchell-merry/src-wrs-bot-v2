@@ -11,13 +11,11 @@ const SetAboveRoleCommand: Subcommand = {
 		.addRoleOption(o => o.setName('above_role').setDescription('The role.').setRequired(true)),
 	perm: 'mods',
 	execute: async (interaction, guildEnt) => {
-		const gRepo = DB.getRepository(GuildEntity);
-		
 		const role = interaction.options.getRole('above_role');
 		if(!role) throw new Error('/set above_role: role not set / is undefined.');
 		
 		guildEnt.above_role_id = role.id;
-		await gRepo.save(guildEnt);
+		await DB.getRepository(GuildEntity).save(guildEnt);
 		await interaction.reply({ content: `above_role set to <@&${role.id}>.`, allowedMentions: { users: [], roles: [] } });
 	}
 };
@@ -28,14 +26,12 @@ const SetRoleDefaultColourCommand: Subcommand = {
 		.addStringOption(o => o.setName('role_default_colour').setDescription('The colour.').setRequired(true)),
 	perm: 'mods',
 	execute: async (interaction, guildEnt) => {
-		const gRepo = DB.getRepository(GuildEntity);
-		
 		const colour = interaction.options.getString('role_default_colour');
 		if(!colour) throw new Error('/set role_default_colour: role_default_colour not set / is undefined.');
 		if(!colour.match(/^#[0-9A-Fa-f]{6}$/)) throw new UserError('Colour must be a hexcode, e.g. #FEE75C.');
 	
 		guildEnt.role_default_colour = colour as HexColorString;
-		await gRepo.save(guildEnt);
+		await DB.getRepository(GuildEntity).save(guildEnt);
 		await interaction.reply(`role_default_colour set to ${colour}.`);
 	}
 };
