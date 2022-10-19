@@ -54,7 +54,7 @@ const SetListCommand: Subcommand = {
 	
 		msg += `\`role_default_colour\`: ${guildEnt.role_default_colour}`;
 	
-		interaction.reply({ content: msg, allowedMentions: { users: [], roles: [] } });
+		await interaction.reply({ content: msg, allowedMentions: { users: [], roles: [] } });
 	}
 }
 
