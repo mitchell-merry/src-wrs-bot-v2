@@ -1,12 +1,14 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CommandWithSubcommands } from "../Command";
 import LeaderboardAddCommand from "./lb.add";
+import LeaderboardListCommand from "./lb.list";
 import LeaderboardRemoveCommand from "./lb.remove";
+import LeaderboardSetroleCommand from "./lb.setrole";
 
 const LeaderboardCommand: CommandWithSubcommands = {
 	data: new SlashCommandBuilder().setName('leaderboard')
 		.setDescription('Manage the leaderboards for this guild.'),
-	subcommands: [ LeaderboardAddCommand, LeaderboardRemoveCommand ]
+	subcommands: [ LeaderboardAddCommand, LeaderboardRemoveCommand, LeaderboardListCommand, LeaderboardSetroleCommand ]
 };
 
 export default LeaderboardCommand;
