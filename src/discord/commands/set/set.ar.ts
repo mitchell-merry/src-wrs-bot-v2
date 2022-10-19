@@ -12,8 +12,7 @@ const SetAboveRoleCommand: Subcommand = {
 		const role = interaction.options.getRole('above_role');
 		if(!role) throw new Error('/set above_role: role not set / is undefined.');
 		
-		guildEnt.above_role_id = role.id;
-		await DB.getRepository(GuildEntity).save(guildEnt);
+		await DB.getRepository(GuildEntity).update({ guild_id: guildEnt.guild_id }, { above_role_id: role.id });
 		await interaction.reply({ content: `above_role set to <@&${role.id}>.`, allowedMentions: { users: [], roles: [] } });
 	}
 };
