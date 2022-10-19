@@ -11,16 +11,14 @@ const ModrolesAddCommand: Subcommand = {
 		.setDescription('Add a moderator role.')
 		.addRoleOption(o => o.setName('role').setDescription('The role.').setRequired(true)),
 	perm: 'admin',
-	execute: async (interaction) => {
-		const mrRepo = DB.getRepository(ModeratorRoleEntity);
-	
+	execute: async (interaction, guildEnt) => {
 		const roleOption = interaction.options.getRole('role', true);
 	
-		const has = await mrRepo.findOne({ where: { guild_id: interaction.guildId!, role_id: roleOption.id } });
+		const has = guildEnt.moderatorRoles.find(mr => mr.role_id === roleOption.id);
 		if(!!has) throw new UserError(`That role is already set as a moderator in this guild.`);
 	
 		const role = new ModeratorRoleEntity(interaction.guildId!, roleOption.id);
-		await mrRepo.save(role);
+		await DB.getRepository(ModeratorRoleEntity).save(role);
 		await interaction.reply(`Added moderator role <@&${roleOption.id}>.`);
 	}
 };
