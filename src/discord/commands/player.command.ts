@@ -17,14 +17,14 @@ const PlayerAddCommand: Subcommand = {
 		const userOpt = interaction.options.getUser('user');
 		const srcOpt = interaction.options.getString('src_account');
 		if(!srcOpt || !userOpt)
-		throw new UserError('src_account and user must be set.');
+			throw new UserError('src_account and user must be set.');
 		
 		if(guildEnt.players.find(p => p.discord_id === userOpt.id))
-		throw new UserError(`This discord account is already associated with a speedrun.com account.`);
+			throw new UserError(`This discord account is already associated with a speedrun.com account.`);
 		
 		const player = await SRC.getUser(srcOpt);	
 		if(guildEnt.players.find(p => p.player_id === player.id))
-		throw new UserError(`This speedrun.com account is already associated with a discord account.`);
+			throw new UserError(`This speedrun.com account is already associated with a discord account.`);
 		
 		const playerEnt = new PlayerEntity(interaction.guildId!, player.id, userOpt.id, player.names.international);
 		await DB.getRepository(PlayerEntity).save(playerEnt);
@@ -68,7 +68,8 @@ const PlayerListCommand: Subcommand = {
 			return `<@${member.id}> - ${playerEnt.src_name} [${playerEnt.player_id}]`;
 		}))).filter(l => l != '');
 	
-		if(items.length === 0) throw new UserError("This guild has no associations for players.");
+		if(items.length === 0)
+			throw new UserError("This guild has no associations for players.");
 	
 		await new PaginatedList(items, 15, "This list has expired. Use /player list to sapwn a new one.")
 			.spawnMenu(interaction);
