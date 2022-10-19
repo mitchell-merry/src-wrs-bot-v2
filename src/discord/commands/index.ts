@@ -17,27 +17,36 @@ export const commands = [ InviteCommand, ModrolesCommand, SetCommand, PlayerComm
 export const hasSubcommands = (cmd: Command | CommandWithSubcommands): cmd is CommandWithSubcommands => 'subcommands' in cmd;
 
 export async function handleSlashCommand(interaction: CommandInteraction) {
+	const guildLog = (s: string) => console.log(`[${interaction.guildId!}] ${s}`);
+	guildLog(`Command receieved by ${interaction.user.tag}.`);
+
 	const command = commands.find(c => c.data.name === interaction.commandName);
 	if (!command) throw new Error(`Command ${interaction.commandName} unknown`);
-	
+	guildLog(`Found command ${command.data.name}.`);
+
 	let perm: PermissionLevel;
 	let execute: Executer;
 
 	if (hasSubcommands(command)) {
 		const sc = command.subcommands.find(sc => sc.data.name === interaction.options.getSubcommand());
 		if(!sc) throw new Error(`Invalid subcommand: ${interaction.options.getSubcommand()}`);
-		
+		guildLog(`Detected as subcommand ${sc.data.name}.`);
+
 		perm = sc.perm;
 		execute = sc.execute;
 	} else {
+		guildLog(`Detected as top-level command.`);
 		perm = command.perm;
 		execute = command.execute;
 	}
 	
-	if (typeof interaction.member?.permissions === 'string') throw new Error(`error with ${interaction.member?.permissions}`)
+	if (typeof interaction.member?.permissions === 'string')
+		throw new Error(`error with ${interaction.member?.permissions}`)
 
+	guildLog('Getting user credentials...');
 	const userIsAdmin = interaction.user.id === process.env.admin || interaction.member!.permissions.has('ADMINISTRATOR');
 	const userIsMod = userIsAdmin || (await isUserMod(interaction.guildId, interaction.member));
+	guildLog(`userIsAdmin: ${userIsAdmin}, userIsMod: ${userIsMod}`);
 
 	// Check user has correct permission.
 	if (perm === 'admin' && !userIsAdmin)
@@ -48,11 +57,20 @@ export async function handleSlashCommand(interaction: CommandInteraction) {
 	if (!interaction.guild || !interaction.guildId)
 		throw new Error('For some reason missing guild');
 
-	const gRepo = DB.getRepository(GuildEntity);
-	const guildEnt = await gRepo.findOne({ where: { guild_id: interaction.guildId }, relations: { trackedLeaderboards: { leaderboard: { variables: true } }, players: true } });
+	guildLog('Getting guild entity...');
+	const guildEnt = await DB.getRepository(GuildEntity).findOne({
+		where: { guild_id: interaction.guildId },
+		relations: {
+			trackedLeaderboards: true,
+			players: true,
+			moderatorRoles: true
+		}
+	});
+
 	if (!guildEnt)
 		throw new Error('Guild not being tracked as an entity for some reason.');
 
+	guildLog(`Found! Executing command.`);
 	await execute(interaction, guildEnt);
 }
 
