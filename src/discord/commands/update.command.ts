@@ -9,7 +9,7 @@ const UpdateCommand: Command = {
 	data: new SlashCommandBuilder().setName('update').setDescription('Update the world record roles.'),
 	perm: 'mods',
 	execute: async (interaction, guildEnt) => {
-		interaction.deferReply();
+		await interaction.deferReply();
 
 		const updateLog = (s: string) => console.log(`[${interaction.guildId}] [/update] ${s}`);
 		updateLog(`Update run by ${interaction.user.tag}, fetching all members in guild...`);
@@ -89,7 +89,7 @@ const UpdateCommand: Command = {
 		}));
 
 		updateLog(`Finished updating!`);
-		interaction.editReply('Done updating.');
+		await interaction.editReply('Done updating.');
 	}
 };
 

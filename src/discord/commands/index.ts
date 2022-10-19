@@ -61,7 +61,7 @@ export async function handleSlashCommand(interaction: CommandInteraction) {
 	const guildEnt = await DB.getRepository(GuildEntity).findOne({
 		where: { guild_id: interaction.guildId },
 		relations: {
-			trackedLeaderboards: true,
+			trackedLeaderboards: { leaderboard: { variables: true } },
 			players: true,
 			moderatorRoles: true
 		}
