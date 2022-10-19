@@ -2,9 +2,9 @@ import { AutocompleteInteraction, CommandInteraction, Interaction, WebhookEditMe
 import SRCError from 'src-ts/lib/src/SRCError';
 
 import InviteCommand from './invite.command';
-import ModrolesCommand from './modroles.command';
+import ModrolesCommand from './modroles/modroles.command';
 import SetCommand from './set.command';
-import PlayerCommand from './player.command';
+import PlayerCommand from './player';
 import LeaderboardCommand from './leaderboard';
 import UpdateCommand from './update.command';
 import UserError from '../UserError';
