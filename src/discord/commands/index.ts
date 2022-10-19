@@ -5,7 +5,7 @@ import InviteCommand from './invite.command';
 import ModrolesCommand from './modroles.command';
 import SetCommand from './set.command';
 import PlayerCommand from './player.command';
-import LeaderboardCommand from './leaderboard/leaderboard.command';
+import LeaderboardCommand from './leaderboard';
 import UpdateCommand from './update.command';
 import UserError from '../UserError';
 import { DB, isUserMod } from '../../db';
