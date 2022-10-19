@@ -69,20 +69,6 @@ export async function handleAutocomplete(interaction: AutocompleteInteraction) {
 	if(interaction.commandName === 'leaderboard'
 		&& (interaction.options.getSubcommand() === 'remove' || interaction.options.getSubcommand() === 'setrole')
 	) {
-		const tlbRepo = DB.getRepository(TrackedLeaderboardEntity);
-		const val = interaction.options.getFocused(true).value as string;
-
-		const boards = await tlbRepo.find({ where: { guild_id: interaction.guildId! }, relations: { leaderboard: true } });
-
-		// TODO sort alphabetically
-		const response = boards
-			.filter(tlb => tlb.leaderboard.lb_name.toLowerCase().includes(val.toLowerCase()))
-			.map(tlb => ({
-				name: `${tlb.leaderboard.lb_name}`,
-				value: tlb.leaderboard.lb_id
-			}))
-			.slice(0, 25);
-
-		interaction.respond(response);
+		
 	}
 }

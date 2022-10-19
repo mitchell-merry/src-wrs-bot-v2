@@ -1,13 +1,14 @@
 import { SlashCommandBuilder, SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { AutocompleteInteraction, CommandInteraction } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import { PermissionLevel } from ".";
 import { GuildEntity } from "../../db/entities";
+import { Autocompleter } from "../autocompleters/Autocompleter";
 
 export interface Command {
 	data: SlashCommandBuilder;
 	perm: PermissionLevel;
 	execute: (interaction: CommandInteraction, guildEnt: GuildEntity) => Promise<void>;
-	autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
+	autocomplete?: Autocompleter;
 }
 
 export interface CommandWithSubcommands {
@@ -19,7 +20,7 @@ export interface Subcommand {
 	data: SlashCommandSubcommandBuilder;
 	perm: PermissionLevel;
 	execute: (interaction: CommandInteraction, guildEnt: GuildEntity) => Promise<void>;
-	autocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
+	autocomplete?: Autocompleter;
 }
 	
 	
