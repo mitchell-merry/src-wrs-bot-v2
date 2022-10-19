@@ -9,7 +9,7 @@ import LeaderboardCommand from './leaderboard/leaderboard.command';
 import UpdateCommand from './update.command';
 import UserError from '../UserError';
 import { DB, isUserMod } from '../../db';
-import { Command, CommandWithSubcommands, Executer, PermissionLevel } from './Command';
+import { Command, CommandWithSubcommands, Executer, PermissionLevel } from './command';
 import { GuildEntity } from '../../db/entities';
 
 export const commands = [ InviteCommand, ModrolesCommand, SetCommand, PlayerCommand, LeaderboardCommand, UpdateCommand ];

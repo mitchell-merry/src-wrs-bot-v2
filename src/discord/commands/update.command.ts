@@ -1,11 +1,10 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
 import * as SRC from "src-ts";
 
 import { DB } from "../../db";
-import { GuildEntity, PlayerEntity, TrackedLeaderboardEntity } from "../../db/entities";
+import { PlayerEntity, TrackedLeaderboardEntity } from "../../db/entities";
 import UserError from "../UserError";
-import { Command } from "./Command";
+import { Command } from "./command";
 
 const UpdateCommand: Command = {
 	data: new SlashCommandBuilder().setName('update').setDescription('Update the world record roles.'),

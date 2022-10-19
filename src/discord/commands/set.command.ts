@@ -3,7 +3,7 @@ import { CommandInteraction, HexColorString } from "discord.js";
 import { DB } from "../../db";
 import { GuildEntity } from "../../db/entities";
 import UserError from "../UserError";
-import { CommandWithSubcommands, Subcommand } from "./Command";
+import { CommandWithSubcommands, Subcommand } from "./command";
 
 const SetAboveRoleCommand: Subcommand = {
 	data: new SlashCommandSubcommandBuilder().setName('above_role')
