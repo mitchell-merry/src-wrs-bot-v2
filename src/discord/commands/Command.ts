@@ -1,13 +1,15 @@
 import { SlashCommandBuilder, SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
-import { PermissionLevel } from ".";
 import { GuildEntity } from "../../db/entities";
 import { Autocompleter } from "../autocompleters/Autocompleter";
+
+export type PermissionLevel = 'admin' | 'mods' | 'all';
+export type Executer = (interaction: CommandInteraction, guildEnt: GuildEntity) => Promise<void>
 
 export interface Command {
 	data: SlashCommandBuilder;
 	perm: PermissionLevel;
-	execute: (interaction: CommandInteraction, guildEnt: GuildEntity) => Promise<void>;
+	execute: Executer;
 	autocomplete?: Autocompleter;
 }
 
@@ -19,13 +21,6 @@ export interface CommandWithSubcommands {
 export interface Subcommand {
 	data: SlashCommandSubcommandBuilder;
 	perm: PermissionLevel;
-	execute: (interaction: CommandInteraction, guildEnt: GuildEntity) => Promise<void>;
+	execute: Executer;
 	autocomplete?: Autocompleter;
 }
-	
-	
-	// this.subcommands.forEach(sc => this.data.addSubcommand(sc.data));
-	// const sc = this.subcommands.find(sc => sc.data.name === interaction.options.getSubcommand());
-	// if(!sc) throw new Error(`Invalid subcommand: ${interaction.options.getSubcommand()}`);
-	
-	// sc.execute(interaction, guildEnt);

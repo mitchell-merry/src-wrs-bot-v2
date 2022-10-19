@@ -1,16 +1,14 @@
 /** Entry file */
-import 'dotenv/config'
-import 'reflect-metadata'
+import 'dotenv/config';
+import 'reflect-metadata';
 
-import { Client, Intents, Interaction } from 'discord.js'
+import { Client, Intents } from 'discord.js'
 
-import { DB, isUserMod, synchronizeGuilds } from './db'
-import { commands, CommandFile, handleSlashCommand, handleAutocomplete } from './discord';
-import { GuildEntity, TrackedLeaderboardEntity } from './db/entities';
-import UserError from './discord/UserError';
+import { DB, synchronizeGuilds } from './db'
+import { interactionCreate } from './discord';
+import { GuildEntity } from './db/entities';
 
 const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS ] });
-let commandDict: Record<string, CommandFile> = {};
 
 client.on('ready', async () => {
 	if(!client.user) throw new Error(`Null client.user? ${client}`);
@@ -20,8 +18,6 @@ client.on('ready', async () => {
 	client.guilds.cache.forEach(g => {
 		console.log(`[${g.id}] ${g.available ? g.name : "UNAVAILABLE"} `)
 	});
-
-	commandDict = Object.fromEntries(commands.map(command => [command.data.name, command]));
 
 	let retries = 5;
 	while (retries)
@@ -49,10 +45,7 @@ client.on('ready', async () => {
 
 client.login(process.env.TOKEN);
 
-client.on('interactionCreate', async (interaction: Interaction) => {
-	if(interaction.isCommand()) await handleSlashCommand(interaction);
-	if(interaction.isAutocomplete()) await handleAutocomplete(interaction); 
-});
+client.on('interactionCreate', interactionCreate);
 
 client.on('guildCreate', async guild => {
 	const gRepo = DB.getRepository(GuildEntity);
