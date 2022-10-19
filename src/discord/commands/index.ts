@@ -49,7 +49,7 @@ export async function handleSlashCommand(interaction: CommandInteraction) {
 		throw new Error('For some reason missing guild');
 
 	const gRepo = DB.getRepository(GuildEntity);
-	const guildEnt = await gRepo.findOne({ where: { guild_id: interaction.guildId }});
+	const guildEnt = await gRepo.findOne({ where: { guild_id: interaction.guildId }, relations: { trackedLeaderboards: { leaderboard: { variables: true } }, players: true } });
 	if (!guildEnt)
 		throw new Error('Guild not being tracked as an entity for some reason.');
 
