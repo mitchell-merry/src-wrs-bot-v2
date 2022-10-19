@@ -13,7 +13,7 @@ export class ModeratorRoleEntity {
 	role_id!: string;
 
 	/** The leaderboard which this variable is attached to. */
-	@ManyToOne(() => GuildEntity, guild => guild.moderatorRoles)
+	@ManyToOne(() => GuildEntity, guild => guild.moderatorRoles, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'guild_id' })
 	guild!: GuildEntity;
 
