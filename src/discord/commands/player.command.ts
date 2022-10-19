@@ -37,14 +37,16 @@ const PlayerRemoveCommand: Subcommand = {
 		.setDescription('Remove a player association.')
 		.addUserOption(o => o.setName('user').setDescription('The discord account.').setRequired(true)),
 	perm: 'mods',
-	execute: async (interaction) => {
+	execute: async (interaction, guildEnt) => {
 		const pRepo = DB.getRepository(PlayerEntity);
 	
 		const userOpt = interaction.options.getUser('user');
-		if(!userOpt) throw new UserError('The option user must be set.');
+		if(!userOpt)
+			throw new UserError('The option user must be set.');
 	
-		let exists = await pRepo.findOne({ where: { guild_id: interaction.guildId!, discord_id: userOpt.id } });
-		if(!exists) throw new UserError(`This discord account is not associated with a speedrun.com account.`);
+		let exists = guildEnt.players.find(p => p.discord_id === userOpt.id);
+		if(!exists)
+			throw new UserError(`This discord account is not associated with a speedrun.com account.`);
 	
 		await pRepo.remove(exists);
 		await interaction.reply({ content: `Association for <@${userOpt.id}> removed!`, allowedMentions: { users: [], roles: [] } });
