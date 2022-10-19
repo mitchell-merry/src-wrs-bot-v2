@@ -64,7 +64,7 @@ const ModrolesListCommand: Subcommand = {
 const ModrolesCommand: CommandWithSubcommands = {
 	data: new SlashCommandBuilder()
 		.setName('modroles')
-		.setDescription('Manager the moderator roles for the bot. Requires admin permissions.'),
+		.setDescription('Manages the moderator roles for the bot. Requires admin permissions.'),
 	subcommands: [ ModrolesAddCommand, ModrolesRemoveCommand, ModrolesListCommand ]
 };
 
