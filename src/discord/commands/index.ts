@@ -95,8 +95,8 @@ export async function handleAutocomplete(interaction: AutocompleteInteraction) {
 
 export async function interactionCreate(interaction: Interaction) {
 	try {
-		if(interaction.isCommand()) await handleSlashCommand(interaction);
-		if(interaction.isAutocomplete()) await handleAutocomplete(interaction); 
+		if (interaction.isCommand()) await handleSlashCommand(interaction);
+		if (interaction.isAutocomplete()) await handleAutocomplete(interaction); 
 	} catch (error) {
 		const data: WebhookEditMessageOptions = {
 			content: "Unknown error occurred.",
@@ -104,12 +104,11 @@ export async function interactionCreate(interaction: Interaction) {
 			allowedMentions: { users: [], roles: [] }
 		};
 
-		if(error instanceof UserError || error instanceof SRCError) {
+		if (error instanceof UserError || error instanceof SRCError)
 			data.content = error.message;
+
+		if (!(error instanceof UserError))
 			console.error(error);
-		} else {
-			console.error(error);
-		}
 
 		if (interaction.isCommand()) {
 			await ((interaction.replied || interaction.deferred)
