@@ -21,7 +21,7 @@ const PlayerListCommand: Subcommand = {
 		if(items.length === 0)
 			throw new UserError("This guild has no associations for players.");
 	
-		await new PaginatedList(items, 15, "This list has expired. Use /player list to sapwn a new one.")
+		await new PaginatedList(items, 15, "This list has expired. Use /player list to spawn a new one.")
 			.spawnMenu(interaction);
 	}
 }
