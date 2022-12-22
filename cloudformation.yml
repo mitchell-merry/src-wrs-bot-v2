@@ -11,6 +11,10 @@ Parameters:
     Type: String
     Description: Password for the MySQL RDS database.
     NoEcho: true
+  DBSnapshot:
+    Type: String
+    Description: ARN of the snapshot to create the instance from.
+    Default: ""
   DiscordToken:
     Type: String
     NoEcho: true
@@ -110,6 +114,8 @@ Resources:
       DBName: srcwrs
       MasterUsername: !Ref DBUser
       MasterUserPassword: !Ref DBPass
+
+      DBSnapshotIdentifier: !Ref DBSnapshot
       DBInstanceClass: db.t2.micro
       AllocatedStorage: "20"
       BackupRetentionPeriod: 7
