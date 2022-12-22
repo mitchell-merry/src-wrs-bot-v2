@@ -56,7 +56,7 @@ const UpdateCommand: Command = {
 
 				const discPlayerIDs = srcPlayerIds
 					.map(id => guildEnt.players.find(p => p.player_id === id))
-					.filter((p): p is PlayerEntity => p !== null)
+					.filter((p): p is PlayerEntity => !!p)
 					.map(p => p.discord_id);
 				
 				lblog(`Found WR holder(s) (discord): ${discPlayerIDs.join(', ')}`);
