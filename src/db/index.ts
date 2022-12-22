@@ -12,7 +12,7 @@ export const DB = new DataSource({
 	port: +(process.env.DB_PORT || 3306),
 	username: 'root',
 	password: process.env.MYSQL_ROOT_PASSWORD,
-	database: process.env.MYSQL_DATABASE,
+	database: process.env.MYSQL_DATABASE || "srcwrs",
 	synchronize: (process.env.DB_SYNC === "true") || false,
 	entities,
 	migrations
