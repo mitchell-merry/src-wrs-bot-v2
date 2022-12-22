@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import * as SRC from "src-ts";
+import { DB } from "../../db";
 
 import { PlayerEntity, TrackedLeaderboardEntity } from "../../db/entities";
 import UserError from "../UserError";
@@ -80,7 +81,14 @@ const UpdateCommand: Command = {
 
 			// add roles to users
 			await Promise.all(accounts.map(async a => {
-				const user = await interaction.guild!.members.fetch(a);
+				const user = interaction.guild!.members.cache.get(a);
+				if (!user)
+				{
+					roleLog(`Account ${a} not in the server, removing association!`);
+					await DB.getRepository(PlayerEntity).delete({ discord_id: a, guild_id: guildEnt.guild_id });
+					return;
+				}
+
 				roleLog(`Adding role to ${user.user.tag}...`);
 				await user.roles.add(role!);
 			}));
