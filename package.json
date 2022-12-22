@@ -41,7 +41,7 @@
 		"mysql2": "^2.3.3",
 		"node-fetch": "^2.6.7",
 		"reflect-metadata": "^0.1.13",
-		"src-ts": "^2.5.1",
+		"src-ts": "^2.8.0",
 		"typeorm": "^0.3.6"
 	},
 	"devDependencies": {

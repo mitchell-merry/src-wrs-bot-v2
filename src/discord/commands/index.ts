@@ -1,5 +1,5 @@
 import { AutocompleteInteraction, CommandInteraction, Interaction, WebhookEditMessageOptions } from 'discord.js';
-import SRCError from 'src-ts/lib/src/SRCError';
+import { SRCError } from 'src-ts';
 
 import InviteCommand from './invite.command';
 import ModrolesCommand from './modroles/modroles.command';
