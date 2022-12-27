@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, CommandInteraction, Interaction, WebhookEditMessageOptions } from 'discord.js';
+import { AutocompleteInteraction, ChatInputCommandInteraction, CommandInteraction, Interaction, InteractionReplyOptions, MessagePayload, MessagePayloadOption, WebhookEditMessageOptions } from 'discord.js';
 import { SRCError } from 'src-ts';
 
 import InviteCommand from './invite.command';
@@ -16,7 +16,7 @@ export const commands = [ InviteCommand, ModrolesCommand, SetCommand, PlayerComm
 
 export const hasSubcommands = (cmd: Command | CommandWithSubcommands): cmd is CommandWithSubcommands => 'subcommands' in cmd;
 
-export async function handleSlashCommand(interaction: CommandInteraction) {
+export async function handleSlashCommand(interaction: ChatInputCommandInteraction) {
 	const guildLog = (s: string) => console.log(`[${interaction.guildId!}] ${s}`);
 	guildLog(`Command receieved by ${interaction.user.tag}.`);
 
@@ -44,7 +44,7 @@ export async function handleSlashCommand(interaction: CommandInteraction) {
 		throw new Error(`error with ${interaction.member?.permissions}`)
 
 	guildLog('Getting user credentials...');
-	const userIsAdmin = interaction.user.id === process.env.admin || interaction.member!.permissions.has('ADMINISTRATOR');
+	const userIsAdmin = interaction.user.id === process.env.admin || interaction.member!.permissions.has('Administrator');
 	const userIsMod = userIsAdmin || (await isUserMod(interaction.guildId, interaction.member));
 	guildLog(`userIsAdmin: ${userIsAdmin}, userIsMod: ${userIsMod}`);
 
@@ -95,10 +95,10 @@ export async function handleAutocomplete(interaction: AutocompleteInteraction) {
 
 export async function interactionCreate(interaction: Interaction) {
 	try {
-		if (interaction.isCommand()) await handleSlashCommand(interaction);
+		if (interaction.isChatInputCommand()) await handleSlashCommand(interaction);
 		if (interaction.isAutocomplete()) await handleAutocomplete(interaction); 
 	} catch (error) {
-		const data: WebhookEditMessageOptions = {
+		const data: InteractionReplyOptions = {
 			content: "Unknown error occurred.",
 			components: [],
 			allowedMentions: { users: [], roles: [] }

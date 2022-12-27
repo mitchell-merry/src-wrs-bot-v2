@@ -1,5 +1,5 @@
 import * as SRC from "src-ts";
-import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
+import { SlashCommandSubcommandBuilder } from "discord.js";
 import UserError from "../../UserError";
 import { Subcommand } from "../command";
 import { PlayerEntity } from "../../../db/entities";

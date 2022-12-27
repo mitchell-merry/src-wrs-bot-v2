@@ -1,4 +1,5 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
+import UserError from "../UserError";
 import { Command } from "./command";
 
 const InviteCommand: Command = {
@@ -6,10 +7,8 @@ const InviteCommand: Command = {
 		.setName('invite')
 		.setDescription('Get the invite for this bot.'),
 	perm: 'mods',
-	execute: async (interaction) => {
-		return interaction.reply({
-			content: `https://discord.com/api/oauth2/authorize?client_id=${process.env.client}&permissions=268438528&scope=bot%20applications.commands`
-		});
+	execute: (interaction) => {
+		throw new UserError(`https://discord.com/api/oauth2/authorize?client_id=${process.env.client}&permissions=268438528&scope=bot%20applications.commands`);
 	}
 }
 

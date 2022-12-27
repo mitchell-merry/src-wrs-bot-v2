@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 import { CommandWithSubcommands } from "../command";
 import ModrolesAddCommand from "./mr.add";
 import ModrolesListCommand from "./mr.list";

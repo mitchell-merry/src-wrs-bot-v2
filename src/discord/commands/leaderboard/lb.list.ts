@@ -1,5 +1,4 @@
-import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { CommandInteraction } from "discord.js";
+import { CommandInteraction, SlashCommandSubcommandBuilder } from "discord.js";
 import { DB } from "../../../db";
 import { TrackedLeaderboardEntity } from "../../../db/entities";
 import PaginatedList from "../../menus/PaginatedList";
@@ -10,7 +9,7 @@ const LeaderboardListCommand: Subcommand = {
 	data: new SlashCommandSubcommandBuilder().setName('list')
 		.setDescription('Lists all leaderboards tracked in this guild.'),
 	perm: 'all',
-	execute: async (interaction: CommandInteraction) => {
+	execute: async (interaction) => {
 		await interaction.deferReply();
 		
 		const tlbRepo = DB.getRepository(TrackedLeaderboardEntity);

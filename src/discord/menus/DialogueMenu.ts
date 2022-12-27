@@ -1,11 +1,10 @@
-import { CommandInteraction, EmojiResolvable, InteractionButtonOptions, Message, MessageActionRow, MessageButton, MessageSelectMenu, WebhookEditMessageOptions } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentEmojiResolvable, CommandInteraction, Message, StringSelectMenuBuilder, WebhookEditMessageOptions, InteractionEditReplyOptions, MessagePayload, InteractionReplyOptions, ChatInputCommandInteraction, MessageCreateOptions } from "discord.js";
 import UserError from "../UserError";
 
 export interface DialogueOption<T extends string = string> {
 	id: T;
 	label: string;
-	style?: InteractionButtonOptions['style'];
-	emoji?: EmojiResolvable;
+	style?: ButtonStyle;
 	disabled?: boolean;
 }
 
@@ -14,9 +13,9 @@ export type SpawnAction = "NEW_REPLY" | "EDIT_REPLY" | "NEW_MESSAGE";
 export default class DialogueMenu<T extends string = string> {
 	private content: string;
 	private options: DialogueOption[];
-	private defaultStyle: InteractionButtonOptions['style'];
+	private defaultStyle: ButtonStyle;
 
-	constructor(content: string, options: readonly DialogueOption<T>[] | Record<T, string>, defaultStyle: InteractionButtonOptions['style'] = "PRIMARY") {
+	constructor(content: string, options: readonly DialogueOption<T>[] | Record<T, string>, defaultStyle: ButtonStyle = ButtonStyle.Primary) {
 		this.content = content;
 		
 		if (Array.isArray(options)) this.options = options;
@@ -25,16 +24,15 @@ export default class DialogueMenu<T extends string = string> {
 		this.defaultStyle = defaultStyle;
 	}
 
-	public async spawnMenu(interaction: CommandInteraction, action: SpawnAction, options: WebhookEditMessageOptions = {}, timeout: number = 300000): Promise<[T, string]> {
+	public async spawnMenu(interaction: ChatInputCommandInteraction, action: SpawnAction, timeout: number = 300000): Promise<[T, string]> {
 		// get the components of the menu (buttons / select menu for > 5 items)
 		const components = this.getComponents();
 
 		// build the message to send
-		const data: WebhookEditMessageOptions = {
+		const data = {
 			content: this.content,
 			components,
-			allowedMentions: { users: [], roles: [] },
-			...options
+			allowedMentions: { users: [], roles: [] }
 		};
 
 		let menuMessage: Message;
@@ -62,7 +60,7 @@ export default class DialogueMenu<T extends string = string> {
 		// get the choice
 		let choice: T;
 		if (r.isButton()) choice = r.customId as T;
-		else if (r.isSelectMenu()) choice = r.values[0] as T;
+		else if (r.isStringSelectMenu()) choice = r.values[0] as T;
 		else throw new Error(`Unexpected interaction type: ${r.componentType}`);
 
 		let choiceLabel = this.options.find(o => o.id === choice)!.label;
@@ -78,27 +76,25 @@ export default class DialogueMenu<T extends string = string> {
 		const row = this.options.length <= 5 
 			? this.options.map(o => this.buildButton(o))
 			: [ this.buildSelect(this.options) ];
-		return [ new MessageActionRow().addComponents(row) ];
+		return [ new ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>().addComponents(row) ];
 	}
 
 	private buildButton(option: DialogueOption) {
-		return new MessageButton()
+		return new ButtonBuilder()
 			.setCustomId(option.id)
 			.setLabel(option.label)
 			.setStyle(option.style ?? this.defaultStyle)
-			.setEmoji(option.emoji ?? '')
 			.setDisabled(option.disabled ?? false);
 	}
 	
 	private buildSelect(options: DialogueOption[]) {
-		return new MessageSelectMenu()
+		return new StringSelectMenuBuilder()
 			.setCustomId('select_menu')
 			.setPlaceholder('Nothing selected.')
 			.setMinValues(1).setMaxValues(1)
 			.addOptions(options.map(option => ({
 				label: option.label,
 				value: option.id,
-				emoji: option.emoji,
 			})));
 	}
 }

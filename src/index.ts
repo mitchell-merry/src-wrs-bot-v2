@@ -2,13 +2,13 @@
 import 'dotenv/config';
 import 'reflect-metadata';
 
-import { Client, Intents } from 'discord.js'
+import { Client, GatewayIntentBits } from 'discord.js'
 
 import { DB, synchronizeGuilds } from './db'
 import { interactionCreate } from './discord';
 import { GuildEntity } from './db/entities';
 
-const client = new Client({ intents: [ Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MEMBERS ] });
+const client = new Client({ intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers ] });
 
 client.on('ready', async () => {
 	if(!client.user) throw new Error(`Null client.user? ${client}`);

@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { SlashCommandBuilder } from "discord.js";
 import { CommandWithSubcommands } from "../command";
 import LeaderboardAddCommand from "./lb.add";
 import LeaderboardListCommand from "./lb.list";

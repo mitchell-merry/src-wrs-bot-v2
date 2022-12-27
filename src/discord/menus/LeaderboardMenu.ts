@@ -1,4 +1,4 @@
-import { CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, CommandInteraction } from "discord.js";
 import * as SRC from "src-ts";
 import UserError from "../UserError";
 import DialogueMenu from "./DialogueMenu";
@@ -11,7 +11,7 @@ export default class LeaderboardMenu {
 
 	constructor() { }
 
-	public async spawnMenu(interaction: CommandInteraction, gameId: string) {
+	public async spawnMenu(interaction: ChatInputCommandInteraction, gameId: string) {
 		// get all the game info from speedrun.com
 		const game = await SRC.getGame<'categories.variables,levels'>(gameId, { embed: 'categories.variables,levels' });
 
@@ -39,7 +39,7 @@ export default class LeaderboardMenu {
 		return { game, level, category, variables };
 	}
 
-	public async selectType(interaction: CommandInteraction, game: SRC.Game<'categories.variables,levels'>): Promise<SRC.CategoryType> {
+	public async selectType(interaction: ChatInputCommandInteraction, game: SRC.Game<'categories.variables,levels'>): Promise<SRC.CategoryType> {
 		if (game.levels.data.length === 0 && game.categories.data.length === 0)
 			throw new UserError(`The game ${game.names.international} has no leaderboards!`);
 
@@ -52,7 +52,7 @@ export default class LeaderboardMenu {
 		else return "per-level";
 	}
 
-	public async selectLevel(interaction: CommandInteraction, message: string, levels: SRC.Level[]) {
+	public async selectLevel(interaction: ChatInputCommandInteraction, message: string, levels: SRC.Level[]) {
 		if (levels.length === 1) return levels[0];
 		
 		const q = (message !== '' ? `${message}\n` : '') + 'Choose a level:';
@@ -62,7 +62,7 @@ export default class LeaderboardMenu {
 		return levels.find(l => l.id === levelId)!;
 	}
 
-	public async selectCategory<E extends string, T extends SRC.CategoryType>(interaction: CommandInteraction, message: string, categories: SRC.Category<E, T>[], type: T) {
+	public async selectCategory<E extends string, T extends SRC.CategoryType>(interaction: ChatInputCommandInteraction, message: string, categories: SRC.Category<E, T>[], type: T) {
 		const categoriesOfType = categories.filter(c => c.type === type);
 		if (categoriesOfType.length === 1) return categoriesOfType[0];
 
@@ -73,7 +73,7 @@ export default class LeaderboardMenu {
 		return categories.find(c => c.id === categoryId)!;
 	}
 
-	public async selectVariables(interaction: CommandInteraction, message: string, variables: SRC.Variable[], level?: SRC.Level): Promise<[SRC.Variable, string][]> {
+	public async selectVariables(interaction: ChatInputCommandInteraction, message: string, variables: SRC.Variable[], level?: SRC.Level): Promise<[SRC.Variable, string][]> {
 		const selectedVariables: string[] = [];
 
 		return Promise.all(variables.filter(SRC.variableIsSubcategory)

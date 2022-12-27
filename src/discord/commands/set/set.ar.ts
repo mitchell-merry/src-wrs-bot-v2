@@ -1,4 +1,4 @@
-import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
+import { SlashCommandSubcommandBuilder } from "discord.js";
 import { DB } from "../../../db";
 import { GuildEntity } from "../../../db/entities";
 import { Subcommand } from "../command";

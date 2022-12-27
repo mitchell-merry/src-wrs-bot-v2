@@ -1,6 +1,5 @@
 import 'dotenv/config';
-import { APIInteractionGuildMember } from "discord-api-types/v9";
-import { GuildManager, GuildMember } from "discord.js";
+import { APIInteractionGuildMember, GuildManager, GuildMember } from "discord.js";
 import { DataSource } from "typeorm";
 import { entities, GuildEntity, ModeratorRoleEntity } from "./entities";
 import { join } from 'path';

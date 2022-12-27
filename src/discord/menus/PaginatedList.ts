@@ -1,4 +1,4 @@
-import { CommandInteraction, Message, MessageActionRow, MessageButton, MessageComponentInteraction, MessageEditOptions, WebhookEditMessageOptions } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ChatInputCommandInteraction, CommandInteraction, InteractionReplyOptions, Message, MessageComponentInteraction, WebhookEditMessageOptions } from "discord.js";
 import UserError from "../UserError";
 
 const MESSAGE_LIMIT = 2000;
@@ -28,17 +28,16 @@ export default class PaginatedList {
 		this.expireMessage = expireMessage;
 	}
 
-	public async spawnMenu(interaction: CommandInteraction, options: WebhookEditMessageOptions = {})
+	public async spawnMenu(interaction: ChatInputCommandInteraction)
 	{
 		const message = await interaction.fetchReply() as Message;
 		let r: MessageComponentInteraction | undefined = undefined;
 
 		while(true) {
-			const data: WebhookEditMessageOptions = {
+			const data = {
 				content: this.pages[this.currentPage].join(''),
 				components: this.getPageComponents(this.currentPage),
-				allowedMentions: { users: [], roles: [] },
-				...options
+				allowedMentions: { users: [], roles: [] }
 			};
 
 			await (r 
@@ -63,12 +62,12 @@ export default class PaginatedList {
 		const isFirstPage = page === 0;
 		const isLastPage = page === this.pages.length - 1;
 
-		return [new MessageActionRow().addComponents([
-			new MessageButton().setLabel('|<').setCustomId(`left_all`).setDisabled(isFirstPage).setStyle('PRIMARY'),
-			new MessageButton().setLabel('<').setCustomId(`left_once`).setDisabled(isFirstPage).setStyle('PRIMARY'),
-			new MessageButton().setLabel(`${page+1} / ${this.pages.length}`).setCustomId('page').setDisabled(true).setStyle('SECONDARY'),
-			new MessageButton().setLabel('>').setCustomId(`right_once`).setDisabled(isLastPage).setStyle('PRIMARY'),
-			new MessageButton().setLabel('>|').setCustomId(`right_all`).setDisabled(isLastPage).setStyle('PRIMARY'),
+		return [new ActionRowBuilder<ButtonBuilder>().addComponents([
+			new ButtonBuilder().setLabel('|<').setCustomId(`left_all`).setDisabled(isFirstPage).setStyle(ButtonStyle.Primary),
+			new ButtonBuilder().setLabel('<').setCustomId(`left_once`).setDisabled(isFirstPage).setStyle(ButtonStyle.Primary),
+			new ButtonBuilder().setLabel(`${page+1} / ${this.pages.length}`).setCustomId('page').setDisabled(true).setStyle(ButtonStyle.Secondary),
+			new ButtonBuilder().setLabel('>').setCustomId(`right_once`).setDisabled(isLastPage).setStyle(ButtonStyle.Primary),
+			new ButtonBuilder().setLabel('>|').setCustomId(`right_all`).setDisabled(isLastPage).setStyle(ButtonStyle.Primary),
 		])];
 	}
 }

@@ -1,5 +1,4 @@
-import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { Role } from "discord.js";
+import { Role, SlashCommandSubcommandBuilder } from "discord.js";
 import * as SRC from "src-ts";
 
 import { DB } from "../../../db";
@@ -43,8 +42,8 @@ const LeaderboardAddCommand: Subcommand = {
 		}
 
 		// check we have permission to create/manage a role at this permission
-		if(interaction.guild!.me!.roles.highest.position < position) {
-			throw new UserError(`Bot does not have permission to create/manage a role at this position. Give the bot a role higher than \`@${errorRoleName}\` [${interaction.guild!.me!.roles.highest.position}, ${position}].`);
+		if(interaction.guild!.members.me!.roles.highest.position < position) {
+			throw new UserError(`Bot does not have permission to create/manage a role at this position. Give the bot a role higher than \`@${errorRoleName}\` [${interaction.guild!.members.me!.roles.highest.position}, ${position}].`);
 		}
 
 		const { game, category, variables, level } = await new LeaderboardMenu().spawnMenu(interaction, gameOpt)

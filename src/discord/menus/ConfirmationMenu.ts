@@ -1,3 +1,4 @@
+import { ButtonStyle } from "discord.js";
 import DialogueMenu from "./DialogueMenu";
 
 export default class ConfirmationMenu extends DialogueMenu<"YES" | "NO"> {
@@ -5,11 +6,11 @@ export default class ConfirmationMenu extends DialogueMenu<"YES" | "NO"> {
 		super(message, [{
 			id: "YES",
 			label: yes,
-			style: "SUCCESS",
+			style: ButtonStyle.Success,
 		}, {
 			id: "NO",
 			label: no,
-			style: "DANGER",	
+			style: ButtonStyle.Danger,
 		}]);
 	}
 }

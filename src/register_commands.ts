@@ -1,6 +1,5 @@
+import { REST, Routes } from 'discord.js';
 import 'dotenv/config';
-import { REST } from '@discordjs/rest';
-import { Routes } from 'discord-api-types/v9';
 import { commands, hasSubcommands } from './discord';
 
 if(!process.env.TOKEN || !process.env.client) throw new Error('TOKEN and client environment variables are required.');

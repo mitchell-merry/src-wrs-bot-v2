@@ -25,6 +25,11 @@ Parameters:
   DiscordAdmin:
     Type: String
     Description: The ID of the admin discord account. Has all privileges for the bot.
+  IP:
+    Type: String
+    Description: IP to allow access to the RDS from
+Conditions:
+  FromSnapshot: !Not [!Equals [!Ref DBSnapshot, AWS::NoValue ] ]
 Resources:
   VPC:
     Type: AWS::EC2::VPC
@@ -98,30 +103,52 @@ Resources:
       RouteTableId: !Ref PublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
-  DBSG:
+  PrivateRouteToMyIp:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: !Join [ "", [ !Ref IP, "/32" ]]
+      GatewayId: !Ref InternetGateway
+  DBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
       DBSubnetGroupDescription: Subnet Group for RDS DB
       SubnetIds:
       - !Ref PrivateSubnet1
       - !Ref PrivateSubnet2
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security group to allow access for a local machine and mysql"
+      SecurityGroupIngress:
+        - IpProtocol: "tcp"
+          CidrIp: !Join [ "", [ !Ref IP, "/32" ]]
+          FromPort: 3306
+          ToPort: 3306
+        - IpProtocol: "tcp"
+          CidrIp: 10.0.0.0/16
+          FromPort: 3306
+          ToPort: 3306
+      VpcId: !Ref VPC
   DB:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Snapshot
     UpdateReplacePolicy: Snapshot
     Properties:
       Engine: MySQL
-      DBName: srcwrs
+      DBName: !If [FromSnapshot, !Ref AWS::NoValue, "srcwrs"]
       MasterUsername: !Ref DBUser
       MasterUserPassword: !Ref DBPass
+      DBSnapshotIdentifier: !If [FromSnapshot, !Ref DBSnapshot, !Ref AWS::NoValue]
 
-      DBSnapshotIdentifier: !Ref DBSnapshot
       DBInstanceClass: db.t2.micro
       AllocatedStorage: "20"
       BackupRetentionPeriod: 7
       MultiAZ: false
-      DBSubnetGroupName: !Ref DBSG
-      PubliclyAccessible: false
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VPCSecurityGroups:
+        - !Ref DBSecurityGroup
+      PubliclyAccessible: true
   ExecutionRole:
     Type: AWS::IAM::Role
     Properties:

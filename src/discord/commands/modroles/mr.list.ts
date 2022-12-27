@@ -1,4 +1,4 @@
-import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
+import { SlashCommandSubcommandBuilder } from "discord.js";
 import PaginatedList from "../../menus/PaginatedList";
 import UserError from "../../UserError";
 import { Subcommand } from "../command";

@@ -1,5 +1,4 @@
-import { SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, Role } from "discord.js";
+import { CommandInteraction, Role, SlashCommandSubcommandBuilder } from "discord.js";
 import { DB } from "../../../db";
 import { LeaderboardEntity, TrackedLeaderboardEntity } from "../../../db/entities";
 import { LeaderboardNameACL } from "../../autocompleters/lbname.acl";
@@ -12,7 +11,7 @@ const LeaderboardSetroleCommand: Subcommand = {
 		.addIntegerOption(o => o.setName('leaderboard').setDescription('The leaderboard to change the role of.').setRequired(true).setAutocomplete(true))
 		.addRoleOption(o => o.setName('role').setDescription('The role to change to.').setRequired(true)),
 	perm: 'mods',
-	execute: async (interaction: CommandInteraction) => {
+	execute: async (interaction) => {
 		await interaction.deferReply();
 		
 		const tlbRepo = DB.getRepository(TrackedLeaderboardEntity);
@@ -29,10 +28,8 @@ const LeaderboardSetroleCommand: Subcommand = {
 		const tlb = await tlbRepo.findOne(tlbCriteria);
 		if(!tlb) throw new UserError(`This guild does not track the given leaderboard.`);
 
-		if(new_role!.position > interaction.guild!.me!.roles.highest.position)
-		{
+		if(new_role!.position > interaction.guild!.members.me!.roles.highest.position)
 			throw new UserError('Bot does not have permission to modify the specified role.');
-		}
 
 		tlb.role_id = new_role.id;
 		await tlbRepo.save(tlb);
