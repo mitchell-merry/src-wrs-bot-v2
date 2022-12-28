@@ -2,7 +2,7 @@ import { AutocompleteInteraction, ChatInputCommandInteraction, CommandInteractio
 import { SRCError } from 'src-ts';
 
 import InviteCommand from './invite.command';
-import ModrolesCommand from './modroles/modroles.command';
+import ModrolesCommand from './modroles';
 import SetCommand from './set';
 import PlayerCommand from './player';
 import LeaderboardCommand from './leaderboard';
