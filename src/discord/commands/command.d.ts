@@ -2,7 +2,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandSubcomman
 import { GuildEntity } from "../../db/entities";
 import { Autocompleter } from "../autocompleters/Autocompleter";
 
-export type PermissionLevel = 'admin' | 'mods' | 'all';
+export type PermissionLevel = 'superadmin' | 'admin' | 'mods' | 'all';
 export type Executer = (interaction: ChatInputCommandInteraction, guildEnt: GuildEntity) => Promise<void>
 
 export interface Command {

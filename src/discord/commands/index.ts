@@ -44,12 +44,15 @@ export async function handleSlashCommand(interaction: ChatInputCommandInteractio
 		throw new Error(`error with ${interaction.member?.permissions}`)
 
 	guildLog('Getting user credentials...');
-	const userIsAdmin = interaction.user.id === process.env.admin || interaction.member!.permissions.has('Administrator');
+	const userIsSuperAdmin = interaction.user.id === process.env.admin;
+	const userIsAdmin = userIsSuperAdmin || interaction.member!.permissions.has('Administrator');
 	const userIsMod = userIsAdmin || (await isUserMod(interaction.guildId, interaction.member));
-	guildLog(`userIsAdmin: ${userIsAdmin}, userIsMod: ${userIsMod}`);
+	guildLog(`userIsSuperAdmin: ${userIsSuperAdmin}, userIsAdmin: ${userIsAdmin}, userIsMod: ${userIsMod}`);
 
 	// Check user has correct permission.
-	if (perm === 'admin' && !userIsAdmin)
+	if (perm === 'superadmin' && !userIsSuperAdmin)
+		throw new UserError(`Only the best of the best (super-admins) can use this... for shame.`);
+	else if (perm === 'admin' && !userIsAdmin)
 		throw new UserError(`Only admins are allowed to use this command! Loser. Scram!!`);
 	else if (perm === 'mods' && !userIsMod)
 		throw new UserError(`Only mods and above are allowed to use this! Shame on you. Bad.`);
