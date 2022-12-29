@@ -8,12 +8,10 @@ const AdminClearCommand: Subcommand = {
 		.addStringOption(o => o.setName('guild_id').setDescription('The ID of the guild. Leave this blank to update globally.').setRequired(false)),
 	perm: 'superadmin',
 	execute: async (interaction) => {
+		await interaction.deferReply();
 		const guild_id = interaction.options.getString('guild_id') ?? undefined;
 
-		await Promise.all([
-			interaction.deferReply(),
-			clearCommands(guild_id)
-		]);
+		await clearCommands(guild_id);
 
 		await interaction.editReply(`Commands updated!`);
 	}
