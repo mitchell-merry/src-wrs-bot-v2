@@ -20,6 +20,8 @@ async function registerCommands(commands: (CommandWithSubcommands | Command)[], 
 	if (!process.env.client)
 		throw new Error("No client environment variable specified!");
 
+	console.log(`Registering commands for ${guild}.`);
+
 	const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 
 	const commandData = commands.map(command => {
@@ -30,9 +32,11 @@ async function registerCommands(commands: (CommandWithSubcommands | Command)[], 
 		return newData;
 	});
 
-	rest.put(guild 
+	await rest.put(guild 
 			? Routes.applicationGuildCommands(process.env.client, guild)
 			: Routes.applicationCommands(process.env.client),
 		{ body: commandData },
 	);
+
+	console.log(`Finished registering commands for ${guild}!`);
 }
