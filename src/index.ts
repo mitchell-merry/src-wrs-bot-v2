@@ -7,6 +7,7 @@ import { Client, GatewayIntentBits } from 'discord.js'
 import { DB, synchronizeGuilds } from './db'
 import { interactionCreate } from './discord';
 import { GuildEntity } from './db/entities';
+import { registerAllCommands } from './discord/put_cmds';
 
 const client = new Client({ intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers ] });
 
@@ -18,6 +19,13 @@ client.on('ready', async () => {
 	client.guilds.cache.forEach(g => {
 		console.log(`[${g.id}] ${g.available ? g.name : "UNAVAILABLE"} `)
 	});
+
+	if (client.guilds.cache.some(g => g.id !== process.env.guild))
+	{
+		console.log(`Registering commands + admin commands in guild [${process.env.guild}]`);
+		await registerAllCommands(process.env.guild);
+		console.log(`Registered!`);
+	}
 
 	let retries = 5;
 	while (retries)
@@ -42,6 +50,12 @@ client.on('ready', async () => {
 
 	console.log(`Bot is ready.`);
 });
+
+const requiredEnvs = [ "TOKEN", "guild", "client", "admin", "MYSQL_ROOT_PASSWORD" ];
+for (const vari of requiredEnvs) {
+	if (!process.env[vari])
+		throw new Error(`Environment variable ${vari} is missing! Aborting startup.`);
+}
 
 client.login(process.env.TOKEN);
 

@@ -12,8 +12,8 @@
 		"db:down": "docker-compose -f docker-compose.dev.yml down",
 		"docker:build": "npm run build && docker build -t mitchellmerry/src-wrs-bot-v2 .",
 		"docker:push": "npm run docker:build && docker push mitchellmerry/src-wrs-bot-v2",
-		"registerCommands": "tsc && node --experimental-specifier-resolution=node build/register_commands.js",
-		"clearCommands": "tsc && node --experimental-specifier-resolution=node build/clear_commands.js",
+		"registerCommands": "tsc && node --experimental-specifier-resolution=node build/scripts/register_commands.js",
+		"clearCommands": "tsc && node --experimental-specifier-resolution=node build/scripts/clear_commands.js",
 		"typeorm": "typeorm-ts-node-esm -d src/db/index.ts"
 	},
 	"repository": {

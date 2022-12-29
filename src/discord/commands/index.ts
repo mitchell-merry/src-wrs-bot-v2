@@ -11,6 +11,7 @@ import UserError from '../UserError';
 import { DB, isUserMod } from '../../db';
 import { Command, CommandWithSubcommands, Executer, PermissionLevel } from './command';
 import { GuildEntity } from '../../db/entities';
+import AdminCommand from './admin';
 
 export const commands = [ InviteCommand, ModrolesCommand, SetCommand, PlayerCommand, LeaderboardCommand, UpdateCommand ];
 
@@ -20,8 +21,9 @@ export async function handleSlashCommand(interaction: ChatInputCommandInteractio
 	const guildLog = (s: string) => console.log(`[${interaction.guildId!}] ${s}`);
 	guildLog(`Command receieved by ${interaction.user.tag}.`);
 
-	const command = commands.find(c => c.data.name === interaction.commandName);
-	if (!command) throw new Error(`Command ${interaction.commandName} unknown`);
+	const command = [...commands, AdminCommand].find(c => c.data.name === interaction.commandName);
+	if (!command)
+		throw new Error(`Command ${interaction.commandName} unknown`);
 	guildLog(`Found command ${command.data.name}.`);
 
 	let perm: PermissionLevel;
