@@ -20,12 +20,10 @@ client.on('ready', async () => {
 		console.log(`[${g.id}] ${g.available ? g.name : "UNAVAILABLE"} `)
 	});
 
-	if ( (process.env.DISCORD_COMMANDS_SYNC ?? true)
+	if (process.env.DISCORD_COMMANDS_SYNC !== "false"
 	 && client.guilds.cache.some(g => g.id !== process.env.guild))
 	{
-		console.log(`Registering commands + admin commands in guild [${process.env.guild}]`);
 		await registerAllCommands(process.env.guild);
-		console.log(`Registered!`);
 	}
 
 	let retries = 5;
