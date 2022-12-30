@@ -24,19 +24,13 @@ async function registerCommands(commands: (CommandWithSubcommands | Command)[], 
 
 	const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 
-	const commandData = commands.map(command => {
-		if (!hasSubcommands(command)) return command.data;
-	
-		const newData = command.data;
-		command.subcommands.forEach(sc => newData.addSubcommand(sc.data));
-		return newData;
-	});
+	const commandData = commands.map(command => command.data);
 
 	await rest.put(guild 
 			? Routes.applicationGuildCommands(process.env.client, guild)
 			: Routes.applicationCommands(process.env.client),
 		{ body: commandData },
-	);
+	).catch(r => console.log(JSON.stringify(r, null, 2)));
 
 	console.log(`Finished registering commands for ${guild}!`);
 }
