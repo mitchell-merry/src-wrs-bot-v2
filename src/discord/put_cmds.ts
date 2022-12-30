@@ -13,31 +13,31 @@ export function setupCommands() {
 }
 
 export async function registerAllCommands(guild?: string) {
-	const cmds = process.env.guild === guild ? [ AdminCommand ] : [ ];
+	const cmds = process.env.DiscordAdminGuild === guild ? [ AdminCommand ] : [ ];
 	return registerCommands([ ...cmds, ...commands ], guild);
 }
 
 export async function clearCommands(guild?: string) {
-	const cmds = process.env.guild === guild ? [ AdminCommand ] : [ ];
+	const cmds = process.env.DiscordAdminGuild === guild ? [ AdminCommand ] : [ ];
 	return registerCommands(cmds, guild);
 }
 
 async function registerCommands(commands: (CommandWithSubcommands | Command)[], guild?: string) {
-	if (!process.env.TOKEN)
+	if (!process.env.DiscordToken)
 		throw new Error("No TOKEN environment variable specified!");
 
-	if (!process.env.client)
+	if (!process.env.DiscordClient)
 		throw new Error("No client environment variable specified!");
 
 	console.log(`Registering commands for ${guild}.`);
 
-	const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
+	const rest = new REST({ version: '9' }).setToken(process.env.DiscordToken);
 
 	const commandData = commands.map(command => command.data);
 
 	await rest.put(guild 
-			? Routes.applicationGuildCommands(process.env.client, guild)
-			: Routes.applicationCommands(process.env.client),
+			? Routes.applicationGuildCommands(process.env.DiscordClient, guild)
+			: Routes.applicationCommands(process.env.DiscordClient),
 		{ body: commandData },
 	).catch(r => console.log(JSON.stringify(r, null, 2)));
 

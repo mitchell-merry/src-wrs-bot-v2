@@ -8,7 +8,7 @@ const InviteCommand: Command = {
 		.setDescription('Get the invite for this bot.'),
 	perm: 'mods',
 	execute: (interaction) => {
-		throw new UserError(`https://discord.com/api/oauth2/authorize?client_id=${process.env.client}&permissions=268438528&scope=bot%20applications.commands`);
+		throw new UserError(`https://discord.com/api/oauth2/authorize?client_id=${process.env.DiscordClient}&permissions=268438528&scope=bot%20applications.commands`);
 	}
 }
 

@@ -46,7 +46,7 @@ export async function handleSlashCommand(interaction: ChatInputCommandInteractio
 		throw new Error(`error with ${interaction.member?.permissions}`)
 
 	guildLog('Getting user credentials...');
-	const userIsSuperAdmin = interaction.user.id === process.env.admin;
+	const userIsSuperAdmin = interaction.user.id === process.env.DiscordAdmin;
 	const userIsAdmin = userIsSuperAdmin || interaction.member!.permissions.has('Administrator');
 	const userIsMod = userIsAdmin || (await isUserMod(interaction.guildId, interaction.member));
 	guildLog(`userIsSuperAdmin: ${userIsSuperAdmin}, userIsAdmin: ${userIsAdmin}, userIsMod: ${userIsMod}`);

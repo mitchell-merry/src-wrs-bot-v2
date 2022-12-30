@@ -22,10 +22,10 @@ client.on('ready', async () => {
 
 	setupCommands();
 
-	if (process.env.DISCORD_COMMANDS_SYNC !== "false"
-	 && client.guilds.cache.some(g => g.id !== process.env.guild))
+	if (process.env.DiscordSyncCommands !== "false"
+	 && client.guilds.cache.some(g => g.id !== process.env.DiscordAdminGuild))
 	{
-		await registerAllCommands(process.env.guild);
+		await registerAllCommands(process.env.DiscordAdminGuild);
 	}
 
 	let retries = 5;
@@ -58,7 +58,7 @@ for (const vari of requiredEnvs) {
 		throw new Error(`Environment variable ${vari} is missing! Aborting startup.`);
 }
 
-client.login(process.env.TOKEN);
+client.login(process.env.DiscordToken);
 
 client.on('interactionCreate', interactionCreate);
 

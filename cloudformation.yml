@@ -25,6 +25,9 @@ Parameters:
   DiscordAdmin:
     Type: String
     Description: The ID of the admin discord account. Has all privileges for the bot.
+  DiscordAdminGuild:
+    Type: String
+    Description: The ID of the guild to administrate the bot from.
   IP:
     Type: String
     Description: IP to allow access to the RDS from
@@ -207,22 +210,26 @@ Resources:
             awslogs-region: us-east-1
             awslogs-stream-prefix: ecs
         Environment:
-        - Name: MYSQL_DATABASE
+        - Name: DBName
           Value: srcwrs
-        - Name: MYSQL_ROOT_PASSWORD
-          Value: !Ref DBPass
-        - Name: DB_HOST
+        - Name: DBHost
           Value: !GetAtt DB.Endpoint.Address
-        - Name: DB_PORT
+        - Name: DBPort
           Value: !GetAtt DB.Endpoint.Port
-        - Name: DB_SYNC
+        - Name: DBUser
+          Value: root
+        - Name: DBPass
+          Value: !Ref DBPass
+        - Name: DBSync
           Value: "false"
-        - Name: TOKEN
+        - Name: DiscordToken
           Value: !Ref DiscordToken
-        - Name: admin
-          Value: !Ref DiscordAdmin
-        - Name: client
+        - Name: DiscordClient
           Value: !Ref DiscordClient
+        - Name: DiscordAdmin
+          Value: !Ref DiscordAdmin
+        - Name: DiscordAdminGuild
+          Value: !Ref DiscordAdminGuild
         PortMappings:
         - AppProtocol: http
           ContainerPort: 80

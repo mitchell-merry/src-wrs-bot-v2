@@ -7,12 +7,12 @@ import { join } from 'path';
 const migrations = [ join(__dirname, 'migrations', '*.{ts,js}') ];
 export const DB = new DataSource({
 	type: "mysql",
-	host: process.env.DB_HOST || "localhost",
-	port: +(process.env.DB_PORT || 3306),
+	host: process.env.DBHost || "localhost",
+	port: +(process.env.DBPort || 3306),
 	username: 'root',
-	password: process.env.MYSQL_ROOT_PASSWORD,
-	database: process.env.MYSQL_DATABASE || "srcwrs",
-	synchronize: (process.env.DB_SYNC === "true") || false,
+	password: process.env.DBPass,
+	database: process.env.DBName || "srcwrs",
+	synchronize: (process.env.DiscordSyncCommands === "true") || false,
 	entities,
 	migrations
 });
