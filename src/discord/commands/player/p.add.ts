@@ -12,10 +12,8 @@ const PlayerAddCommand: Subcommand = {
 		.addStringOption(o => o.setName('src_account').setDescription('The speedrun.com username.').setRequired(true)),
 	perm: 'mods',
 	execute: async (interaction, guildEnt) => {
-		const userOpt = interaction.options.getUser('user');
-		const srcOpt = interaction.options.getString('src_account');
-		if(!srcOpt || !userOpt)
-			throw new UserError('src_account and user must be set.');
+		const userOpt = interaction.options.getUser('user', true);
+		const srcOpt = interaction.options.getString('src_account', true);
 		
 		if(guildEnt.players.find(p => p.discord_id === userOpt.id))
 			throw new UserError(`This discord account is already associated with a speedrun.com account.`);

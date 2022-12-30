@@ -12,9 +12,7 @@ const SetRoleDefaultColourCommand: Subcommand = {
 		.addStringOption(o => o.setName('role_default_colour').setDescription('The colour.').setRequired(true)),
 	perm: 'mods',
 	execute: async (interaction, guildEnt) => {
-		const colour = interaction.options.getString('role_default_colour');
-		if(!colour)
-			throw new Error('/set role_default_colour: role_default_colour not set / is undefined.');
+		const colour = interaction.options.getString('role_default_colour', true);
 		
 		if(!isHexColorString(colour))
 			throw new UserError('Colour must be a hexcode, e.g. #FEE75C.');

@@ -22,18 +22,20 @@ const LeaderboardSetroleCommand: Subcommand = {
 
 		const lbCrit = { where: { lb_id }, relations: { trackedLeaderboards: true } };
 		const lb = await lbRepo.findOne(lbCrit);
-		if(!lb) throw new UserError(`That leaderboard does not exist.`);
+		if(!lb)
+			throw new UserError(`That leaderboard does not exist.`);
 
 		const tlbCriteria = { where: { guild_id: interaction.guildId!, lb_id } }
 		const tlb = await tlbRepo.findOne(tlbCriteria);
-		if(!tlb) throw new UserError(`This guild does not track the given leaderboard.`);
+		if(!tlb)
+			throw new UserError(`This guild does not track the given leaderboard.`);
 
 		if(new_role!.position > interaction.guild!.members.me!.roles.highest.position)
 			throw new UserError('Bot does not have permission to modify the specified role.');
 
 		tlb.role_id = new_role.id;
 		await tlbRepo.save(tlb);
-		interaction.editReply({ content: `Leaderboard ${lb.lb_name} updated to be tracked with the role <@&${new_role.id}>. Run /update to reflect this change in role holders.`, allowedMentions: { users: [], roles: [] } });
+		await interaction.editReply({ content: `Leaderboard ${lb.lb_name} updated to be tracked with the role <@&${new_role.id}>. Run /update to reflect this change in role holders.`, allowedMentions: { users: [], roles: [] } });
 	},
 	autocomplete: LeaderboardNameACL
 }

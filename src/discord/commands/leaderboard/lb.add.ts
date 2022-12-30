@@ -22,8 +22,9 @@ const LeaderboardAddCommand: Subcommand = {
 		const lRepo = DB.getRepository(LeaderboardEntity);
 
 		// get game and validate it
-		const gameOpt = interaction.options.getString('game');
-		if(!gameOpt || !gameOpt.match(gameRegex)) throw new UserError(`Invalid game abbreviation: ${gameOpt}. You should use the 'day_seven' part of the game link 'https://www.speedrun.com/day_seven', for example.`);
+		const gameOpt = interaction.options.getString('game', true);
+		if(!gameOpt.match(gameRegex))
+			throw new UserError(`Invalid game abbreviation: ${gameOpt}. You should use the 'day_seven' part of the game link 'https://www.speedrun.com/day_seven', for example.`);
 
 		// check if we have permissions to manage the role  
 		const roleOpt = interaction.options.getRole('role');
@@ -55,7 +56,8 @@ const LeaderboardAddCommand: Subcommand = {
 		// here we should check for dupes
 		let board = await LeaderboardEntity.exists(game.id, category.id, variables, level?.id);
 		const exists = board && board.trackedLeaderboards.find(tlb => tlb.guild_id === interaction.guildId);
-		if(exists) throw new UserError(`This guild is already tracking the leaderboard ${lb_name}.`);
+		if(exists)
+			throw new UserError(`This guild is already tracking the leaderboard ${lb_name}.`);
 
 		// confirm with the user that this is the action we want to take
 		const message = roleOpt
@@ -65,7 +67,8 @@ const LeaderboardAddCommand: Subcommand = {
 				: `This will track the leaderboard ${lb_name} in this guild with a new role, created above <@&${guildEnt.above_role_id}>. Are you sure you wish to do this?`;
 		
 		const [ confirmation ] = await new ConfirmationMenu(message).spawnMenu(interaction, "EDIT_REPLY");
-		if (confirmation === "NO") throw new UserError('Exited menu!');
+		if (confirmation === "NO")
+			throw new UserError('Exited menu!');
 
 		let role: Role;
 		if (roleOpt) role = roleOpt as Role;
@@ -80,7 +83,7 @@ const LeaderboardAddCommand: Subcommand = {
 		board.trackedLeaderboards.push(new TrackedLeaderboardEntity(interaction.guildId!, board.lb_id, role!.id));
 		await lRepo.save(board);
 
-		interaction.editReply({ content: `Added the leaderboard ${lb_name}.`, components: [] });
+		await interaction.editReply({ content: `Added the leaderboard ${lb_name}.`, components: [] });
 	}
 }
 

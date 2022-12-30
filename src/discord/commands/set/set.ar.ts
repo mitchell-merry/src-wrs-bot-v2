@@ -9,9 +9,7 @@ const SetAboveRoleCommand: Subcommand = {
 		.addRoleOption(o => o.setName('above_role').setDescription('The role.').setRequired(true)),
 	perm: 'mods',
 	execute: async (interaction, guildEnt) => {
-		const role = interaction.options.getRole('above_role');
-		if(!role)
-			throw new Error('/set above_role: role not set / is undefined.');
+		const role = interaction.options.getRole('above_role', true);
 		
 		await DB.getRepository(GuildEntity).update(
 			{ guild_id: guildEnt.guild_id },

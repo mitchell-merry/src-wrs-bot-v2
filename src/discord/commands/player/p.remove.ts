@@ -10,9 +10,7 @@ const PlayerRemoveCommand: Subcommand = {
 		.addUserOption(o => o.setName('user').setDescription('The discord account.').setRequired(true)),
 	perm: 'mods',
 	execute: async (interaction, guildEnt) => {
-		const userOpt = interaction.options.getUser('user');
-		if(!userOpt)
-			throw new UserError('The option user must be set.');
+		const userOpt = interaction.options.getUser('user', true);
 	
 		let exists = guildEnt.players.find(p => p.discord_id === userOpt.id);
 		if(!exists)

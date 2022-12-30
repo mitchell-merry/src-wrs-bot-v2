@@ -17,7 +17,8 @@ const LeaderboardListCommand: Subcommand = {
 
 		// get leaderboards tracked by guild
 		const boards = await tlbRepo.find({ where: { guild_id: interaction.guildId! }, relations: { leaderboard: true } });
-		if(!boards || boards.length === 0) throw new UserError("This guild tracks no leaderboards.");
+		if(!boards || boards.length === 0)
+			throw new UserError("This guild tracks no leaderboards.");
 
 		// spawn a paginated list
 		const items = boards.map(tlb => {
