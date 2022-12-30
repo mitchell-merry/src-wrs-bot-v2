@@ -3,6 +3,15 @@ import { commands, hasSubcommands } from "./commands";
 import AdminCommand from "./commands/admin";
 import { Command, CommandWithSubcommands } from "./commands/command";
 
+export function setupCommands() {
+	[ ...commands, AdminCommand ].forEach(cmd => {
+		if (!hasSubcommands(cmd))
+			return;
+		
+		cmd.subcommands.forEach(sc => cmd.data.addSubcommand(sc.data));
+	})
+}
+
 export async function registerAllCommands(guild?: string) {
 	const cmds = process.env.guild === guild ? [ AdminCommand ] : [ ];
 	return registerCommands([ ...cmds, ...commands ], guild);
