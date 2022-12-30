@@ -5,10 +5,9 @@ import 'reflect-metadata';
 import { Client, GatewayIntentBits } from 'discord.js'
 
 import { DB, synchronizeGuilds } from './db'
-import { commands, hasSubcommands, interactionCreate } from './discord';
 import { GuildEntity } from './db/entities';
-import { registerAllCommands } from './discord/put_cmds';
-import AdminCommand from './discord/commands/admin';
+import { interactionCreate } from './discord';
+import { registerAllCommands, setupCommands } from './discord/put_cmds';
 
 const client = new Client({ intents: [ GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers ] });
 
@@ -21,13 +20,7 @@ client.on('ready', async () => {
 		console.log(`[${g.id}] ${g.available ? g.name : "UNAVAILABLE"} `)
 	});
 
-	// setup commands
-	[ ...commands, AdminCommand ].forEach(cmd => {
-		if (!hasSubcommands(cmd))
-			return;
-		
-		cmd.subcommands.forEach(sc => cmd.data.addSubcommand(sc.data));
-	})
+	setupCommands();
 
 	if (process.env.DISCORD_COMMANDS_SYNC !== "false"
 	 && client.guilds.cache.some(g => g.id !== process.env.guild))
