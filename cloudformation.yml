@@ -2,11 +2,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Stack that hosts src-wrs-bot-v2.
 Parameters:
-  DBUser:
-    Type: String
-    Description: Username of the MySQL RDS database.
-    NoEcho: true
-    Default: root
   DBPass:
     Type: String
     Description: Password for the MySQL RDS database.
@@ -140,7 +135,7 @@ Resources:
     Properties:
       Engine: MySQL
       DBName: !If [FromSnapshot, !Ref AWS::NoValue, "srcwrs"]
-      MasterUsername: !Ref DBUser
+      MasterUsername: root
       MasterUserPassword: !Ref DBPass
       DBSnapshotIdentifier: !If [FromSnapshot, !Ref DBSnapshot, !Ref AWS::NoValue]
 
@@ -210,14 +205,10 @@ Resources:
             awslogs-region: us-east-1
             awslogs-stream-prefix: ecs
         Environment:
-        - Name: DBName
-          Value: srcwrs
         - Name: DBHost
           Value: !GetAtt DB.Endpoint.Address
         - Name: DBPort
           Value: !GetAtt DB.Endpoint.Port
-        - Name: DBUser
-          Value: root
         - Name: DBPass
           Value: !Ref DBPass
         - Name: DBSync

@@ -11,7 +11,7 @@ export const DB = new DataSource({
 	port: +(process.env.DBPort || 3306),
 	username: 'root',
 	password: process.env.DBPass,
-	database: process.env.DBName || "srcwrs",
+	database: "srcwrs",
 	synchronize: (process.env.DiscordSyncCommands === "true") || false,
 	entities,
 	migrations

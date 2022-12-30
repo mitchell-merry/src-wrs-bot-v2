@@ -3,8 +3,8 @@ services:
     image: mysql
     container_name: db
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DBPass}
+      MYSQL_DATABASE: srcwrs
     cap_add:
       - SYS_NICE
     volumes:
@@ -17,7 +17,7 @@ services:
     environment:
       PMA_HOST: db
       PMA_USER: root
-      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      PMA_PASSWORD: ${DBPass}
     ports:
       - 8081:80
     depends_on:
@@ -27,14 +27,15 @@ services:
     image: mitchellmerry/src-wrs-bot-v2
     container_name: bot
     environment:
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_SYNC: "false"
-      TOKEN: ${TOKEN}
-      admin: ${admin}
-      client: ${client}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      DBHost: db
+      DBPort: ${DBPort}
+      DBPass: ${DBPass}
+      DBSync: ${DBSync}
+
+      DiscordToken: ${DiscordToken}
+      DiscordClient: ${DiscordClient}
+      DiscordAdmin: ${DiscordAdmin}
+      DiscordAdminGuild: ${DiscordAdminGuild}
     ports:
       - 80:80
       - 443:443

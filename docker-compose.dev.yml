@@ -3,8 +3,8 @@ services:
     image: mysql
     container_name: db
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DBPass}
+      MYSQL_DATABASE: srcwrs
     cap_add:
       - SYS_NICE
     ports:
@@ -19,7 +19,7 @@ services:
     environment:
       PMA_HOST: db
       PMA_USER: root
-      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      PMA_PASSWORD: ${DBPass}
     ports:
       - 8081:80
     depends_on:
