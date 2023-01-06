@@ -52,7 +52,7 @@ client.on('ready', async () => {
 	console.log(`Bot is ready.`);
 });
 
-const requiredEnvs = [ "TOKEN", "guild", "client", "admin", "MYSQL_ROOT_PASSWORD" ];
+const requiredEnvs = [ "DiscordToken", "DiscordAdminGuild", "DiscordClient", "DiscordAdmin", "DBPass" ];
 for (const vari of requiredEnvs) {
 	if (!process.env[vari])
 		throw new Error(`Environment variable ${vari} is missing! Aborting startup.`);
