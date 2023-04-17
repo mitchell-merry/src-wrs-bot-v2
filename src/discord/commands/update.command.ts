@@ -49,7 +49,7 @@ const UpdateCommand: Command = {
 					variables: Object.fromEntries(tlb.leaderboard.variables.map(variable => [ variable.variable_id, variable.value ]))
 				};
 
-				const lb = await SRC.getLeaderboardFromPartial(partial, { top: 1 }).catch(() => { throw new Error(`Error updating ${tlb.leaderboard.lb_name}`) });
+				const lb = await SRC.getLeaderboardFromPartial(partial, { top: 1 }, { cache: false }).catch(() => { throw new Error(`Error updating ${tlb.leaderboard.lb_name}`) });
 
 				// guests are ignored
 				const srcPlayerIds = lb.runs.map(run => run.run.players.filter(SRC.playerIsUser).map(p => p.id)).flat();
