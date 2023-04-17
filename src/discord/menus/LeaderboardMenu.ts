@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, CommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction } from "discord.js";
 import * as SRC from "src-ts";
 import UserError from "../UserError";
 import DialogueMenu from "./DialogueMenu";

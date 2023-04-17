@@ -1,4 +1,4 @@
-import { AutocompleteInteraction, ChatInputCommandInteraction, CommandInteraction, Interaction, InteractionReplyOptions, MessagePayload, MessagePayloadOption, WebhookEditMessageOptions } from 'discord.js';
+import { AutocompleteInteraction, ChatInputCommandInteraction, CommandInteraction, Interaction, InteractionReplyOptions } from 'discord.js';
 import { SRCError } from 'src-ts';
 
 import InviteCommand from './invite.command';

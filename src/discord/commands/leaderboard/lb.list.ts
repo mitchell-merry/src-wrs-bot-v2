@@ -1,4 +1,4 @@
-import { CommandInteraction, SlashCommandSubcommandBuilder } from "discord.js";
+import { SlashCommandSubcommandBuilder } from "discord.js";
 import { DB } from "../../../db";
 import { TrackedLeaderboardEntity } from "../../../db/entities";
 import PaginatedList from "../../menus/PaginatedList";

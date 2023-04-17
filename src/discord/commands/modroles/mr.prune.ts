@@ -1,6 +1,6 @@
 import { SlashCommandSubcommandBuilder } from "discord.js";
 import { DB } from "../../../db";
-import { GuildEntity, ModeratorRoleEntity } from "../../../db/entities";
+import { ModeratorRoleEntity } from "../../../db/entities";
 import UserError from "../../UserError";
 import { Subcommand } from "../command";
 

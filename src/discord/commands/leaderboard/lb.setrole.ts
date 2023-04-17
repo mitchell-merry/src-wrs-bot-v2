@@ -1,4 +1,4 @@
-import { CommandInteraction, Role, SlashCommandSubcommandBuilder } from "discord.js";
+import { Role, SlashCommandSubcommandBuilder } from "discord.js";
 import { DB } from "../../../db";
 import { LeaderboardEntity, TrackedLeaderboardEntity } from "../../../db/entities";
 import { LeaderboardNameACL } from "../../autocompleters/lbname.acl";

@@ -1,4 +1,4 @@
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentEmojiResolvable, CommandInteraction, Message, StringSelectMenuBuilder, WebhookEditMessageOptions, InteractionEditReplyOptions, MessagePayload, InteractionReplyOptions, ChatInputCommandInteraction, MessageCreateOptions } from "discord.js";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Message, StringSelectMenuBuilder, ChatInputCommandInteraction } from "discord.js";
 import UserError from "../UserError";
 
 export interface DialogueOption<T extends string = string> {
