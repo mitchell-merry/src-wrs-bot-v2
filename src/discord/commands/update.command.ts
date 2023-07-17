@@ -24,9 +24,9 @@ const UpdateCommand: Command = {
 			roleLeaderboards[tlb.role_id].push(tlb);
 		});
 		
-		// for every role (wait for all)
-		await Promise.all(Object.entries(roleLeaderboards).map(async ([ roleId, tlbs ]) => {
-			// fetch role
+		// await Promise.all(Object.entries(roleLeaderboards).map(async ([ roleId, tlbs ]) => {
+        for (const [ roleId, tlbs ] of Object.entries(roleLeaderboards)) {
+            // fetch role
 			let role = await interaction.guild!.roles.fetch(roleId, { cache: false });
 			
 			// TODO give the user the option of making a new role, attaching an existing role, removing the leaderboard, or ignoring altogether
@@ -107,7 +107,7 @@ const UpdateCommand: Command = {
 			}));
 			
 			roleLog(`Finished @${role.name}!`);
-		}));
+		}
 
 		updateLog(`Finished updating!`);
 		await interaction.editReply('Done updating.');
