@@ -13,8 +13,9 @@ export const DB = new DataSource({
 	password: process.env.DBPass,
 	database: "srcwrs",
 	synchronize: (process.env.DiscordSyncCommands === "true") || false,
+	migrationsRun: true,
 	entities,
-	migrations
+	migrations,
 });
 
 console.log(`Will look for migrations at \`${migrations}\`.`);
