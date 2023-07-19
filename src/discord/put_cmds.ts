@@ -33,6 +33,7 @@ async function registerCommands(commands: (CommandWithSubcommands | Command)[], 
 
 	const rest = new REST({ version: '9' }).setToken(process.env.DiscordToken);
 
+	setupCommands();
 	const commandData = commands.map(command => command.data);
 
 	await rest.put(guild 
