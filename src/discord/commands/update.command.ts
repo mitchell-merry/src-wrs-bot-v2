@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from "discord.js";
+import {ChannelType, EmbedBuilder, SlashCommandBuilder} from "discord.js";
 import * as SRC from "src-ts";
 import { DB } from "../../db";
 
@@ -13,9 +13,15 @@ const UpdateCommand: Command = {
 		await interaction.deferReply();
 
 		const updateLog = (s: string) => console.log(`[${interaction.guildId}] [/update] ${s}`);
-		updateLog(`Update run by ${interaction.user.tag}, fetching all members in guild...`);
+		updateLog(`Update run by ${interaction.user.tag}, fetching all members and channels in guild...`);
 		await interaction.guild!.members.fetch();
 		updateLog('Members fetched.');
+		await interaction.guild!.channels.fetch();
+		updateLog('Channels fetched.');
+
+		const log_channel = interaction.guild!.channels.cache.get(guildEnt.log_channel_id ?? '');
+		if (log_channel !== undefined && log_channel.type !== ChannelType.GuildText)
+			throw new Error('log_channel is either set to a channel which doesn\'t exist or a non-text channel. Run /set log_channel.');
 
 		// group leaderboards by role
 		const roleLeaderboards: Record<string, TrackedLeaderboardEntity[]> = {};
@@ -29,8 +35,14 @@ const UpdateCommand: Command = {
             // fetch role
 			let role = await interaction.guild!.roles.fetch(roleId, { cache: false });
 			
-			// TODO give the user the option of making a new role, attaching an existing role, removing the leaderboard, or ignoring altogether
-			if(!role) throw new UserError(`ERROR: role no exist.`);
+			if(!role) {
+				let lbs = tlbs.map(tlb => tlb.leaderboard.lb_name).join(', ');
+				let err = `The role attached to the leaderboards ${lbs} no longer exists. ` +
+					`Please run /leaderboard setrole for each of these to update them.`;
+
+				interaction.channel?.send(err);
+				throw new Error(err)
+			}
 
 			const roleLog = (s: string) => updateLog(`[${roleId}] ${s}`);
 			roleLog(`Updating @${role.name}`);
@@ -61,7 +73,7 @@ const UpdateCommand: Command = {
                     }
 
                     interaction.channel?.send(err);
-                    throw new Error(err)
+                    throw new Error(err);
                 });
 
 				// guests are ignored
@@ -74,6 +86,16 @@ const UpdateCommand: Command = {
 					.map(p => p.discord_id);
 				
 				lblog(`Found WR holder(s) (discord): ${discPlayerIDs.join(', ')}`);
+
+				if (log_channel) {
+					const word = discPlayerIDs.length === 1 ? 'has' : 'all have';
+					const embed = new EmbedBuilder()
+						.setColor(role?.color ?? (guildEnt.role_default_colour ?? "#FEE75C"))
+						.setTitle(`World Record in ${tlb.leaderboard.lb_name}`)
+						.setDescription(`Now ${discPlayerIDs.map(id => `<@${discPlayerIDs}>`).join(', ')} ${word} the world record!`);
+
+					await log_channel.send({ embeds: [ embed ]});
+				}
 				
 				discPlayerIDs.forEach(id => {
 					if(!accounts.includes(id)) accounts.push(id);
@@ -105,7 +127,7 @@ const UpdateCommand: Command = {
 				roleLog(`Adding role to ${user.user.tag}...`);
 				await user.roles.add(role!);
 			}));
-			
+
 			roleLog(`Finished @${role.name}!`);
 		}
 

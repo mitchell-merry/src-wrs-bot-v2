@@ -17,6 +17,10 @@ export class GuildEntity {
 	@Column({ default: '' })
 	above_role_id!: string;
 
+	/** The ID of the channel to send messages about new world records. */
+	@Column({ default: '' })
+	log_channel_id!: string;
+
 	/** The leaderboards this guild is tracking. */
 	@OneToMany(() => TrackedLeaderboardEntity, tlb => tlb.guild)
 	trackedLeaderboards!: TrackedLeaderboardEntity[];
