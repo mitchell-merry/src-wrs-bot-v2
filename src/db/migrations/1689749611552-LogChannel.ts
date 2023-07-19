@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner } from "typeorm"
+import { MigrationInterface, QueryFailedError, QueryRunner } from "typeorm"
 
 export class LogChannel1689749611552 implements MigrationInterface {
 
@@ -7,7 +7,7 @@ export class LogChannel1689749611552 implements MigrationInterface {
             await queryRunner.query(`ALTER TABLE \`guild\` ADD \`log_channel\` varchar(255) NOT NULL`);
             await queryRunner.query('UPDATE \`guild\` SET \`log_channel\` = ');
         } catch (e) {
-            if (!(e instanceof Error) || e.message !== 'Duplicate column name `log_channel`') throw e;
+            if (!(e instanceof QueryFailedError) || !e.driverError.includes('Duplicate column name \'log_channel\'')) throw e;
         }
     }
 
