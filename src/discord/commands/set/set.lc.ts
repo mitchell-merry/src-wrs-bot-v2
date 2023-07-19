@@ -9,16 +9,16 @@ const SetLogChannelCommand: Subcommand = {
 		.addChannelOption(o => o.setName('wr_channel').setDescription('The channel.').setRequired(true)),
 	perm: 'mods',
 	execute: async (interaction, guildEnt) => {
-		const channel = interaction.options.getChannel('log_channel', true);
+		const channel = interaction.options.getChannel('wr_channel', true);
 
-		if (channel.type !== ChannelType.GuildText) throw new Error('log_channel should be a text channel.');
+		if (channel.type !== ChannelType.GuildText) throw new Error('wr_channel should be a text channel.');
 
 		await DB.getRepository(GuildEntity).update(
 			{ guild_id: guildEnt.guild_id },
 			{ log_channel_id: channel.id }
 		);
 		
-		await interaction.reply({ content: `log_channel set to <#&${channel.id}>.`, allowedMentions: { users: [], roles: [] } });
+		await interaction.reply({ content: `wr_channel set to <#&${channel.id}>.`, allowedMentions: { users: [], roles: [] } });
 	}
 };
 

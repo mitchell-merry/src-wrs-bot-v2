@@ -132,6 +132,7 @@ Resources:
     Type: AWS::RDS::DBInstance
     DeletionPolicy: Snapshot
     UpdateReplacePolicy: Snapshot
+    DependsOn: InternetGatewayAttachment
     Properties:
       Engine: MySQL
       DBName: !If [FromSnapshot, !Ref AWS::NoValue, "srcwrs"]
