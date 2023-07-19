@@ -48,6 +48,11 @@ const UpdateCommand: Command = {
 			roleLog(`Updating @${role.name}`);
 			roleLog(`Member(s) with role: ${Array.from(role.members).map(([id, m]) => `${m.user.tag} (${id})`).join(', ')}`);
 
+			let runMap: Record<string, {
+				players: string[],
+				time: number,
+			}[]> = {};
+
 			// list of accounts to add the role to
 			let accounts: string[] = [];
 			await Promise.all(tlbs.map(async tlb => {
@@ -60,6 +65,8 @@ const UpdateCommand: Command = {
 					level: tlb.leaderboard.level_id,
 					variables: Object.fromEntries(tlb.leaderboard.variables.map(variable => [ variable.variable_id, variable.value ]))
 				};
+
+				runMap[tlb.leaderboard.lb_name] = [];
 
 				const lb = await SRC.getLeaderboardFromPartial(partial, { top: 1 }, { cache: false }).catch((e) => {
                     let err = `Error updating ${tlb.leaderboard.lb_name} - we were unable to fetch data about this leaderboard from speedrun.com.\n`;
@@ -84,6 +91,8 @@ const UpdateCommand: Command = {
 					.map(id => guildEnt.players.find(p => p.player_id === id))
 					.filter((p): p is PlayerEntity => !!p)
 					.map(p => p.discord_id);
+
+				// runMap[tlb.]
 				
 				lblog(`Found WR holder(s) (discord): ${discPlayerIDs.join(', ')}`);
 

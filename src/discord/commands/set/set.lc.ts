@@ -18,7 +18,7 @@ const SetLogChannelCommand: Subcommand = {
 			{ log_channel_id: channel.id }
 		);
 		
-		await interaction.reply({ content: `wr_channel set to <#&${channel.id}>.`, allowedMentions: { users: [], roles: [] } });
+		await interaction.reply({ content: `wr_channel set to <#${channel.id}>.`, allowedMentions: { users: [], roles: [] } });
 	}
 };
 
