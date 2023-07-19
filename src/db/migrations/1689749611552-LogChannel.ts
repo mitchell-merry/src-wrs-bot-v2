@@ -8,7 +8,10 @@ export class LogChannel1689749611552 implements MigrationInterface {
             await queryRunner.query('UPDATE \`guild\` SET \`log_channel_id\` = ');
         } catch (e) {
             // TODO LOL!
-            if (!(e instanceof QueryFailedError)) throw e;
+            if (!(e instanceof QueryFailedError)) {
+                throw e;
+            }
+            console.log(`IGNORING: ` + e);
         }
     }
 
