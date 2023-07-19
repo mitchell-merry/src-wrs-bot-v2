@@ -3,8 +3,12 @@ import { MigrationInterface, QueryRunner } from "typeorm"
 export class LogChannel1689749611552 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`ALTER TABLE \`guild\` ADD \`log_channel\` varchar(255) NOT NULL`);
-        await queryRunner.query('UPDATE \`guild\` SET \`log_channel\` = ');
+        try {
+            await queryRunner.query(`ALTER TABLE \`guild\` ADD \`log_channel\` varchar(255) NOT NULL`);
+            await queryRunner.query('UPDATE \`guild\` SET \`log_channel\` = ');
+        } catch (e) {
+            if (!(e instanceof Error) || e.message !== 'Duplicate column name `log_channel`') throw e;
+        }
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
