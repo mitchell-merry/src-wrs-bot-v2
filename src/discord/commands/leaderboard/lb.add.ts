@@ -72,7 +72,7 @@ const LeaderboardAddCommand: Subcommand = {
 
 		let role: Role;
 		if (roleOpt) role = roleOpt as Role;
-		else role = await interaction.guild!.roles.create({ name: `${lb_name} WR`, color: guildEnt.role_default_colour, position });
+		else role = await interaction.guild!.roles.create({ name: `${lb_name} WR`, color: guildEnt.role_default_colour, position, permissions: [] });
 
 		// save new leaderboard in database
 		if(!board) {

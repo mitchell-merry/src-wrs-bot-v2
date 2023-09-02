@@ -4,21 +4,29 @@ import { DataSource } from "typeorm";
 import { entities, GuildEntity, ModeratorRoleEntity } from "./entities";
 import { join } from 'path';
 
-const migrations = [ join(__dirname, 'migrations', '*.{ts,js}') ];
+const synchronize = process.env.DBSync === "true";
+
+let migrations: string[] = [];
+if (!synchronize) {
+    migrations = [ join(__dirname, 'migrations', '*.{ts,js}') ];
+    console.log(`Will look for migrations at \`${migrations}\`.`);
+} else {
+    console.log(`Will syncronize database.`);
+}
+
 export const DB = new DataSource({
 	type: "mysql",
-	host: process.env.DBHost || "localhost",
-	port: +(process.env.DBPort || 3306),
+	host: process.env.DBHost ?? "localhost",
+	port: +(process.env.DBPort ?? 3306),
 	username: 'root',
 	password: process.env.DBPass,
 	database: "srcwrs",
-	synchronize: (process.env.DiscordSyncCommands === "true") || false,
+	synchronize,
 	migrationsRun: true,
 	entities,
 	migrations,
 });
 
-console.log(`Will look for migrations at \`${migrations}\`.`);
 
 export async function synchronizeGuilds(guilds: GuildManager) {
 	const guildRepo = DB.getRepository(GuildEntity);

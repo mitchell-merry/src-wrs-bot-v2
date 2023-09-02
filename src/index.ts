@@ -58,7 +58,11 @@ for (const vari of requiredEnvs) {
 		throw new Error(`Environment variable ${vari} is missing! Aborting startup.`);
 }
 
-client.login(process.env.DiscordToken);
+const token = process.env.DiscordToken;
+if (!token) throw new Error('No token provided! Exiting...');
+
+console.log(`Using token that ends with ${token.substring(token.length-5)}`);
+client.login(token);
 
 client.on('interactionCreate', interactionCreate);
 
