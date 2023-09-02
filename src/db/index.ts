@@ -15,7 +15,7 @@ if (!synchronize) {
     migrations = [join(__dirname, 'migrations', '*.{ts,js}')];
     console.log(`Will look for migrations at \`${migrations}\`.`);
 } else {
-    console.log(`Will syncronize database.`);
+    console.log(`Will synchronize database.`);
 }
 
 export const DB = new DataSource({

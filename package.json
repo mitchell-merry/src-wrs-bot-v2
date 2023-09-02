@@ -14,6 +14,7 @@
         "docker:push": "npm run docker:build && docker push mitchellmerry/src-wrs-bot-v2",
         "registerCommands": "tsc && node --experimental-specifier-resolution=node build/scripts/register_commands.js",
         "clearCommands": "tsc && node --experimental-specifier-resolution=node build/scripts/clear_commands.js",
+        "test": "vitest --config ./vitest.config.ts",
         "typeorm": "typeorm-ts-node-esm -d src/db/index.ts"
     },
     "repository": {
@@ -40,7 +41,8 @@
         "prettier": "3.0.3",
         "reflect-metadata": "^0.1.13",
         "src-ts": "^2.8.0",
-        "typeorm": "^0.3.6"
+        "typeorm": "^0.3.6",
+        "vitest": "^0.34.3"
     },
     "devDependencies": {
         "@types/node": "^17.0.36",

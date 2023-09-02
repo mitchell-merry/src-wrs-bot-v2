@@ -3,6 +3,7 @@ import { CommandWithSubcommands } from '../command';
 import SetAboveRoleCommand from './set.ar';
 import SetListCommand from './set.list';
 import SetRoleDefaultColourCommand from './set.rdc';
+import SetRoleDefaultNameCommand from './set.rdn';
 import SetLogChannelCommand from './set.lc';
 
 const SetCommand: CommandWithSubcommands = {
@@ -10,10 +11,11 @@ const SetCommand: CommandWithSubcommands = {
         .setName('set')
         .setDescription('Set server settings. Requires moderator permissions.'),
     subcommands: [
-        SetAboveRoleCommand,
-        SetRoleDefaultColourCommand,
         SetListCommand,
+        SetAboveRoleCommand,
         SetLogChannelCommand,
+        SetRoleDefaultColourCommand,
+        SetRoleDefaultNameCommand,
     ],
 };
 

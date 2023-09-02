@@ -11,6 +11,7 @@ import ConfirmationMenu from '../../menus/ConfirmationMenu';
 import LeaderboardMenu from '../../menus/LeaderboardMenu';
 import UserError from '../../UserError';
 import { Subcommand } from '../command';
+import { templateLeaderboardName } from '../../../lib/template_name';
 
 const gameRegex = /^\w+$/;
 
@@ -104,12 +105,19 @@ const LeaderboardAddCommand: Subcommand = {
                 `This guild is already tracking the leaderboard ${lb_name}.`,
             );
 
+        const role_name = templateLeaderboardName(guildEnt.role_default_name, {
+            game: game.names.international,
+            category: category.name,
+            subcategories: labels,
+            level: level?.name,
+        });
+
         // confirm with the user that this is the action we want to take
         const message = roleOpt
             ? `This will track the leaderboard ${lb_name} in this guild with the role <@&${roleOpt.id}>. Are you sure you wish to do this?`
             : guildEnt.above_role_id === ''
-            ? `This will track the leaderboard ${lb_name} in this guild with a new role. Are you sure you wish to do this?`
-            : `This will track the leaderboard ${lb_name} in this guild with a new role, created above <@&${guildEnt.above_role_id}>. Are you sure you wish to do this?`;
+            ? `This will track the leaderboard ${lb_name} in this guild with a new role with the name ${role_name}. Are you sure you wish to do this?`
+            : `This will track the leaderboard ${lb_name} in this guild with a new role with the name ${role_name}, created above <@&${guildEnt.above_role_id}>. Are you sure you wish to do this?`;
 
         const [confirmation] = await new ConfirmationMenu(message).spawnMenu(
             interaction,
@@ -119,13 +127,14 @@ const LeaderboardAddCommand: Subcommand = {
 
         let role: Role;
         if (roleOpt) role = roleOpt as Role;
-        else
+        else {
             role = await interaction.guild!.roles.create({
-                name: `${lb_name} WR`,
+                name: role_name,
                 color: guildEnt.role_default_colour,
                 position,
                 permissions: [],
             });
+        }
 
         // save new leaderboard in database
         if (!board) {
@@ -150,7 +159,7 @@ const LeaderboardAddCommand: Subcommand = {
         await lRepo.save(board);
 
         await interaction.editReply({
-            content: `Added the leaderboard ${lb_name}.`,
+            content: `Added the leaderboard ${lb_name}, tracked by <@&${role.id}>.`,
             components: [],
         });
     },

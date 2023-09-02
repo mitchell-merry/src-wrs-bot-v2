@@ -12,6 +12,12 @@ export class GuildEntity {
     @Column({ default: '#FEE75C' })
     role_default_colour!: HexColorString;
 
+    /** The default role name template */
+    @Column({
+        default: '{{game}}: {{level}} - {{category}} ({{subcategories}})',
+    })
+    role_default_name!: string;
+
     /** The ID of the role to place new roles above. */
     @Column({ default: '' })
     above_role_id!: string;

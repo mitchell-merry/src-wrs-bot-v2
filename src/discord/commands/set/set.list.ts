@@ -18,6 +18,7 @@ const SetListCommand: Subcommand = {
         else msg += `<@&${guildEnt.above_role_id}>\n`;
 
         msg += `\`role_default_colour\`: ${guildEnt.role_default_colour}`;
+        msg += `\`role_default_name\`: ${guildEnt.role_default_name}`;
 
         await interaction.reply({
             content: msg,
