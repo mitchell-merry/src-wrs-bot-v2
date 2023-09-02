@@ -17,8 +17,8 @@ const SetListCommand: Subcommand = {
             msg += 'Not set! Will stick to bottom.\n';
         else msg += `<@&${guildEnt.above_role_id}>\n`;
 
-        msg += `\`role_default_colour\`: ${guildEnt.role_default_colour}`;
-        msg += `\`role_default_name\`: ${guildEnt.role_default_name}`;
+        msg += `\`role_default_colour\`: ${guildEnt.role_default_colour}\n`;
+        msg += `\`role_default_name\`: ${guildEnt.role_default_name}\n`;
 
         await interaction.reply({
             content: msg,
