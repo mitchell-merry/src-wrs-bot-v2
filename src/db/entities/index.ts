@@ -12,4 +12,11 @@ export { VariableEntity } from './Variable.entity';
 export { TrackedLeaderboardEntity } from './TrackedLeaderboard.entity';
 export { PlayerEntity } from './Player.entity';
 
-export const entities = [ GuildEntity, ModeratorRoleEntity, LeaderboardEntity, VariableEntity, TrackedLeaderboardEntity, PlayerEntity ];
+export const entities = [
+    GuildEntity,
+    ModeratorRoleEntity,
+    LeaderboardEntity,
+    VariableEntity,
+    TrackedLeaderboardEntity,
+    PlayerEntity,
+];

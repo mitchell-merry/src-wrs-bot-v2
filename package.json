@@ -1,49 +1,58 @@
 {
-	"name": "src-wrs-bot-v2",
-	"version": "0.0.1",
-	"description": "",
-	"scripts": {
-		"build": "tsc",
-		"start": "node --experimental-specifier-resolution node build/index.js",
-		"bs": "npm run build && npm run start",
-		"dev": "tsnd --respawn --cache-directory ./cache -- src/index.ts",
-		"db:up": "docker-compose -f docker-compose.dev.yml up",
-		"db:stop": "docker-compose -f docker-compose.dev.yml stop",
-		"db:down": "docker-compose -f docker-compose.dev.yml down",
-		"docker:build": "npm run build && docker build -t mitchellmerry/src-wrs-bot-v2 .",
-		"docker:push": "npm run docker:build && docker push mitchellmerry/src-wrs-bot-v2",
-		"registerCommands": "tsc && node --experimental-specifier-resolution=node build/scripts/register_commands.js",
-		"clearCommands": "tsc && node --experimental-specifier-resolution=node build/scripts/clear_commands.js",
-		"typeorm": "typeorm-ts-node-esm -d src/db/index.ts"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/mitchell-merry/src-wrs-bot-v2.git"
-	},
-	"keywords": [
-		"discord",
-		"discord-bot",
-		"speedrun.com"
-	],
-	"author": "Mitchell Merry",
-	"license": "MIT",
-	"bugs": {
-		"url": "https://github.com/mitchell-merry/src-wrs-bot-v2/issues"
-	},
-	"homepage": "https://github.com/mitchell-merry/src-wrs-bot-v2#readme",
-	"dependencies": {
-		"bottleneck": "^2.19.5",
-		"discord.js": "^14.9.0",
-		"dotenv": "^16.0.1",
-		"mysql2": "^2.3.3",
-		"node-fetch": "^2.6.7",
-		"reflect-metadata": "^0.1.13",
-		"src-ts": "^2.8.0",
-		"typeorm": "^0.3.6"
-	},
-	"devDependencies": {
-		"@types/node": "^17.0.36",
-		"ts-node-dev": "^2.0.0",
-		"typescript": "^4.7.2"
-	}
+    "name": "src-wrs-bot-v2",
+    "version": "0.0.1",
+    "description": "",
+    "scripts": {
+        "build": "tsc",
+        "start": "node --experimental-specifier-resolution node build/index.js",
+        "bs": "npm run build && npm run start",
+        "dev": "tsnd --respawn --cache-directory ./cache -- src/index.ts",
+        "db:up": "docker-compose -f docker-compose.dev.yml up",
+        "db:stop": "docker-compose -f docker-compose.dev.yml stop",
+        "db:down": "docker-compose -f docker-compose.dev.yml down",
+        "docker:build": "npm run build && docker build -t mitchellmerry/src-wrs-bot-v2 .",
+        "docker:push": "npm run docker:build && docker push mitchellmerry/src-wrs-bot-v2",
+        "registerCommands": "tsc && node --experimental-specifier-resolution=node build/scripts/register_commands.js",
+        "clearCommands": "tsc && node --experimental-specifier-resolution=node build/scripts/clear_commands.js",
+        "typeorm": "typeorm-ts-node-esm -d src/db/index.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mitchell-merry/src-wrs-bot-v2.git"
+    },
+    "keywords": [
+        "discord",
+        "discord-bot",
+        "speedrun.com"
+    ],
+    "author": "Mitchell Merry",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/mitchell-merry/src-wrs-bot-v2/issues"
+    },
+    "homepage": "https://github.com/mitchell-merry/src-wrs-bot-v2#readme",
+    "dependencies": {
+        "bottleneck": "^2.19.5",
+        "discord.js": "^14.9.0",
+        "dotenv": "^16.0.1",
+        "mysql2": "^2.3.3",
+        "node-fetch": "^2.6.7",
+        "prettier": "3.0.3",
+        "reflect-metadata": "^0.1.13",
+        "src-ts": "^2.8.0",
+        "typeorm": "^0.3.6"
+    },
+    "devDependencies": {
+        "@types/node": "^17.0.36",
+        "ts-node-dev": "^2.0.0",
+        "typescript": "^4.7.2"
+    },
+    "prettier": {
+        "useTabs": false,
+        "tabWidth": 4,
+        "printWidth": 80,
+        "semi": true,
+        "singleQuote": true,
+        "arrowParens": "avoid"
+    }
 }

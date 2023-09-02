@@ -1,3 +1,5 @@
-import { AutocompleteInteraction } from "discord.js";
+import { AutocompleteInteraction } from 'discord.js';
 
-export type Autocompleter = (interaction: AutocompleteInteraction) => Promise<void>; 
+export type Autocompleter = (
+    interaction: AutocompleteInteraction,
+) => Promise<void>;

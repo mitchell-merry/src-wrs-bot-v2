@@ -2,257 +2,258 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Stack that hosts src-wrs-bot-v2.
 Parameters:
-  DBPass:
-    Type: String
-    Description: Password for the MySQL RDS database.
-    NoEcho: true
-  DBSnapshot:
-    Type: String
-    Description: ARN of the snapshot to create the instance from.
-    Default: ""
-  DiscordToken:
-    Type: String
-    NoEcho: true
-    Description: The API key for the discord bot to connect to.
-  DiscordClient:
-    Type: String
-    Description: The ID of the discord bot's account.
-  DiscordAdmin:
-    Type: String
-    Description: The ID of the admin discord account. Has all privileges for the bot.
-  DiscordAdminGuild:
-    Type: String
-    Description: The ID of the guild to administrate the bot from.
-  IP:
-    Type: String
-    Description: IP to allow access to the RDS from
+    DBPass:
+        Type: String
+        Description: Password for the MySQL RDS database.
+        NoEcho: true
+    DBSnapshot:
+        Type: String
+        Description: ARN of the snapshot to create the instance from.
+        Default: ''
+    DiscordToken:
+        Type: String
+        NoEcho: true
+        Description: The API key for the discord bot to connect to.
+    DiscordClient:
+        Type: String
+        Description: The ID of the discord bot's account.
+    DiscordAdmin:
+        Type: String
+        Description: The ID of the admin discord account. Has all privileges for the bot.
+    DiscordAdminGuild:
+        Type: String
+        Description: The ID of the guild to administrate the bot from.
+    IP:
+        Type: String
+        Description: IP to allow access to the RDS from
 Conditions:
-  FromSnapshot: !Not [!Equals [!Ref DBSnapshot, AWS::NoValue ] ]
+    FromSnapshot: !Not [!Equals [!Ref DBSnapshot, AWS::NoValue]]
 Resources:
-  VPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: 10.0.0.0/16
-      EnableDnsHostnames: true
-      EnableDnsSupport: true
-      InstanceTenancy: default
-  PublicSubnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: 10.0.0.0/24
-      AvailabilityZone: us-east-1a
-  PrivateSubnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: 10.0.1.0/24
-      AvailabilityZone: us-east-1a
-  PublicSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: 10.0.2.0/24
-      AvailabilityZone: us-east-1b
-  PrivateSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref VPC
-      CidrBlock: 10.0.3.0/24
-      AvailabilityZone: us-east-1b
-  InternetGateway:
-    Type: AWS::EC2::InternetGateway
-  InternetGatewayAttachment:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      VpcId: !Ref VPC
-      InternetGatewayId: !Ref InternetGateway
-  PublicRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-  PrivateRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref VPC
-  PublicSubnetRouteTableAssociation1:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnet1
-      RouteTableId: !Ref PublicRouteTable
-  PrivateSubnetRouteTableAssociation1:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnet1
-      RouteTableId: !Ref PrivateRouteTable
-  PublicSubnetRouteTableAssociation2:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnet2
-      RouteTableId: !Ref PublicRouteTable
-  PrivateSubnetRouteTableAssociation2:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnet2
-      RouteTableId: !Ref PrivateRouteTable
-  PublicRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PublicRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGateway
-  PrivateRouteToMyIp:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PrivateRouteTable
-      DestinationCidrBlock: !Join [ "", [ !Ref IP, "/32" ]]
-      GatewayId: !Ref InternetGateway
-  DBSubnetGroup:
-    Type: AWS::RDS::DBSubnetGroup
-    Properties:
-      DBSubnetGroupDescription: Subnet Group for RDS DB
-      SubnetIds:
-      - !Ref PrivateSubnet1
-      - !Ref PrivateSubnet2
-  DBSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: "Security group to allow access for a local machine and mysql"
-      SecurityGroupIngress:
-        - IpProtocol: "tcp"
-          CidrIp: !Join [ "", [ !Ref IP, "/32" ]]
-          FromPort: 3306
-          ToPort: 3306
-        - IpProtocol: "tcp"
-          CidrIp: 10.0.0.0/16
-          FromPort: 3306
-          ToPort: 3306
-      VpcId: !Ref VPC
-  DB:
-    Type: AWS::RDS::DBInstance
-    DeletionPolicy: Snapshot
-    UpdateReplacePolicy: Snapshot
-    DependsOn: InternetGatewayAttachment
-    Properties:
-      Engine: MySQL
-      DBName: !If [FromSnapshot, !Ref AWS::NoValue, "srcwrs"]
-      MasterUsername: root
-      MasterUserPassword: !Ref DBPass
-      DBSnapshotIdentifier: !If [FromSnapshot, !Ref DBSnapshot, !Ref AWS::NoValue]
+    VPC:
+        Type: AWS::EC2::VPC
+        Properties:
+            CidrBlock: 10.0.0.0/16
+            EnableDnsHostnames: true
+            EnableDnsSupport: true
+            InstanceTenancy: default
+    PublicSubnet1:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref VPC
+            CidrBlock: 10.0.0.0/24
+            AvailabilityZone: us-east-1a
+    PrivateSubnet1:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref VPC
+            CidrBlock: 10.0.1.0/24
+            AvailabilityZone: us-east-1a
+    PublicSubnet2:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref VPC
+            CidrBlock: 10.0.2.0/24
+            AvailabilityZone: us-east-1b
+    PrivateSubnet2:
+        Type: AWS::EC2::Subnet
+        Properties:
+            VpcId: !Ref VPC
+            CidrBlock: 10.0.3.0/24
+            AvailabilityZone: us-east-1b
+    InternetGateway:
+        Type: AWS::EC2::InternetGateway
+    InternetGatewayAttachment:
+        Type: AWS::EC2::VPCGatewayAttachment
+        Properties:
+            VpcId: !Ref VPC
+            InternetGatewayId: !Ref InternetGateway
+    PublicRouteTable:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId: !Ref VPC
+    PrivateRouteTable:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId: !Ref VPC
+    PublicSubnetRouteTableAssociation1:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId: !Ref PublicSubnet1
+            RouteTableId: !Ref PublicRouteTable
+    PrivateSubnetRouteTableAssociation1:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId: !Ref PrivateSubnet1
+            RouteTableId: !Ref PrivateRouteTable
+    PublicSubnetRouteTableAssociation2:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId: !Ref PublicSubnet2
+            RouteTableId: !Ref PublicRouteTable
+    PrivateSubnetRouteTableAssociation2:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId: !Ref PrivateSubnet2
+            RouteTableId: !Ref PrivateRouteTable
+    PublicRoute:
+        Type: AWS::EC2::Route
+        Properties:
+            RouteTableId: !Ref PublicRouteTable
+            DestinationCidrBlock: 0.0.0.0/0
+            GatewayId: !Ref InternetGateway
+    PrivateRouteToMyIp:
+        Type: AWS::EC2::Route
+        Properties:
+            RouteTableId: !Ref PrivateRouteTable
+            DestinationCidrBlock: !Join ['', [!Ref IP, '/32']]
+            GatewayId: !Ref InternetGateway
+    DBSubnetGroup:
+        Type: AWS::RDS::DBSubnetGroup
+        Properties:
+            DBSubnetGroupDescription: Subnet Group for RDS DB
+            SubnetIds:
+                - !Ref PrivateSubnet1
+                - !Ref PrivateSubnet2
+    DBSecurityGroup:
+        Type: AWS::EC2::SecurityGroup
+        Properties:
+            GroupDescription: 'Security group to allow access for a local machine and mysql'
+            SecurityGroupIngress:
+                - IpProtocol: 'tcp'
+                  CidrIp: !Join ['', [!Ref IP, '/32']]
+                  FromPort: 3306
+                  ToPort: 3306
+                - IpProtocol: 'tcp'
+                  CidrIp: 10.0.0.0/16
+                  FromPort: 3306
+                  ToPort: 3306
+            VpcId: !Ref VPC
+    DB:
+        Type: AWS::RDS::DBInstance
+        DeletionPolicy: Snapshot
+        UpdateReplacePolicy: Snapshot
+        DependsOn: InternetGatewayAttachment
+        Properties:
+            Engine: MySQL
+            DBName: !If [FromSnapshot, !Ref AWS::NoValue, 'srcwrs']
+            MasterUsername: root
+            MasterUserPassword: !Ref DBPass
+            DBSnapshotIdentifier:
+                !If [FromSnapshot, !Ref DBSnapshot, !Ref AWS::NoValue]
 
-      DBInstanceClass: db.t2.micro
-      AllocatedStorage: "20"
-      BackupRetentionPeriod: 7
-      MultiAZ: false
-      DBSubnetGroupName: !Ref DBSubnetGroup
-      VPCSecurityGroups:
-        - !Ref DBSecurityGroup
-      PubliclyAccessible: true
-  ExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - ecs-tasks.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
-      Policies:
-      - PolicyName: RDSDBAccess
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-          - Effect: Allow
-            Action:
-            - rds-db:connect
-            Resource:
-            - Fn::GetAtt:
-              - DB
-              - DBInstanceArn
-      - PolicyName: Logs
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-          - Effect: Allow
-            Action:
-            - logs:CreateLogGroup
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            - logs:DescribeLogStreams
-            Resource:
-            - arn:aws:logs:*:*:*
-  TaskDefinition:
-    Type: AWS::ECS::TaskDefinition
-    Properties:
-      RequiresCompatibilities:
-      - FARGATE
-      NetworkMode: awsvpc
-      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
-      Cpu: "256"
-      Memory: "512"
-      ContainerDefinitions:
-      - Name: Bot
-        Image: mitchellmerry/src-wrs-bot-v2
-        LogConfiguration:
-          LogDriver: awslogs
-          Options:
-            awslogs-create-group: true
-            awslogs-group: "/ecs/MyTask"
-            awslogs-region: us-east-1
-            awslogs-stream-prefix: ecs
-        Environment:
-        - Name: DBHost
-          Value: !GetAtt DB.Endpoint.Address
-        - Name: DBPort
-          Value: !GetAtt DB.Endpoint.Port
-        - Name: DBPass
-          Value: !Ref DBPass
-        - Name: DBSync
-          Value: "false"
-        - Name: DiscordToken
-          Value: !Ref DiscordToken
-        - Name: DiscordClient
-          Value: !Ref DiscordClient
-        - Name: DiscordAdmin
-          Value: !Ref DiscordAdmin
-        - Name: DiscordAdminGuild
-          Value: !Ref DiscordAdminGuild
-        PortMappings:
-        - AppProtocol: http
-          ContainerPort: 80
-          HostPort: 80
-          Protocol: tcp
-  BotCluster:
-    Type: AWS::ECS::Cluster
-  Bot:
-    Type: AWS::ECS::Service
-    Properties:
-      Cluster: !Ref BotCluster
-      TaskDefinition: !Ref TaskDefinition
-      ServiceName: Bot
-      LaunchType: FARGATE
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
-          Subnets:
-          - !Ref PublicSubnet1
-          - !Ref PublicSubnet2
-      DesiredCount: 1
+            DBInstanceClass: db.t2.micro
+            AllocatedStorage: '20'
+            BackupRetentionPeriod: 7
+            MultiAZ: false
+            DBSubnetGroupName: !Ref DBSubnetGroup
+            VPCSecurityGroups:
+                - !Ref DBSecurityGroup
+            PubliclyAccessible: true
+    ExecutionRole:
+        Type: AWS::IAM::Role
+        Properties:
+            AssumeRolePolicyDocument:
+                Version: '2012-10-17'
+                Statement:
+                    - Effect: Allow
+                      Principal:
+                          Service:
+                              - ecs-tasks.amazonaws.com
+                      Action:
+                          - sts:AssumeRole
+            ManagedPolicyArns:
+                - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+            Policies:
+                - PolicyName: RDSDBAccess
+                  PolicyDocument:
+                      Version: '2012-10-17'
+                      Statement:
+                          - Effect: Allow
+                            Action:
+                                - rds-db:connect
+                            Resource:
+                                - Fn::GetAtt:
+                                      - DB
+                                      - DBInstanceArn
+                - PolicyName: Logs
+                  PolicyDocument:
+                      Version: '2012-10-17'
+                      Statement:
+                          - Effect: Allow
+                            Action:
+                                - logs:CreateLogGroup
+                                - logs:CreateLogStream
+                                - logs:PutLogEvents
+                                - logs:DescribeLogStreams
+                            Resource:
+                                - arn:aws:logs:*:*:*
+    TaskDefinition:
+        Type: AWS::ECS::TaskDefinition
+        Properties:
+            RequiresCompatibilities:
+                - FARGATE
+            NetworkMode: awsvpc
+            ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+            Cpu: '256'
+            Memory: '512'
+            ContainerDefinitions:
+                - Name: Bot
+                  Image: mitchellmerry/src-wrs-bot-v2
+                  LogConfiguration:
+                      LogDriver: awslogs
+                      Options:
+                          awslogs-create-group: true
+                          awslogs-group: '/ecs/MyTask'
+                          awslogs-region: us-east-1
+                          awslogs-stream-prefix: ecs
+                  Environment:
+                      - Name: DBHost
+                        Value: !GetAtt DB.Endpoint.Address
+                      - Name: DBPort
+                        Value: !GetAtt DB.Endpoint.Port
+                      - Name: DBPass
+                        Value: !Ref DBPass
+                      - Name: DBSync
+                        Value: 'false'
+                      - Name: DiscordToken
+                        Value: !Ref DiscordToken
+                      - Name: DiscordClient
+                        Value: !Ref DiscordClient
+                      - Name: DiscordAdmin
+                        Value: !Ref DiscordAdmin
+                      - Name: DiscordAdminGuild
+                        Value: !Ref DiscordAdminGuild
+                  PortMappings:
+                      - AppProtocol: http
+                        ContainerPort: 80
+                        HostPort: 80
+                        Protocol: tcp
+    BotCluster:
+        Type: AWS::ECS::Cluster
+    Bot:
+        Type: AWS::ECS::Service
+        Properties:
+            Cluster: !Ref BotCluster
+            TaskDefinition: !Ref TaskDefinition
+            ServiceName: Bot
+            LaunchType: FARGATE
+            NetworkConfiguration:
+                AwsvpcConfiguration:
+                    AssignPublicIp: ENABLED
+                    Subnets:
+                        - !Ref PublicSubnet1
+                        - !Ref PublicSubnet2
+            DesiredCount: 1
 Outputs:
-  DBEndpoint:
-    Value:
-      Fn::GetAtt:
-      - DB
-      - Endpoint.Address
-    Description: Endpoint address for the MySQL RDS database
-  DBPort:
-    Value:
-      Fn::GetAtt:
-      - DB
-      - Endpoint.Port
-    Description: Port for the MySQL RDS database
+    DBEndpoint:
+        Value:
+            Fn::GetAtt:
+                - DB
+                - Endpoint.Address
+        Description: Endpoint address for the MySQL RDS database
+    DBPort:
+        Value:
+            Fn::GetAtt:
+                - DB
+                - Endpoint.Port
+        Description: Port for the MySQL RDS database

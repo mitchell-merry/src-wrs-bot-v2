@@ -1,29 +1,29 @@
-services: 
-  db:
-    image: mysql
-    container_name: db
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DBPass}
-      MYSQL_DATABASE: srcwrs
-    cap_add:
-      - SYS_NICE
-    ports:
-      - ${DBPort}:3306
-    volumes:
-      - db-data:/var/lib/mysql
-  
-  phpmyadmin:
-    # latest was broken at the time of creation
-    image: phpmyadmin/phpmyadmin:5.1.1
-    container_name: pma
-    environment:
-      PMA_HOST: db
-      PMA_USER: root
-      PMA_PASSWORD: ${DBPass}
-    ports:
-      - 8081:80
-    depends_on:
-      - db
-      
+services:
+    db:
+        image: mysql
+        container_name: db
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DBPass}
+            MYSQL_DATABASE: srcwrs
+        cap_add:
+            - SYS_NICE
+        ports:
+            - ${DBPort}:3306
+        volumes:
+            - db-data:/var/lib/mysql
+
+    phpmyadmin:
+        # latest was broken at the time of creation
+        image: phpmyadmin/phpmyadmin:5.1.1
+        container_name: pma
+        environment:
+            PMA_HOST: db
+            PMA_USER: root
+            PMA_PASSWORD: ${DBPass}
+        ports:
+            - 8081:80
+        depends_on:
+            - db
+
 volumes:
-  db-data:
+    db-data:

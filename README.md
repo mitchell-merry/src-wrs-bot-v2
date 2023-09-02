@@ -1,4 +1,5 @@
 # src-wrs-bot-v2
+
 A bot for tracking speedrun.com world records in your discord server.
 
 The following subject has not been tested and is subject to serious misinformation, but I tried my best.
@@ -6,9 +7,10 @@ The following subject has not been tested and is subject to serious misinformati
 ## SETUP
 
 All of these require:
-- A discord bot account to log into, including the Token and Client ID (ID of the account).
-- An administrator (most likely yourself)'s discord account ID.
-- A guild to designate as the "admin guild", where you can do special adminning.
+
+-   A discord bot account to log into, including the Token and Client ID (ID of the account).
+-   An administrator (most likely yourself)'s discord account ID.
+-   A guild to designate as the "admin guild", where you can do special adminning.
 
 After getting the bot running, you should probably run the `/admin update_commands` command in the admin guild to register the commands globally.
 
@@ -25,6 +27,7 @@ You can view the database via phpmyadmin on that machine by going to `localhost:
 1. Install the [AWS CLI](https://aws.amazon.com/cli/).
 1. Log into your AWS account with `aws configure`.
 1. Run the following command:
+
 ```
 aws cloudformation deploy
 	--template-file cloudformation.yml
