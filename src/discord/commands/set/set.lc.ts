@@ -11,22 +11,26 @@ const SetLogChannelCommand: Subcommand = {
             o
                 .setName('wr_channel')
                 .setDescription('The channel.')
-                .setRequired(true),
+                .setRequired(false),
         ),
     perm: 'mods',
     execute: async (interaction, guildEnt) => {
-        const channel = interaction.options.getChannel('wr_channel', true);
+        const channel = interaction.options.getChannel('wr_channel');
 
-        if (channel.type !== ChannelType.GuildText)
+        if (channel && channel.type !== ChannelType.GuildText)
             throw new Error('wr_channel should be a text channel.');
 
         await DB.getRepository(GuildEntity).update(
             { guild_id: guildEnt.guild_id },
-            { log_channel_id: channel.id },
+            { log_channel_id: channel?.id ?? '' },
         );
 
+        const content = channel
+            ? `wr_channel set to <#${channel.id}>.`
+            : `wr_channel cleared.`;
+
         await interaction.reply({
-            content: `wr_channel set to <#${channel.id}>.`,
+            content,
             allowedMentions: { users: [], roles: [] },
         });
     },
