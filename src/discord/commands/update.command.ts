@@ -50,12 +50,13 @@ const UpdateCommand: Command = {
 
 			let runMap: Record<string, {
 				players: string[],
-				time: number,
+				time: string,
 			}[]> = {};
 
 			// list of accounts to add the role to
 			let accounts: string[] = [];
 			await Promise.all(tlbs.map(async tlb => {
+				const { lb_name } = tlb.leaderboard;
 				const lblog = (s: string) => roleLog(`:: [${tlb.leaderboard.lb_name}] ${s}`);
 
 				// get all sr.c player ids
@@ -65,8 +66,6 @@ const UpdateCommand: Command = {
 					level: tlb.leaderboard.level_id,
 					variables: Object.fromEntries(tlb.leaderboard.variables.map(variable => [ variable.variable_id, variable.value ]))
 				};
-
-				runMap[tlb.leaderboard.lb_name] = [];
 
 				const lb = await SRC.getLeaderboardFromPartial(partial, { top: 1 }, { cache: false }).catch((e) => {
                     let err = `Error updating ${tlb.leaderboard.lb_name} - we were unable to fetch data about this leaderboard from speedrun.com.\n`;
@@ -83,29 +82,39 @@ const UpdateCommand: Command = {
                     throw new Error(err);
                 });
 
-				// guests are ignored
-				const srcPlayerIds = lb.runs.map(run => run.run.players.filter(SRC.playerIsUser).map(p => p.id)).flat();
-				lblog(`Found WR holder(s) (sr.c): ${srcPlayerIds.join(', ')}`);
+				let messages: string[] = [];
+				runMap[lb_name] = [];
 
-				const discPlayerIDs = srcPlayerIds
-					.map(id => guildEnt.players.find(p => p.player_id === id))
-					.filter((p): p is PlayerEntity => !!p)
-					.map(p => p.discord_id);
+				for (const run of lb.runs) {
+					// guests are ignored
+					const srcPlayerIds = lb.runs.map(run => run.run.players.filter(SRC.playerIsUser).map(p => p.id)).flat();
+					lblog(`Found WR holder(s) (sr.c): ${srcPlayerIds.join(', ')}`);
 
-				// runMap[tlb.]
-				
-				lblog(`Found WR holder(s) (discord): ${discPlayerIDs.join(', ')}`);
+					const discPlayerIDs = srcPlayerIds
+						.map(id => guildEnt.players.find(p => p.player_id === id))
+						.filter((p): p is PlayerEntity => !!p)
+						.map(p => p.discord_id);
+
+					runMap[lb_name].push({
+						players: discPlayerIDs,
+						time: run.run.times.primary,
+					});
+
+					// messages.push(`${discPlayerIDs.map(id => `<@${id}>`).join(', ')} achieved a time of ${run.run.times.primary}!`);
+				}
 
 				if (log_channel) {
-					const word = discPlayerIDs.length === 1 ? 'has' : 'all have';
 					const embed = new EmbedBuilder()
 						.setColor(role?.color ?? (guildEnt.role_default_colour ?? "#FEE75C"))
-						.setTitle(`World Record in ${tlb.leaderboard.lb_name}`)
-						.setDescription(`Now ${discPlayerIDs.map(id => `<@${discPlayerIDs}>`).join(', ')} ${word} the world record!`);
+						.setTitle(`World Record in ${lb_name}`)
+						.setDescription(messages.join('\n\n'));
 
 					await log_channel.send({ embeds: [ embed ]});
 				}
-				
+
+				const discPlayerIDs = [...new Set(runMap[lb_name].map(x => x.players).flat())];
+				lblog(`Found WR holder(s) (discord): ${discPlayerIDs.join(', ')}`);
+
 				discPlayerIDs.forEach(id => {
 					if(!accounts.includes(id)) accounts.push(id);
 				});
